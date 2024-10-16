@@ -67,17 +67,57 @@
       </div>
       <div class="col-span-7">
 
-mapa
-
-      </div>
+        <div class="ellipse" :style="{ backgroundImage: `url(${mapa})` }"></div>
+       </div>
     </main>
   </div>
 </template>
 
 <script setup>
 import theader from "@/components/ui/atoms/t-header.vue";
-import arrowback from "@/assets/icons/arrowback.svg";
-import tButton from "@/components/ui/atoms/t-router.vue";
+import mapa from '@/components/views/layout/mapa.jpg';
 </script>
-<style>
+<style scoped>
+.ellipse {
+  width: 50vw; /* Reducir el tamaño para evitar desbordamiento */
+  height: 50vw; /* Ajustar para que sea proporcional al ancho */
+  max-width: 830px; /* Limitar el tamaño máximo */
+  max-height: 830px; /* Limitar el tamaño máximo */
+  display: flex;
+  border-radius: 50%; /* Mantén el círculo */
+  position: absolute;
+  top: 7vh; /* Ajusta según sea necesario para centrar */
+  left: 70%; /* Centra horizontalmente */
+  transform: translateX(-50%); /* Centra horizontalmente */
+  background-size: 175%; /* Asegura que la imagen ocupe todo el círculo */
+  background-position: center; /* Centra la imagen dentro del círculo */
+  background-repeat: no-repeat;
+  box-shadow: 0 4px 47px 20px rgba(0, 0, 201, 0.555);
+  animation: slide-horizontal 8s linear infinite;
+  overflow: hidden;
+}
+@keyframes slide-horizontal {
+            0% {
+                background-position: left center; /* Empieza en la izquierda */
+            }
+            100% {
+                background-position: right center; /* Termina en la derecha */
+            }
+        }
+@media (max-width: 768px) {
+  .ellipse {
+    width: 50vw; /* Ajusta el tamaño según el ancho de la pantalla */
+    height: 50vw; /* Mantén la misma proporción para el círculo */
+    top: 30vh; /* Ajusta la posición en pantallas más pequeñas */
+  }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .ellipse {
+    width: 50vw;
+    height: 50vw;
+    top: 50vh;
+  }
+}
 </style>

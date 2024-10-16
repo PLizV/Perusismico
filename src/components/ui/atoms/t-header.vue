@@ -28,7 +28,7 @@
         }"
       >
         <iconthome class="h-4 mr-3"></iconthome>
-        Acerca de Zonifica Perú
+        Acerca de Osis
       </router-link>
       <router-link
         :to="{ name: 'geovisor' }"
@@ -41,7 +41,7 @@
         }"
       >
         <iconworld class="h-5 mr-3"></iconworld>
-        Visor Zonifica Perú
+        Visor Osis
       </router-link>
       <div class="ml-auto">
         <button

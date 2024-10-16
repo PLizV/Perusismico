@@ -171,7 +171,7 @@ export default {
       .addTo(this.map);
 
     // Cargar el archivo GeoJSON usando axios
-    axios.get("http://localhost:8000/placas.json").then((response) => {
+    axios.get("http://localhost:5173/placas.json").then((response) => {
       // Crear clones del GeoJSON para simular repetición
       const repeatOffsets = [
         [0, -360],
