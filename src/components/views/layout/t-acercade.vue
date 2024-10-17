@@ -13,16 +13,16 @@
         >
           <!--  sm: md: lg: xl: 2xl: -->
           <span
-            class="col-span-12 mt-4 text-igp-blue font-medium text-xs sm:text-sm md:text-sm lg:text-sm xl:text-base 2xl:text-base"
+           class="col-span-12 mt-4 text-igp-blue font-medium text-base sm:text-lg md:text-lg lg:text-lg xl:text-xl 2xl:text-xl"
           >
             Plataforma de Observatorio Sísmico
           </span>
-          <p class="col-span-12 text-igp-blue text-6xl font-bold mt-1">
+          <p class="col-span-12 text-igp-blue text-7xl font-bold mt-1">
             Perú<span class="italic font-medium"> Sísmico</span>
           </p>
           <p
-            class="col-span-12 font-light pt-4 text-xs sm:text-sm md:text-base lg:text-base xl:text-base 2xl:text-base mt-3"
-            style="line-height: 2"
+             class="col-span-12 font-light pt-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3"
+             style="line-height: 2"
           >
             <span class="font-medium">Perú Sísmico </span>es una plataforma
             digital de observatorio sísmico creada por el
@@ -39,8 +39,8 @@
             , garantiza datos confiables y precisos.
           </p>
           <p
-            class="col-span-12 font-light pt-8 text-xs sm:text-sm md:text-base lg:text-base xl:text-base 2xl:text-base"
-            style="line-height: 2"
+             class="col-span-12 font-light pt-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3"
+             style="line-height: 2"
           >
             Con su interfaz intuitiva, permite filtrar sismos por magnitud,
             región y fecha, facilitando el análisis y la consulta de eventos

@@ -3,6 +3,7 @@
     class="relative flex items-center pl-10 justify-start z-10 pt-[5.25rem] scroll-auto select-none"
   >
     <div class="px-4 py-6 grid grid-cols-12 bg-white rounded-2xl w-[450px]">
+
       <p class="col-span-12 font-light text-xs leading-[18px] ml-2">
         <span class="font-semibold"> Importante:</span> Configura libremente los
         parámetros sísmicos para ver los eventos en el visor.
@@ -49,7 +50,10 @@
       </tLabel>
 
       <!-- SELECCION DE CAPAS CHECK -->
-      <div class="col-span-12 pl-3 pt-2">INTRODUCIR RANGOS AQUI</div>
+      <div class="col-span-12 pl-3 pt-2">
+
+
+      </div>
       <tLabel
         color="blue"
         size="md"
@@ -158,6 +162,7 @@ import magnitud from "@/assets/icons/magnitud.svg";
 import calendario from "@/assets/icons/calendario.svg";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import tCalendar from "@/components/ui/atoms/t-calendar.vue";
+
 /* 
 import { useGeojsonStore } from "@/stores/geojson.js";
 
@@ -170,6 +175,9 @@ const setDefaultValueRange = ref(0.8); */
 const selContinente = ref("");
 const stateContinente = ref("enable");
 const errContinente = ref("Continente error");
+
+//MAGNITUD
+
 
 //PERIODO DE ANALISIS
 const inpAnalisis = ref();
@@ -220,6 +228,10 @@ const dataContinente = ref([
 ]);
 </script>
 <style>
+
+
+
+
 #rangeTimeAnalisis .dp__input_reg {
   width: auto !important;
 }
