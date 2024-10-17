@@ -219,12 +219,16 @@ export default {
             type: "Feature",
             geometry: {
               type: "Point",
-              coordinates: [parseFloat(row.longitude), parseFloat(row.latitude)],
+              coordinates: [
+                parseFloat(row.longitude),
+                parseFloat(row.latitude),
+              ],
             },
             properties: {
               mag: row.mag,
               place: row.place,
               time: row.time,
+              depth: row.depth,
             },
           })),
       };
@@ -232,15 +236,22 @@ export default {
     addGeoJSONToMap(geoJSON) {
       L.geoJSON(geoJSON, {
         pointToLayer: (feature, latlng) => {
-          // Personalizar estilo según la magnitud
+          // Personalizar estilo según la profundidad
           let radius = 4;
-          let color = "yellow";
+          let color = "yellow"; // Color por defecto
 
-          if (feature.properties.mag >= 4.5 && feature.properties.mag <= 5.9) {
+          if (feature.properties.depth > 300) {
+            radius = 4;
+            color = "blue"; // Profundos (> 300 km)
+          } else if (
+            feature.properties.depth >= 61 &&
+            feature.properties.depth <= 300
+          ) {
             radius = 6;
-          } else if (feature.properties.mag >= 6) {
+            color = "green"; // Intermedios (61 km - 300 km)
+          } else if (feature.properties.depth <= 60) {
             radius = 8;
-            color = "red";
+            color = "red"; // Superficiales (< 60 km)
           }
 
           return L.circleMarker(latlng, {
@@ -255,7 +266,11 @@ export default {
         onEachFeature: (feature, layer) => {
           // Muestra un popup con la información del sismo
           layer.bindPopup(
-            `Lugar: ${feature.properties.place}<br>Magnitud: ${feature.properties.mag}<br>Fecha: ${new Date(
+            `Lugar: ${feature.properties.place}<br>Magnitud: ${
+              feature.properties.mag
+            }<br>Profundidad: ${
+              feature.properties.depth
+            } km<br>Fecha: ${new Date(
               feature.properties.time
             ).toLocaleString()}`
           );

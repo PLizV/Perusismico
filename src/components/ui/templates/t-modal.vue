@@ -103,7 +103,13 @@
         </div>
       </div>
       <tLabel color="blue" size="md" weight="400" class="col-span-12 flex ml-4">
-        <img :src="calendario" alt="img_calen" height="18" width="18" class="mr-1" />
+        <img
+          :src="calendario"
+          alt="img_calen"
+          height="18"
+          width="18"
+          class="mr-1"
+        />
         Seleccione un rango de años:
       </tLabel>
       <!-- DEPARTAMENTO -->
@@ -181,17 +187,17 @@ const items = ref([
   {
     key: "2",
     value: "superficial",
-    name: "Superficiales < 60km 🔴",
+    name: "Superficiales (< 60km)🔴",
   },
   {
     key: "3",
     value: "intermedio",
-    name: "Intermedios 61km> <300km 🟢",
+    name: "Intermedios (61km - 300km) 🟢",
   },
   {
     key: "4",
     value: "profundos",
-    name: "Profundos >300km 🔵",
+    name: "Profundos (> 300km) 🔵",
   },
 ]);
 const checkedItems = ref([true, false, false, false]);
@@ -215,7 +221,7 @@ const dataContinente = ref([
 </script>
 <style>
 #rangeTimeAnalisis .dp__input_reg {
-    width: auto !important;
+  width: auto !important;
 }
 .tooltipmodal {
   position: relative;
