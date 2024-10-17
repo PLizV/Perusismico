@@ -8,11 +8,15 @@
 <script>
 import axios from "axios";
 import * as L from "leaflet/dist/leaflet-src.js";
+import Papa from "papaparse";
 import "leaflet.pattern";
 import "leaflet/dist/leaflet.css";
 import { useGeojsonStore } from "@/stores/geojson.js";
 import circulo from "@/assets/icons/icircle.vue";
 import carpeta from "@/assets/icons/vermas.vue";
+import "leaflet.markercluster/dist/MarkerCluster.css"; // Estilos de clustering
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+import "leaflet.markercluster"; // Importar Leaflet MarkerCluster
 
 export default {
   components: {
@@ -22,41 +26,6 @@ export default {
   data() {
     return {
       map: null,
-
-      geoJSONLayer: null,
-      prioGeoJSONLayer: null,
-      geoLabelLayer: null,
-      punto: null,
-      anho: null,
-      makerPopup: false,
-
-      geoJSONLayer2: null,
-      prioGeoJSONLayer2: null,
-      geoLabelLayer2: null,
-      punto2: null,
-      anho2: null,
-      makerPopup2: false,
-
-      geoJSONLayerCapaZona: null,
-      geoJSONLayerCapaDepartamento: null,
-      useGeojson: useGeojsonStore(),
-      capa1: "",
-      capa2: "",
-      departamento: "",
-      ciudad: "",
-      setZonaEstudio: false,
-      markerIcon: null,
-      prePunto: null,
-      subcapamaker: null,
-      defin: null,
-      colorWhiteRed1: null,
-      shape: null,
-      colorWhiteRed2: null,
-      Cpatter: null,
-      circleRed: null,
-      geoJSONLayerCapaLocalidades: null,
-      geoJSONLayerCapaCiudades: null,
-
       initialZoom: null,
       initialLatLeng: null,
     };
@@ -139,6 +108,7 @@ export default {
       zoom: this.initialZoom,
       layers: [luzNotable], // cambiar favorito
       fullscreenControlOptions: { position: "bottomright" },
+      preferCanvas: true,
       maxBounds: bounds, // Fija los límites del mapa
       maxBoundsViscosity: 1.0,
     }).on("keydown", this.closePopupOnEscape);
@@ -171,42 +141,128 @@ export default {
       .addTo(this.map);
 
     // Cargar el archivo GeoJSON usando axios
-    axios.get("http://localhost:5173/placas.json").then((response) => {
-      // Crear clones del GeoJSON para simular repetición
-      const repeatOffsets = [
-        [0, -360],
-        [0, 360],
-        [0, 0],
-        [360, 0],
-        [-360, 0], // Estas son longitudes para replicar el GeoJSON (puedes ajustar más offsets)
-      ];
+    axios
+      .get(
+        `${import.meta.env.VITE_LINK}:${import.meta.env.VITE_PORT}/placas.json`
+      )
 
-      repeatOffsets.forEach((offset) => {
-        const geoJSONLayerClone = L.geoJSON(response.data, {
-          style: function (feature) {
-            return { color: "#fff" }; // Puedes personalizar el estilo aquí
-          },
-          onEachFeature: function (feature, layer) {
-            if (feature.properties && feature.properties.name) {
-              layer.bindPopup(feature.properties.name); // Muestra un popup con la propiedad 'name'
-            }
-          },
-        }).addTo(that.map);
+      .then((response) => {
+        // Crear clones del GeoJSON para simular repetición
+        const repeatOffsets = [
+          [0, -360],
+          [0, 360],
+          [0, 0],
+          [360, 0],
+          [-360, 0], // Estas son longitudes para replicar el GeoJSON (puedes ajustar más offsets)
+        ];
 
-        // Mueve el clon de la capa por las coordenadas
-        geoJSONLayerClone.eachLayer((layer) => {
-          layer.setLatLngs(
-            layer.getLatLngs().map((point) => [
-              point.lat,
-              point.lng + offset[0], // Desplaza longitudinalmente para repetir
-            ])
-          );
+        repeatOffsets.forEach((offset) => {
+          const geoJSONLayerClone = L.geoJSON(response.data, {
+            style: function (feature) {
+              return { color: "#fff" }; // Puedes personalizar el estilo aquí
+            },
+            onEachFeature: function (feature, layer) {
+              if (feature.properties && feature.properties.name) {
+                layer.bindPopup(feature.properties.name); // Muestra un popup con la propiedad 'name'
+              }
+            },
+          }).addTo(that.map);
+
+          // Mueve el clon de la capa por las coordenadas
+          geoJSONLayerClone.eachLayer((layer) => {
+            layer.setLatLngs(
+              layer.getLatLngs().map((point) => [
+                point.lat,
+                point.lng + offset[0], // Desplaza longitudinalmente para repetir
+              ])
+            );
+          });
         });
       });
-    });
+
+    // Cargar el archivo CSV
+    axios
+      .get(`${import.meta.env.VITE_LINK}:${import.meta.env.VITE_PORT}/data.csv`)
+      .then((response) => {
+        Papa.parse(response.data, {
+          header: true,
+          dynamicTyping: true,
+          complete: (result) => {
+            const geoJSONData = this.convertCSVToGeoJSON(result.data);
+            this.addGeoJSONToMap(geoJSONData);
+          },
+        });
+      });
   },
   watch: {},
-  methods: {},
+  methods: {
+    convertCSVToGeoJSON(data) {
+      // Obtener la fecha de hace dos años
+      const twoYearsAgo = new Date();
+      twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+
+      return {
+        type: "FeatureCollection",
+        features: data
+          .filter((row) => {
+            // Validar si la fecha es válida y está dentro de los últimos dos años
+            const eventDate = new Date(row.time);
+            return (
+              !isNaN(row.latitude) &&
+              !isNaN(row.longitude) &&
+              row.latitude !== null &&
+              row.longitude !== null &&
+              eventDate >= twoYearsAgo
+            );
+          })
+          .map((row) => ({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [parseFloat(row.longitude), parseFloat(row.latitude)],
+            },
+            properties: {
+              mag: row.mag,
+              place: row.place,
+              time: row.time,
+            },
+          })),
+      };
+    },
+    addGeoJSONToMap(geoJSON) {
+      L.geoJSON(geoJSON, {
+        pointToLayer: (feature, latlng) => {
+          // Personalizar estilo según la magnitud
+          let radius = 4;
+          let color = "yellow";
+
+          if (feature.properties.mag >= 4.5 && feature.properties.mag <= 5.9) {
+            radius = 6;
+          } else if (feature.properties.mag >= 6) {
+            radius = 8;
+            color = "red";
+          }
+
+          return L.circleMarker(latlng, {
+            radius: radius,
+            fillColor: color,
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8,
+          });
+        },
+        onEachFeature: (feature, layer) => {
+          // Muestra un popup con la información del sismo
+          layer.bindPopup(
+            `Lugar: ${feature.properties.place}<br>Magnitud: ${feature.properties.mag}<br>Fecha: ${new Date(
+              feature.properties.time
+            ).toLocaleString()}`
+          );
+        },
+      }).addTo(this.map);
+    },
+  },
   beforeUnmount() {
     this.map.remove();
   },
