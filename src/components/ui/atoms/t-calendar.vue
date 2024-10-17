@@ -59,7 +59,7 @@ export default {
     statelassesLabel() {
       const stateMappings = {
         enable:
-          "focus-within:border-igp-brown-800 focus-within:ring-1 focus-within:ring-igp-brown-800",
+          "focus-within:border-igp-blue focus-within:ring-1 focus-within:ring-igp-blue",
         disable: "bg-gray-100 border border-gray-300 text-igp-dark-500",
         error: "text-igp-red border-igp-red",
       };

@@ -1,4 +1,7 @@
 <template>
+  <div>version movil aun no disponible</div>
+  <!-- 
+   <template>
   <div
     class="flex px-6 sm:px-6 md:px-10 z-10 pt-[5.25rem] scroll-auto select-none overflow-auto"
   >
@@ -15,7 +18,6 @@
         <img :src="filter" alt="filter" height="12" width="10" class="mr-1" />
         Filtrar visor por:
       </tLabel>
-      <!-- DEPARTAMENTO -->
       <form class="grid grid-cols-12 col-span-12" method="dialog">
         <tSelect
           class="col-span-12 pl-3 mt-2"
@@ -30,7 +32,6 @@
           <template v-slot:elvalor>Ver todos</template>
           <template v-slot:error> {{ errDepartamento }} </template>
         </tSelect>
-        <!-- DISTRITO -->
         <tSelect
           class="col-span-12 pl-3 mt-3"
           :state="stateDistrito"
@@ -71,7 +72,6 @@
         Para una mejor visualización de información, puede elegir y comparar
         hasta dos capas de todas las disponibles.
       </p>
-      <!-- SELECCION DE CAPAS CHECK -->
       <div class="col-span-12 pt-2">
         <div class="flex flex-col justify-between mb-4">
           <div
@@ -138,7 +138,6 @@
                 >Activar capa</span
               >
             </div>
-            <!-- :title="setDefaultValueRange[item.key]" -->
           </div>
         </div>
       </div>
@@ -146,11 +145,9 @@
         <img :src="infoload" alt="filter" height="14" width="14" class="mr-1" />
         Información complementaria
       </tLabel>
-      <!-- SELECCION DE TABS -->
       <div class="col-span-12 mt-4 p-0">
         <tTab :cantinfo="filteredData">
           <template v-slot:Informes>
-            <!-- Contenido de la pestaña Informes -->
             <tInformes
               :departamento="selDepartamento"
               :distrito="selDistrito"
@@ -159,7 +156,6 @@
             />
           </template>
           <template v-slot:Leyenda>
-            <!-- Contenido de la pestaña Leyenda -->
             <tLeyenda
               :departamento="selDepartamento"
               :distrito="selDistrito"
@@ -174,7 +170,6 @@
             />
           </template>
           <template v-slot:Archivos>
-            <!-- Contenido de la pestaña Archivos -->
             <tArchivos
               :departamento="selDepartamento"
               :distrito="selDistrito"
@@ -193,7 +188,6 @@
         </tTab>
       </div>
 
-      <!--  <div class="col-span-5 pt-4">
         <tButton
           @click="actCompartir"
           class="mx-3 mb-1 w-full"
@@ -204,7 +198,7 @@
           <img :src="share" class="w-[18px] h-[18px]" alt="" />
           Compartir
         </tButton>
-      </div> -->
+      </div> 
     </div>
   </div>
 </template>
@@ -744,3 +738,9 @@ const setRangeSlide = (key, valor) => {
   transform: translateY(30%);
 }
 </style>
+
+   -->
+</template>
+
+
+
