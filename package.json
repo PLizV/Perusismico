@@ -10,12 +10,16 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@material-ui/core": "^4.12.4",
     "@nestjs/mapped-types": "*",
     "@vue/runtime-core": "^3.5.12",
     "@vuepic/vue-datepicker": "^8.2.0",
+    "ant-design-vue": "^4.2.5",
+    "antd": "^5.21.4",
     "axios": "^1.6.7",
     "dotenv": "^16.4.1",
     "flowbite": "^2.3.0",
+    "globe.gl": "^2.33.0",
     "hammerjs": "^2.0.8",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",

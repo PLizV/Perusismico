@@ -48,12 +48,25 @@
         />
         Defina un rango de magnitud:
       </tLabel>
-
       <!-- SELECCION DE CAPAS CHECK -->
       <div class="col-span-12 pl-3 pt-2">
+        <div class="slider">
+          <Slider
+      v-model="magnitudeRange"
+      :marks="marks"
+      :min="4"
+      :max="9.5"
+      :step="0.1"
+      :tooltipFormatter="customTooltipFormatter"
+      range
+     @change="updateRanges"
+      />
+   
+      
+      
+    </div>
+  </div>
 
-
-      </div>
       <tLabel
         color="blue"
         size="md"
@@ -116,6 +129,7 @@
         />
         Seleccione un rango de años:
       </tLabel>
+
       <!-- DEPARTAMENTO -->
       <tCalendar class="col-span-12 mt-2 pl-4" :state="stateAnalisis">
         <template v-slot:calendar>
@@ -162,6 +176,7 @@ import magnitud from "@/assets/icons/magnitud.svg";
 import calendario from "@/assets/icons/calendario.svg";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import tCalendar from "@/components/ui/atoms/t-calendar.vue";
+import { Slider } from 'ant-design-vue';
 
 /* 
 import { useGeojsonStore } from "@/stores/geojson.js";
@@ -177,7 +192,32 @@ const stateContinente = ref("enable");
 const errContinente = ref("Continente error");
 
 //MAGNITUD
+const magnitudeRange = ref([4, 9.5])
 
+const marks = {
+  4: '4',
+  4.5: '4.5',
+  5: '5',
+  5.5: '5.5',
+  6: '6',
+  6.5: '6.5',
+  7: '7',
+  7.5: '7.5',
+  8: '8',
+  8.5: '8.5',
+  9: '9',
+  9.5: '9.5',
+};
+const updateRanges = () => {
+  const [min, max] = magnitudeRange.value;
+  if (min > max) {
+    magnitudeRange.value.reverse(); // Intercambiar valores si están cruzados
+  }
+};
+
+const customTooltipFormatter = (value) => {
+  return `M ${value.toFixed(1)}`; // Cambia el formato del tooltip
+};
 
 //PERIODO DE ANALISIS
 const inpAnalisis = ref();
@@ -228,8 +268,48 @@ const dataContinente = ref([
 ]);
 </script>
 <style>
+.ant-slider-mark {
+    font-size: 5px; /* Cambia este valor para ajustar el tamaño de la fuente */
+    color: #2f0f79; /* Cambia el color del texto */
+  }
+.ant-slider-tooltip {
+  font-size: 12px !important; /* Tamaño de la fuente */
+}
+.slider {
+  width: 90%;
+  max-width: 1000px;
+  margin: 15px;
+  padding: 6px 0;
+  position: relative;
+}
 
+.slider input {
+  --start: 10%;
+  --stop: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  background: none;
+  pointer-events: none;
+  position: absolute;
+  height: 4px;
+  width: 100%;
+}
 
+.slider input:first-of-type {
+  background-image: linear-gradient(
+    to right,
+    lightgrey var(--start),
+    dodgerblue var(--start),
+    dodgerblue var(--stop),
+    lightgrey var(--stop)
+  );
+}
+
+.slider ::-moz-range-thumb,
+.slider ::-webkit-slider-thumb {
+  cursor: pointer;
+  pointer-events: auto;
+}
 
 
 #rangeTimeAnalisis .dp__input_reg {
