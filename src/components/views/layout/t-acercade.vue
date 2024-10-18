@@ -13,7 +13,7 @@
         >
           <!--  sm: md: lg: xl: 2xl: -->
           <span
-           class="col-span-12 mt-4 text-igp-blue font-medium text-base sm:text-lg md:text-lg lg:text-lg xl:text-xl 2xl:text-xl"
+          class="col-span-12 mt-4 text-igp-blue font-medium text-lg sm:text-xl md:text-xl lg:text-xl xl:text-2xl 2xl:text-2xl"
           >
             Plataforma de Observatorio Sísmico
           </span>

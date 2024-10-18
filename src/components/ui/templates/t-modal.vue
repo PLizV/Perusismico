@@ -59,10 +59,10 @@
       :step="0.1"
       :tooltipFormatter="customTooltipFormatter"
       range
-     @change="updateRanges"
+     @change="handleChange"
       />
    
-      
+      <p>Rango de magnitud: {{ magnitudeRange }}</p>
       
     </div>
   </div>
@@ -167,7 +167,6 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
-import axios from "axios";
 import tLabel from "@/components/ui/atoms/t-label.vue";
 import tSelect from "@/components/ui/atoms/t-select.vue";
 import profundidad from "@/assets/icons/profundidad.svg";
@@ -193,7 +192,6 @@ const errContinente = ref("Continente error");
 
 //MAGNITUD
 const magnitudeRange = ref([4, 9.5])
-
 const marks = {
   4: '4',
   4.5: '4.5',
@@ -208,16 +206,17 @@ const marks = {
   9: '9',
   9.5: '9.5',
 };
-const updateRanges = () => {
-  const [min, max] = magnitudeRange.value;
-  if (min > max) {
-    magnitudeRange.value.reverse(); // Intercambiar valores si están cruzados
-  }
+const handleChange = (value) => {
+  console.log("Rango de magnitud actualizado:", value);
+  // Aquí puedes actualizar otras partes de tu estado si es necesario
 };
 
 const customTooltipFormatter = (value) => {
   return `M ${value.toFixed(1)}`; // Cambia el formato del tooltip
 };
+watch(magnitudeRange, (newValue) => {
+  console.log("Rango de magnitud actualizado:", newValue); // Imprimir el nuevo valor en la consola
+});
 
 //PERIODO DE ANALISIS
 const inpAnalisis = ref();

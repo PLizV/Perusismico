@@ -26,6 +26,7 @@
     "leaflet.pattern": "^0.1.0",
     "papaparse": "^5.4.1",
     "pinia": "^2.1.7",
+    "three-globe": "^2.32.0",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5",
     "vue-slider-component": "^3.2.24",
