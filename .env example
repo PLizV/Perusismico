@@ -1,0 +1,4 @@
+# VITE_SISVULBD= http://localhost:5000/api
+VITE_PORT = 8000
+VITE_ROUTER_BASE = history
+VITE_LINK =  http://localhost #LINK

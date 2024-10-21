@@ -23,11 +23,22 @@ export default {
     circulo,
     carpeta,
   },
+  props: {
+    startDate: {
+      type: Date,
+      required: true,
+    },
+    endDate: {
+      type: Date,
+      required: true,
+    },
+  },
   data() {
     return {
       map: null,
       initialZoom: null,
       initialLatLeng: null,
+      setData: null,
     };
   },
   mounted() {
@@ -167,7 +178,6 @@ export default {
               }
             },
           }).addTo(that.map);
-
           // Mueve el clon de la capa por las coordenadas
           geoJSONLayerClone.eachLayer((layer) => {
             layer.setLatLngs(
@@ -189,18 +199,31 @@ export default {
           dynamicTyping: true,
           complete: (result) => {
             const geoJSONData = this.convertCSVToGeoJSON(result.data);
+            this.setData = result.data;
             this.addGeoJSONToMap(geoJSONData);
           },
         });
       });
   },
-  watch: {},
+  watch: {
+    // Cada vez que startDate cambie
+    startDate(newValue) {
+      console.log("Fecha de inicio actualizada a:", newValue);
+      this.convertCSVToGeoJSON(this.setData); // Llama a tu función de actualización
+    },
+    // Cada vez que endDate cambie
+    endDate(newValue) {
+      console.log("Fecha de fin actualizada a:", newValue);
+      this.convertCSVToGeoJSON(this.setData); // Llama a tu función de actualización
+    },
+  },
+
   methods: {
     convertCSVToGeoJSON(data) {
       // Obtener la fecha de hace dos años
       const twoYearsAgo = new Date();
       twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
-
+      const that = this;
       return {
         type: "FeatureCollection",
         features: data
@@ -212,7 +235,8 @@ export default {
               !isNaN(row.longitude) &&
               row.latitude !== null &&
               row.longitude !== null &&
-              eventDate >= twoYearsAgo
+              eventDate >= that.startDate &&
+              eventDate <= that.endDate
             );
           })
           .map((row) => ({

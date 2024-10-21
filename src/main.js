@@ -8,7 +8,7 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 const app = createApp(App)
 const pinia = createPinia();
-const script = document.createElement('script');
+/* const script = document.createElement('script');
 script.async = true;
 script.src = 'https://www.googletagmanager.com/gtag/js?id=G-HX5JKDVM5E';
 document.head.appendChild(script);
@@ -21,7 +21,7 @@ script.onload = () => {
     gtag('config', 'G-HX5JKDVM5E');
   };
   
-
+ */
 
 
 

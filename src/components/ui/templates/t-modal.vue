@@ -2,8 +2,7 @@
   <div
     class="relative flex items-center pl-10 justify-start z-10 pt-[5.25rem] scroll-auto select-none"
   >
-    <div class="px-4 py-6 grid grid-cols-12 bg-white rounded-2xl w-[450px]">
-
+    <div class="px-4 pt-6 grid grid-cols-12 bg-white rounded-2xl w-[450px]">
       <p class="col-span-12 font-light text-xs leading-[18px] ml-2">
         <span class="font-semibold"> Importante:</span> Configura libremente los
         parámetros sísmicos para ver los eventos en el visor.
@@ -52,20 +51,19 @@
       <div class="col-span-12 pl-3 pt-2">
         <div class="slider">
           <Slider
-      v-model="magnitudeRange"
-      :marks="marks"
-      :min="4"
-      :max="9.5"
-      :step="0.1"
-      :tooltipFormatter="customTooltipFormatter"
-      range
-     @change="handleChange"
-      />
-   
-      <p>Rango de magnitud: {{ magnitudeRange }}</p>
-      
-    </div>
-  </div>
+            v-model:value="magnitudeRange"
+            :marks="marks"
+            :min="4"
+            :max="9.5"
+            :step="0.1"
+            :tooltipFormatter="customTooltipFormatter"
+            range
+            @change="handleChange"
+          />
+
+          <p>Rango de magnitud: {{ magnitudeRange }}</p>
+        </div>
+      </div>
 
       <tLabel
         color="blue"
@@ -130,24 +128,33 @@
         Seleccione un rango de años:
       </tLabel>
 
-      <!-- DEPARTAMENTO -->
-      <tCalendar class="col-span-12 mt-2 pl-4" :state="stateAnalisis">
+      <tCalendar class="col-span-6 mt-2 pl-4" :state="stateStartDate">
         <template v-slot:calendar>
           <VueDatePicker
-            id="rangeTimeAnalisis"
-            v-model="inpAnalisis"
+            v-model="startDate"
             format="MMM/yyyy"
-            range
-            :multi-calendars="{ count: 2 }"
-            hide-offset-dates
             locale="es"
-            autoAppl
             :autoApply="true"
-            :disabled="disabledRangeTiempo"
+            :disabled="disStartDate"
+            month-picker
           ></VueDatePicker>
         </template>
-        <template v-slot:name> Periodo de análisis </template>
-        <template v-slot:error> {{ errAnalisis }} </template>
+        <template v-slot:name> Fecha de inicio </template>
+        <template v-slot:error> {{ errStartDate }} </template>
+      </tCalendar>
+      <tCalendar class="col-span-6 mt-2 pl-4" :state="stateEndDate">
+        <template v-slot:calendar>
+          <VueDatePicker
+            v-model="endDate"
+            format="MMM/yyyy"
+            locale="es"
+            :autoApply="true"
+            :disabled="disEndDate"
+            month-picker
+          ></VueDatePicker>
+        </template>
+        <template v-slot:name> Fecha de fín </template>
+        <template v-slot:error> {{ errEndDate }} </template>
       </tCalendar>
       <!--  <div class="col-span-5 pt-4">
         <tButton
@@ -175,7 +182,8 @@ import magnitud from "@/assets/icons/magnitud.svg";
 import calendario from "@/assets/icons/calendario.svg";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import tCalendar from "@/components/ui/atoms/t-calendar.vue";
-import { Slider } from 'ant-design-vue';
+import { Slider } from "ant-design-vue";
+const emit = defineEmits(["update-dates"]);
 
 /* 
 import { useGeojsonStore } from "@/stores/geojson.js";
@@ -191,20 +199,20 @@ const stateContinente = ref("enable");
 const errContinente = ref("Continente error");
 
 //MAGNITUD
-const magnitudeRange = ref([4, 9.5])
+const magnitudeRange = ref([4, 9.5]);
 const marks = {
-  4: '4',
-  4.5: '4.5',
-  5: '5',
-  5.5: '5.5',
-  6: '6',
-  6.5: '6.5',
-  7: '7',
-  7.5: '7.5',
-  8: '8',
-  8.5: '8.5',
-  9: '9',
-  9.5: '9.5',
+  4: "4",
+  4.5: "4.5",
+  5: "5",
+  5.5: "5.5",
+  6: "6",
+  6.5: "6.5",
+  7: "7",
+  7.5: "7.5",
+  8: "8",
+  8.5: "8.5",
+  9: "9",
+  9.5: "9.5",
 };
 const handleChange = (value) => {
   console.log("Rango de magnitud actualizado:", value);
@@ -214,23 +222,60 @@ const handleChange = (value) => {
 const customTooltipFormatter = (value) => {
   return `M ${value.toFixed(1)}`; // Cambia el formato del tooltip
 };
+
 watch(magnitudeRange, (newValue) => {
   console.log("Rango de magnitud actualizado:", newValue); // Imprimir el nuevo valor en la consola
 });
 
-//PERIODO DE ANALISIS
-const inpAnalisis = ref();
-const errAnalisis = ref("Periodo de analisis error");
-const disabledRangeTiempo = ref(false);
-const stateAnalisis = ref("enable");
+//FUNCION PARA CONVERTR FECHA
+const convertToDate = (proxyObject) => {
+  if (
+    proxyObject &&
+    proxyObject.month !== undefined &&
+    proxyObject.year !== undefined
+  ) {
+    const date = new Date(proxyObject.year, proxyObject.month + 1);
+    date.setDate(date.getDate() - 1);
+    return date;
+  }
+  return null;
+};
+
+//StartDate
+const startDate = ref({
+  month: new Date().getMonth(),
+  year: new Date().getFullYear(),
+});
+const errStartDate = ref("Fecha inicio error");
+const disStartDate = ref(false);
+const stateStartDate = ref("enable");
+watch(startDate, (newValue) => {
+  const newStartDate = convertToDate(new Date(newValue));
+  emit("update-dates", {
+    startDate: newStartDate,
+    endDate: convertToDate(endDate.value),
+  });
+});
+
+//EndDate
+const endDate = ref({
+  month: new Date().getMonth(),
+  year: new Date().getFullYear(),
+});
+const errEndDate = ref("Fecha fin error");
+const disEndDate = ref(false);
+const stateEndDate = ref("enable");
+
+watch(endDate, (newValue) => {
+  const newEndDate = convertToDate(new Date(newValue));
+  emit("update-dates", {
+    startDate: convertToDate(startDate.value),
+    endDate: newEndDate,
+  });
+});
 
 //CHECK LIST
 const items = ref([
-  {
-    key: "1",
-    value: "todos",
-    name: "Todos 🔴🟢🔵",
-  },
   {
     key: "2",
     value: "superficial",
@@ -268,9 +313,9 @@ const dataContinente = ref([
 </script>
 <style>
 .ant-slider-mark {
-    font-size: 5px; /* Cambia este valor para ajustar el tamaño de la fuente */
-    color: #2f0f79; /* Cambia el color del texto */
-  }
+  font-size: 5px; /* Cambia este valor para ajustar el tamaño de la fuente */
+  color: #2f0f79; /* Cambia el color del texto */
+}
 .ant-slider-tooltip {
   font-size: 12px !important; /* Tamaño de la fuente */
 }
@@ -310,10 +355,6 @@ const dataContinente = ref([
   pointer-events: auto;
 }
 
-
-#rangeTimeAnalisis .dp__input_reg {
-  width: auto !important;
-}
 .tooltipmodal {
   position: relative;
   display: inline-block;
