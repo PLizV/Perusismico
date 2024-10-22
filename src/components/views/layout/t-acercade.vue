@@ -67,34 +67,112 @@
       </div>
       <div class="col-span-7">
 
-        <div class="ellipse" :style="{ backgroundImage: `url(${mapa})` }"></div>
-       </div>
+        <div class="ellipse" ref="globeContainer"></div>
+
+        </div>
     </main>
   </div>
 </template>
 
 <script setup>
 import theader from "@/components/ui/atoms/t-header.vue";
-import mapa from '@/components/views/layout/mapa.jpg';
+/*import mapa from '@/components/views/layout/mapa.jpg';*/
+import { onMounted, ref } from 'vue';
+import createGlobe from 'globe.gl';
+
+
+const globeContainer = ref(null);
+
+onMounted(() => {
+  const world = createGlobe()(globeContainer.value);
+  
+  if (world) {
+    world
+      .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+      .pointOfView({ lat: 0, lng: -60, altitude: 2.5 }, 5000) // Cambiar lat/lng para centrar mejor el globo
+      .polygonCapColor(() => 'rgba(0, 0, 255, 0.6)')
+      .polygonSideColor(() => 'rgba(0, 80, 0, 0.01)')
+    //  .polygonLabel(({ properties: d }) => `
+      //  <b>${d.ADMIN} (${d.ISO_A2})</b> <br />
+     //   Population: <i>${Math.round(+d.POP_EST / 1e4) / 1e2}M</i>
+     // `);
+
+    if (world.controls) {
+      world.controls().autoRotate = true;
+      world.controls().autoRotateSpeed = 1.8;
+    } else {
+      console.error('Error: world.controls() no está disponible.');
+    }
+    // Cargar los datos de los países desde un archivo GeoJSON
+   } 
+
+  // Añadir los anillos de propagación utilizando datos aleatorios
+  const N = 50; // Aumentamos el número de anillos para el Cinturón de Fuego
+  const gData = [...Array(N).keys()].map(() => {
+  const region = Math.random();
+
+  // Regiones del Cinturón de Fuego
+  if (region < 0.3) {
+    // América del Norte y América del Sur (costa oeste)
+    return {
+      lat: Math.random() * (60 - -55) + -55, // Latitudes entre 60°N y -55°S
+      lng: Math.random() * (-60 - -130) + -130, // Longitudes entre -60° y -130°
+      maxR: Math.random() * 20 + 3,
+      propagationSpeed: (Math.random() - 0.5) * 20 + 1,
+      repeatPeriod: Math.random() * 2000 + 200
+    };
+  } else if (region < 0.6) {
+    // Este y sureste de Asia
+    return {
+      lat: Math.random() * (60 - 0) + 0, // Latitudes entre 0° y 60°N
+      lng: Math.random() * (160 - 100) + 100, // Longitudes entre 100° y 160°
+      maxR: Math.random() * 20 + 3,
+      propagationSpeed: (Math.random() - 0.5) * 20 + 1,
+      repeatPeriod: Math.random() * 2000 + 200
+    };
+  } else {
+    // Oceanía (Nueva Zelanda)
+    return {
+      lat: Math.random() * (-10 - -50) + -50, // Latitudes entre -10° y -50°
+      lng: Math.random() * (180 - 160) + 160, // Longitudes entre 160° y 180°
+      maxR: Math.random() * 20 + 3,
+      propagationSpeed: (Math.random() - 0.5) * 20 + 1,
+      repeatPeriod: Math.random() * 2000 + 200
+    };
+  }
+});
+
+const colorInterpolator = t => `rgba(255,0,50,${Math.sqrt(1 - t)})`;
+
+  world
+    .ringsData(gData)
+    .ringColor(() => colorInterpolator)
+    .ringMaxRadius('maxR')
+    .ringPropagationSpeed('propagationSpeed')
+    .ringRepeatPeriod('repeatPeriod');
+
+});
 </script>
+
 <style scoped>
 .ellipse {
   width: 50vw; /* Reducir el tamaño para evitar desbordamiento */
   height: 50vw; /* Ajustar para que sea proporcional al ancho */
   max-width: 830px; /* Limitar el tamaño máximo */
   max-height: 830px; /* Limitar el tamaño máximo */
-  display: flex;
+  display:flex;
   border-radius: 50%; /* Mantén el círculo */
   position: absolute;
   top: 7vh; /* Ajusta según sea necesario para centrar */
   left: 70%; /* Centra horizontalmente */
   transform: translateX(-50%); /* Centra horizontalmente */
-  background-size: 175%; /* Asegura que la imagen ocupe todo el círculo */
-  background-position: center; /* Centra la imagen dentro del círculo */
-  background-repeat: no-repeat;
-  box-shadow: 0 4px 47px 20px rgba(0, 0, 201, 0.555);
-  animation: slide-horizontal 8s linear infinite;
+  box-shadow: 0 4px 47px 20px rgba(62, 23, 202, 0.514);
   overflow: hidden;
+}
+.ellipse canvas {
+  width: 100%; /* Asegura que el canvas ocupe todo el espacio */
+  height: 100%; /* Asegura que el canvas ocupe todo el espacio */
+  object-fit: cover;
 }
 @keyframes slide-horizontal {
             0% {
@@ -106,8 +184,8 @@ import mapa from '@/components/views/layout/mapa.jpg';
         }
 @media (max-width: 768px) {
   .ellipse {
-    width: 50vw; /* Ajusta el tamaño según el ancho de la pantalla */
-    height: 50vw; /* Mantén la misma proporción para el círculo */
+    width: 20vw; /* Ajusta el tamaño según el ancho de la pantalla */
+    height: 30vw; /* Mantén la misma proporción para el círculo */
     top: 30vh; /* Ajusta la posición en pantallas más pequeñas */
   }
 }
@@ -115,9 +193,9 @@ import mapa from '@/components/views/layout/mapa.jpg';
 /* Ajustes para pantallas muy pequeñas */
 @media (max-width: 480px) {
   .ellipse {
-    width: 50vw;
-    height: 50vw;
-    top: 50vh;
+    width: 20vw;
+    height: 30vw;
+    top: 20vh;
   }
 }
 </style>
