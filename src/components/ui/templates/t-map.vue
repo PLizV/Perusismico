@@ -24,13 +24,18 @@ export default {
     carpeta,
   },
   props: {
-    startDate: {
-      type: Date,
+    alldata: {
+      type: Object,
       required: true,
-    },
-    endDate: {
-      type: Date,
-      required: true,
+      default: () => ({
+        startDate: null,
+        endDate: null,
+        maxMag: null,
+        minMag: null,
+        /*     isSuperficial: null,
+        isIntermediate: null,
+        isDeep: null, */
+      }),
     },
   },
   data() {
@@ -39,6 +44,7 @@ export default {
       initialZoom: null,
       initialLatLeng: null,
       setData: null,
+      csvLayer: null,
     };
   },
   mounted() {
@@ -206,37 +212,48 @@ export default {
       });
   },
   watch: {
-    // Cada vez que startDate cambie
-    startDate(newValue) {
-      console.log("Fecha de inicio actualizada a:", newValue);
-      this.convertCSVToGeoJSON(this.setData); // Llama a tu función de actualización
-    },
-    // Cada vez que endDate cambie
-    endDate(newValue) {
-      console.log("Fecha de fin actualizada a:", newValue);
-      this.convertCSVToGeoJSON(this.setData); // Llama a tu función de actualización
+    // Observa el objeto dates completamente
+    alldata: {
+      async handler(newDates) {
+        const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
+        this.addGeoJSONToMap(geoJSONData);
+        console.log("ME EJECUTO BUG")
+      },
+      deep: true,
     },
   },
 
   methods: {
     convertCSVToGeoJSON(data) {
       // Obtener la fecha de hace dos años
+      console.log(this.alldata.startDate);
       const twoYearsAgo = new Date();
       twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
-      const that = this;
       return {
         type: "FeatureCollection",
         features: data
           .filter((row) => {
             // Validar si la fecha es válida y está dentro de los últimos dos años
             const eventDate = new Date(row.time);
+            const mag = row.mag;
+            /*  const depth = row.depth;
+
+             const isSuperficial = this.alldata.superficiales && depth <= 60;
+            const isIntermediate =
+              this.alldata.intermedios && depth >= 61 && depth <= 300;
+            const isDeep = this.alldata.profundos && depth > 300;
+            const depthCondition = isSuperficial || isIntermediate || isDeep;
+            console.log(depthCondition, "<<<<<<<<<<") */
             return (
               !isNaN(row.latitude) &&
               !isNaN(row.longitude) &&
               row.latitude !== null &&
               row.longitude !== null &&
-              eventDate >= that.startDate &&
-              eventDate <= that.endDate
+              eventDate >= this.alldata.startDate &&
+              eventDate <= this.alldata.endDate &&
+              mag >= this.alldata.maxMag &&
+              mag <= this.alldata.minMag
+              //&& depthCondition
             );
           })
           .map((row) => ({
@@ -258,7 +275,13 @@ export default {
       };
     },
     addGeoJSONToMap(geoJSON) {
-      L.geoJSON(geoJSON, {
+      // Eliminar la capa CSV anterior si existe
+      if (this.csvLayer) {
+        this.map.removeLayer(this.csvLayer); // Elimina la capa anterior del mapa
+      }
+
+      // Agregar la nueva capa al mapa
+      this.csvLayer = L.geoJSON(geoJSON, {
         pointToLayer: (feature, latlng) => {
           // Personalizar estilo según la profundidad
           let radius = 4;
@@ -299,7 +322,7 @@ export default {
             ).toLocaleString()}`
           );
         },
-      }).addTo(this.map);
+      }).addTo(this.map); // Almacenar la nueva capa en this.csvLayer
     },
   },
   beforeUnmount() {

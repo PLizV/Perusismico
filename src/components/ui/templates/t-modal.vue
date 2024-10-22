@@ -60,17 +60,10 @@
             range
             @change="handleChange"
           />
-
-          <p>Rango de magnitud: {{ magnitudeRange }}</p>
         </div>
       </div>
 
-      <tLabel
-        color="blue"
-        size="md"
-        weight="400"
-        class="col-span-12 flex pt-4 pl-4"
-      >
+      <tLabel color="blue" size="md" weight="400" class="col-span-12 flex pl-4">
         <img
           :src="profundidad"
           alt="img_prof"
@@ -183,7 +176,7 @@ import calendario from "@/assets/icons/calendario.svg";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import tCalendar from "@/components/ui/atoms/t-calendar.vue";
 import { Slider } from "ant-design-vue";
-const emit = defineEmits(["update-dates"]);
+const emit = defineEmits(["update-data"]);
 
 /* 
 import { useGeojsonStore } from "@/stores/geojson.js";
@@ -197,7 +190,15 @@ const setDefaultValueRange = ref(0.8); */
 const selContinente = ref("");
 const stateContinente = ref("enable");
 const errContinente = ref("Continente error");
-
+const dataContinente = ref([
+  { value: "suramerica", name: "America del sur" },
+  { value: "centroamerica", name: "America central" },
+  { value: "noramerica", name: "America del norte" },
+  { value: "asia", name: "Ásia" },
+  { value: "europa", name: "Europa" },
+  { value: "africa", name: "Africa" },
+  { value: "oceania", name: "Oceanía" },
+]);
 //MAGNITUD
 const magnitudeRange = ref([4, 9.5]);
 const marks = {
@@ -215,17 +216,20 @@ const marks = {
   9.5: "9.5",
 };
 const handleChange = (value) => {
-  console.log("Rango de magnitud actualizado:", value);
-  // Aquí puedes actualizar otras partes de tu estado si es necesario
+  console.log("Rango de magnitud actualizado:", value[0]);
+
+  console.log(magnitudeRange.value);
+  emit("update-data", {
+    startDate: convertToDate(startDate.value),
+    endDate: convertToDate(endDate.value),
+    maxMag: value[0],
+    minMag: value[1],
+  });
 };
 
 const customTooltipFormatter = (value) => {
   return `M ${value.toFixed(1)}`; // Cambia el formato del tooltip
 };
-
-watch(magnitudeRange, (newValue) => {
-  console.log("Rango de magnitud actualizado:", newValue); // Imprimir el nuevo valor en la consola
-});
 
 //FUNCION PARA CONVERTR FECHA
 const convertToDate = (proxyObject) => {
@@ -250,10 +254,12 @@ const errStartDate = ref("Fecha inicio error");
 const disStartDate = ref(false);
 const stateStartDate = ref("enable");
 watch(startDate, (newValue) => {
-  const newStartDate = convertToDate(new Date(newValue));
-  emit("update-dates", {
+  const newStartDate = convertToDate(newValue);
+  emit("update-data", {
     startDate: newStartDate,
     endDate: convertToDate(endDate.value),
+    maxMag: magnitudeRange.value[0],
+    minMag: magnitudeRange.value[1],
   });
 });
 
@@ -267,32 +273,34 @@ const disEndDate = ref(false);
 const stateEndDate = ref("enable");
 
 watch(endDate, (newValue) => {
-  const newEndDate = convertToDate(new Date(newValue));
-  emit("update-dates", {
+  const newEndDate = convertToDate(newValue);
+  emit("update-data", {
     startDate: convertToDate(startDate.value),
     endDate: newEndDate,
+    maxMag: magnitudeRange.value[0],
+    minMag: magnitudeRange.value[1],
   });
 });
 
 //CHECK LIST
 const items = ref([
   {
-    key: "2",
-    value: "superficial",
+    key: "1",
+    value: "Superficiales",
     name: "Superficiales (< 60km)🔴",
   },
   {
-    key: "3",
-    value: "intermedio",
+    key: "2",
+    value: "Intermedios",
     name: "Intermedios (61km - 300km) 🟢",
   },
   {
-    key: "4",
-    value: "profundos",
+    key: "3",
+    value: "isDeep",
     name: "Profundos (> 300km) 🔵",
   },
 ]);
-const checkedItems = ref([true, false, false, false]);
+const checkedItems = ref([true, true, true]);
 const maxSelection = ref(3);
 const selectedCount = computed(
   () => checkedItems.value.filter((item) => item).length
@@ -300,16 +308,30 @@ const selectedCount = computed(
 const maxSelectionReached = computed(
   () => selectedCount.value >= maxSelection.value
 );
+const selectedItems = computed(() =>
+  items.value.filter((item, index) => checkedItems.value[index])
+);
+const handleCheckboxChange = () => {
+  const isSuperficial = checkedItems.value[0]; // Superficiales
+  const isIntermediate = checkedItems.value[1]; // Intermedios
+  const isDeep = checkedItems.value[2]; // Profundos
 
-const dataContinente = ref([
-  { value: "suramerica", name: "America del sur" },
-  { value: "centroamerica", name: "America central" },
-  { value: "noramerica", name: "America del norte" },
-  { value: "asia", name: "Ásia" },
-  { value: "europa", name: "Europa" },
-  { value: "africa", name: "Africa" },
-  { value: "oceania", name: "Oceanía" },
-]);
+  // Imprimir en la consola los valores
+  console.log("Superficiales:", isSuperficial);
+  console.log("Intermedios:", isIntermediate);
+  console.log("Profundos:", isDeep);
+
+  // Emitir los valores dependiendo de lo seleccionado
+  /*  emit("update-data", {
+    startDate: convertToDate(startDate.value),
+    endDate:  convertToDate(endDate.value),
+    maxMag: magnitudeRange.value[0],
+    minMag: magnitudeRange.value[1],
+    isSuperficial, // Será true o false según el checkbox
+    isIntermediate, // Será true o false según el checkbox
+    isDeep, // Será true o false según el checkbox
+  }); */
+};
 </script>
 <style>
 .ant-slider-mark {

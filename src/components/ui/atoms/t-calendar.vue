@@ -1,7 +1,7 @@
 <template>
   <div class="text-right">
-    <label
-      class="block rounded-md border text-start border-gray-200 px-3"
+    <div
+      class="block rounded-md border text-start border-gray-200 px-3 z-50"
       :class="textClasses"
     >
       <span
@@ -11,7 +11,7 @@
         <slot name="name"></slot>
       </span>
       <slot name="calendar"></slot>
-    </label>
+    </div>
     <span class="text-xs" :class="errorClasses">
       <slot name="error"></slot>
     </span>
@@ -106,9 +106,9 @@ export default {
 
     colorTime() {
       if (this.state === "disable") {
-        return '#6d6d6d';
+        return "#6d6d6d";
       } else {
-        return '#333333';
+        return "#333333";
       }
     },
   },
