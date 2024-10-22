@@ -66,9 +66,11 @@
         </div>
       </div>
       <div class="col-span-7">
-
-        <div class="ellipse" ref="globeContainer"></div>
-
+        <div class="ellipse" >
+        <div class="image-container">
+        <div class="globe" ref="globeContainer"></div>
+        </div>
+      </div>
         </div>
     </main>
   </div>
@@ -80,7 +82,6 @@ import theader from "@/components/ui/atoms/t-header.vue";
 import { onMounted, ref } from 'vue';
 import createGlobe from 'globe.gl';
 
-
 const globeContainer = ref(null);
 
 onMounted(() => {
@@ -89,17 +90,14 @@ onMounted(() => {
   if (world) {
     world
       .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
-      .pointOfView({ lat: 0, lng: -60, altitude: 2.5 }, 5000) // Cambiar lat/lng para centrar mejor el globo
+      .pointOfView({ lat: 0, lng: 0, altitude: 1.5 }) // Cambiar lat/lng para centrar mejor el globo
       .polygonCapColor(() => 'rgba(0, 0, 255, 0.6)')
       .polygonSideColor(() => 'rgba(0, 80, 0, 0.01)')
-    //  .polygonLabel(({ properties: d }) => `
-      //  <b>${d.ADMIN} (${d.ISO_A2})</b> <br />
-     //   Population: <i>${Math.round(+d.POP_EST / 1e4) / 1e2}M</i>
-     // `);
-
+   
+  
     if (world.controls) {
       world.controls().autoRotate = true;
-      world.controls().autoRotateSpeed = 1.8;
+      world.controls().autoRotateSpeed = -1.8;
     } else {
       console.error('Error: world.controls() no está disponible.');
     }
@@ -111,8 +109,7 @@ onMounted(() => {
   const gData = [...Array(N).keys()].map(() => {
   const region = Math.random();
 
-  // Regiones del Cinturón de Fuego
-  if (region < 0.3) {
+  if (region < 0.2) {
     // América del Norte y América del Sur (costa oeste)
     return {
       lat: Math.random() * (60 - -55) + -55, // Latitudes entre 60°N y -55°S
@@ -121,11 +118,39 @@ onMounted(() => {
       propagationSpeed: (Math.random() - 0.5) * 20 + 1,
       repeatPeriod: Math.random() * 2000 + 200
     };
+  } else if (region < 0.4) {
+    // Este, noreste, sureste, oeste de Asia
+    const subRegion = Math.random();
+    if (subRegion < 0.5) {
+      return {
+        lat: Math.random() * (60 - 0) + 0, // Latitudes entre 0° y 60°N
+        lng: Math.random() * (160 - 100) + 100, // Longitudes entre 100° y 160°
+        maxR: Math.random() * 20 + 3,
+        propagationSpeed: (Math.random() - 0.5) * 20 + 1,
+        repeatPeriod: Math.random() * 2000 + 200
+      };
+    } else if (subRegion < 0.75) {
+      return {
+        lat: Math.random() * (60 - 30) + 30, // Latitudes entre 30°N y 60°N
+        lng: Math.random() * (160 - 120) + 120, // Longitudes entre 120°E y 160°E
+        maxR: Math.random() * 20 + 3,
+        propagationSpeed: (Math.random() - 0.5) * 20 + 1,
+        repeatPeriod: Math.random() * 2000 + 200
+      };
+    } else {
+      return {
+        lat: Math.random() * (60 - 0) + 0, // Latitudes entre 0° y 60°N
+        lng: Math.random() * (80 - 30) + 30, // Longitudes entre 30°E y 80°E
+        maxR: Math.random() * 20 + 3,
+        propagationSpeed: (Math.random() - 0.5) * 20 + 1,
+        repeatPeriod: Math.random() * 2000 + 200
+      };
+    }
   } else if (region < 0.6) {
-    // Este y sureste de Asia
+    // Región entre América y África (Atlántico)
     return {
-      lat: Math.random() * (60 - 0) + 0, // Latitudes entre 0° y 60°N
-      lng: Math.random() * (160 - 100) + 100, // Longitudes entre 100° y 160°
+      lat: Math.random() * (30 - -40) + -40, // Latitudes entre -40° y 30°N
+      lng: Math.random() * (20 - -60) + -60, // Longitudes entre -60° y 20°E (Atlántico)
       maxR: Math.random() * 20 + 3,
       propagationSpeed: (Math.random() - 0.5) * 20 + 1,
       repeatPeriod: Math.random() * 2000 + 200
@@ -142,15 +167,28 @@ onMounted(() => {
   }
 });
 
-const colorInterpolator = t => `rgba(255,0,50,${Math.sqrt(1 - t)})`;
+const colorForRegion = (lat, lng) => {
+  if (lng < -60 && lng > -130) {
+    return 'rgba(255,0,8,0.6)'; // América del Norte y del Sur (costa oeste)
+  } else if (lng > 100 && lng < 160) {
+    return 'rgba(0, 255, 0, 0.6)'; // Asia (este y sureste)
+  } else if (lng > 120 && lng < 160) {
+    return 'rgba(0, 0, 255, 0.6)'; // Noreste de Asia
+  } else if (lng > 30 && lng < 80) {
+    return 'rgba(255, 240, 4, 0.6)'; // Oeste de Asia
+  } else if (lng > -60 && lng < 20) {
+    return 'rgba(100,255,0,0.4)'; // Atlántico entre América y África
+  } else {
+    return 'rgba(255, 0, 0, 0.6)'; // Otros lugares (por ejemplo, Oceanía)
+  }
+};
 
   world
-    .ringsData(gData)
-    .ringColor(() => colorInterpolator)
-    .ringMaxRadius('maxR')
-    .ringPropagationSpeed('propagationSpeed')
-    .ringRepeatPeriod('repeatPeriod');
-
+  .ringsData(gData)
+  .ringColor(({ lat, lng }) => colorForRegion(lat, lng)) // Asigna un color específico según la región
+  .ringMaxRadius('maxR')
+  .ringPropagationSpeed('propagationSpeed')
+  .ringRepeatPeriod('repeatPeriod');
 });
 </script>
 
@@ -166,14 +204,28 @@ const colorInterpolator = t => `rgba(255,0,50,${Math.sqrt(1 - t)})`;
   top: 7vh; /* Ajusta según sea necesario para centrar */
   left: 70%; /* Centra horizontalmente */
   transform: translateX(-50%); /* Centra horizontalmente */
-  box-shadow: 0 4px 47px 20px rgba(62, 23, 202, 0.514);
+  box-shadow: 0 4px 47px 20px rgba(4, 57, 172, 0.692);
   overflow: hidden;
 }
-.ellipse canvas {
-  width: 100%; /* Asegura que el canvas ocupe todo el espacio */
-  height: 100%; /* Asegura que el canvas ocupe todo el espacio */
-  object-fit: cover;
+.image-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  top:-3vh;
+  left:-60vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+/* Ajustar el globo */
+.globe {
+  width: 100%; /* Asegura que el globo ocupa el contenedor */
+  height: 100%;
+  object-fit: cover; /* Ajuste proporcional dentro del contenedor */
+  border-radius: 50%; /* Mantiene la forma circular */
+}
+
 @keyframes slide-horizontal {
             0% {
                 background-position: left center; /* Empieza en la izquierda */
@@ -183,19 +235,23 @@ const colorInterpolator = t => `rgba(255,0,50,${Math.sqrt(1 - t)})`;
             }
         }
 @media (max-width: 768px) {
-  .ellipse {
-    width: 20vw; /* Ajusta el tamaño según el ancho de la pantalla */
-    height: 30vw; /* Mantén la misma proporción para el círculo */
-    top: 30vh; /* Ajusta la posición en pantallas más pequeñas */
+
+  .image-container {
+    width: 100%;
+    height: 100%;
+    top: -5vh; /* Ajusta la posición superior en pantallas medianas */
+    left: -30vh; /* Ajusta la posición para que no se salga en pantallas medianas */
   }
-}
+  }
 
 /* Ajustes para pantallas muy pequeñas */
 @media (max-width: 480px) {
-  .ellipse {
-    width: 20vw;
-    height: 30vw;
-    top: 20vh;
+
+  .image-container {
+    width: 100%;
+    height: 100%;
+    top: 20vh; /* Ajusta la posición superior para pantallas pequeñas */
+    left: 0vh; /* Asegura que la imagen esté centrada horizontalmente en pantallas pequeñas */
   }
 }
 </style>
