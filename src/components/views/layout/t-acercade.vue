@@ -97,7 +97,7 @@ onMounted(() => {
   
     if (world.controls) {
       world.controls().autoRotate = true;
-      world.controls().autoRotateSpeed = -1.8;
+      world.controls().autoRotateSpeed = -1.2;
     } else {
       console.error('Error: world.controls() no está disponible.');
     }
