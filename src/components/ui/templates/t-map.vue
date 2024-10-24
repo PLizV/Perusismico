@@ -32,9 +32,19 @@ export default {
         endDate: null,
         maxMag: null,
         minMag: null,
-        /*     isSuperficial: null,
+        isSuperficial: null,
         isIntermediate: null,
-        isDeep: null, */
+        isDeep: null,
+      }),
+    },
+    setlimits: {
+      type: Object,
+      required: true,
+      default: () => ({
+        minLatitude: null,
+        maxLatitude: null,
+        minLongitude: null,
+        maxLongitude: null,
       }),
     },
   },
@@ -110,12 +120,17 @@ export default {
       );
 
     const windowWidth = window.innerWidth;
-    this.initialZoom = windowWidth < 991 ? 5 : 6;
-    this.initialLatLeng = windowWidth < 991 ? [-12.5, -76.0] : [-9.5, -76.0];
 
+    if (windowWidth < 991) {
+      this.initialZoom = 2;
+      this.initialLatLeng = [20, 0];
+    } else {
+      this.initialZoom = 3;
+      this.initialLatLeng = [20, 0];
+    }
     // Define límites (bounds) para evitar la repetición del mapa
     const southWest = L.latLng(-75, -270);
-    const northEast = L.latLng(90, 180);
+    const northEast = L.latLng(90, 210);
     const bounds = L.latLngBounds(southWest, northEast);
     // Inicializa el mapa
     this.map = L.map("map", {
@@ -128,7 +143,7 @@ export default {
       preferCanvas: true,
       maxBounds: bounds, // Fija los límites del mapa
       maxBoundsViscosity: 1.0,
-    }).on("keydown", this.closePopupOnEscape);
+    });
 
     const that = this;
     this.map.removeControl(this.map.zoomControl);
@@ -217,7 +232,14 @@ export default {
       async handler(newDates) {
         const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
         this.addGeoJSONToMap(geoJSONData);
-        console.log("ME EJECUTO BUG")
+      },
+      deep: true,
+    },
+    setlimits: {
+      async handler(newDates) {
+        console.log("aaaa");
+        const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
+        this.addGeoJSONToMap(geoJSONData);
       },
       deep: true,
     },
@@ -225,53 +247,63 @@ export default {
 
   methods: {
     convertCSVToGeoJSON(data) {
-      // Obtener la fecha de hace dos años
-      console.log(this.alldata.startDate);
-      const twoYearsAgo = new Date();
-      twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+      // Filtrar primero por latitud y longitud
+      const filteredByCoordinates = data.filter((row) => {
+        return (
+          !isNaN(row.latitude) &&
+          !isNaN(row.longitude) &&
+          row.latitude !== null &&
+          row.longitude !== null &&
+          row.latitude >= this.setlimits.minLatitude &&
+          row.latitude <= this.setlimits.maxLatitude &&
+          row.longitude >= this.setlimits.minLongitude &&
+          row.longitude <= this.setlimits.maxLongitude
+        );
+      });
+
+      // Luego, filtrar por magnitud
+      const filteredByMagnitude = filteredByCoordinates.filter((row) => {
+        const mag = row.mag;
+        return mag >= this.alldata.maxMag && mag <= this.alldata.minMag;
+      });
+
+      // Finalmente, filtrar por fecha
+      const filteredByDate = filteredByMagnitude.filter((row) => {
+        const eventDate = new Date(row.time);
+        return (
+          eventDate >= this.alldata.startDate &&
+          eventDate <= this.alldata.endDate
+        );
+      });
+      const filteredByDepth = filteredByDate.filter((row) => {
+        const depth = row.depth;
+
+        if (this.alldata.isSuperficial && depth <= 60) {
+          return true;
+        }
+        if (this.alldata.isIntermediate && depth > 60 && depth <= 300) {
+          return true;
+        }
+        if (this.alldata.isDeep && depth > 300) {
+          return true;
+        }
+        return false; // No cumple con las condiciones de profundidad
+      });
       return {
         type: "FeatureCollection",
-        features: data
-          .filter((row) => {
-            // Validar si la fecha es válida y está dentro de los últimos dos años
-            const eventDate = new Date(row.time);
-            const mag = row.mag;
-            /*  const depth = row.depth;
-
-             const isSuperficial = this.alldata.superficiales && depth <= 60;
-            const isIntermediate =
-              this.alldata.intermedios && depth >= 61 && depth <= 300;
-            const isDeep = this.alldata.profundos && depth > 300;
-            const depthCondition = isSuperficial || isIntermediate || isDeep;
-            console.log(depthCondition, "<<<<<<<<<<") */
-            return (
-              !isNaN(row.latitude) &&
-              !isNaN(row.longitude) &&
-              row.latitude !== null &&
-              row.longitude !== null &&
-              eventDate >= this.alldata.startDate &&
-              eventDate <= this.alldata.endDate &&
-              mag >= this.alldata.maxMag &&
-              mag <= this.alldata.minMag
-              //&& depthCondition
-            );
-          })
-          .map((row) => ({
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [
-                parseFloat(row.longitude),
-                parseFloat(row.latitude),
-              ],
-            },
-            properties: {
-              mag: row.mag,
-              place: row.place,
-              time: row.time,
-              depth: row.depth,
-            },
-          })),
+        features: filteredByDepth.map((row) => ({
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [parseFloat(row.longitude), parseFloat(row.latitude)],
+          },
+          properties: {
+            mag: row.mag,
+            place: row.place,
+            time: row.time,
+            depth: row.depth,
+          },
+        })),
       };
     },
     addGeoJSONToMap(geoJSON) {
@@ -323,6 +355,17 @@ export default {
           );
         },
       }).addTo(this.map); // Almacenar la nueva capa en this.csvLayer
+
+      // Ajustar el mapa a los límites definidos
+      const bounds = L.latLngBounds([
+        [this.setlimits.minLatitude, this.setlimits.minLongitude],
+        [this.setlimits.maxLatitude, this.setlimits.maxLongitude],
+      ]);
+
+      // Verifica si hay datos y ajusta el mapa a los límites
+      if (geoJSON.features.length > 0) {
+        this.map.fitBounds(bounds);
+      }
     },
   },
   beforeUnmount() {

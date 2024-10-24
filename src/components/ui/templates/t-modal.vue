@@ -16,7 +16,6 @@
         <img :src="gps" alt="img_gps" height="20" width="20" class="mr-1" />
         Seleccione una ubicación:
       </tLabel>
-      <!-- DEPARTAMENTO -->
       <div class="grid grid-cols-12 col-span-12">
         <tSelect
           class="col-span-12 pl-3 mt-2"
@@ -28,7 +27,6 @@
           :selectedItems="dataContinente"
         >
           <template v-slot:name> Seleccionar continente </template>
-          <template v-slot:elvalor>Todos global </template>
           <template v-slot:error> {{ errContinente }} </template>
         </tSelect>
       </div>
@@ -166,7 +164,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import tLabel from "@/components/ui/atoms/t-label.vue";
 import tSelect from "@/components/ui/atoms/t-select.vue";
 import profundidad from "@/assets/icons/profundidad.svg";
@@ -176,7 +174,7 @@ import calendario from "@/assets/icons/calendario.svg";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import tCalendar from "@/components/ui/atoms/t-calendar.vue";
 import { Slider } from "ant-design-vue";
-const emit = defineEmits(["update-data"]);
+const emit = defineEmits(["update-data", "update-limits"]);
 
 /* 
 import { useGeojsonStore } from "@/stores/geojson.js";
@@ -191,14 +189,99 @@ const selContinente = ref("");
 const stateContinente = ref("enable");
 const errContinente = ref("Continente error");
 const dataContinente = ref([
-  { value: "suramerica", name: "America del sur" },
-  { value: "centroamerica", name: "America central" },
-  { value: "noramerica", name: "America del norte" },
-  { value: "asia", name: "Ásia" },
-  { value: "europa", name: "Europa" },
-  { value: "africa", name: "Africa" },
-  { value: "oceania", name: "Oceanía" },
+  {
+    value: "",
+    name: "Todos Global",
+    boundaries: {
+      minLatitude: -55.0,
+      maxLatitude: 81.0,
+      minLongitude: -168.0,
+      maxLongitude: 180.0,
+    },
+  },
+  {
+    value: "suramerica",
+    name: "América del Sur",
+    boundaries: {
+      minLatitude: -55.0,
+      maxLatitude: 12.0,
+      minLongitude: -81.0,
+      maxLongitude: -34.0,
+    },
+  },
+  {
+    value: "noramerica",
+    name: "América del Norte",
+    boundaries: {
+      minLatitude: 23.0,
+      maxLatitude: 50.0,
+      minLongitude: -168.0,
+      maxLongitude: -53.0,
+    },
+  },
+  {
+    value: "centroamerica",
+    name: "América Central",
+    boundaries: {
+      minLatitude: 7.0,
+      maxLatitude: 20.0,
+      minLongitude: -92.0,
+      maxLongitude: -77.0,
+    },
+  },
+  {
+    value: "asia",
+    name: "Asia",
+    boundaries: {
+      minLatitude: 1.0,
+      maxLatitude: 81.0,
+      minLongitude: 26.0,
+      maxLongitude: 169.0,
+    },
+  },
+  {
+    value: "europa",
+    name: "Europa",
+    boundaries: {
+      minLatitude: 35.0,
+      maxLatitude: 71.0,
+      minLongitude: -31.0,
+      maxLongitude: 50.0,
+    },
+  },
+  {
+    value: "africa",
+    name: "África",
+    boundaries: {
+      minLatitude: -35.0,
+      maxLatitude: 37.0,
+      minLongitude: -17.0,
+      maxLongitude: 51.0,
+    },
+  },
+  {
+    value: "oceania",
+    name: "Oceanía",
+    boundaries: {
+      minLatitude: -55.0,
+      maxLatitude: 0.0,
+      minLongitude: 110.0,
+      maxLongitude: 180.0,
+    },
+  },
 ]);
+
+watch(selContinente, (newValue) => {
+  const continenteSeleccionado = dataContinente.value.find(
+    (continente) => continente.value === newValue
+  );
+
+  if (continenteSeleccionado) {
+    const boundaries = continenteSeleccionado.boundaries;
+    emit("update-limits", boundaries);
+    console.log(boundaries); // También puedes ver los límites en la consola
+  }
+});
 //MAGNITUD
 const magnitudeRange = ref([4, 9.5]);
 const marks = {
@@ -215,16 +298,24 @@ const marks = {
   9: "9",
   9.5: "9.5",
 };
-const handleChange = (value) => {
-  console.log("Rango de magnitud actualizado:", value[0]);
+let timeoutId = null;
 
-  console.log(magnitudeRange.value);
-  emit("update-data", {
-    startDate: convertToDate(startDate.value),
-    endDate: convertToDate(endDate.value),
-    maxMag: value[0],
-    minMag: value[1],
-  });
+const handleChange = (value) => {
+  // Cancelar el timeout anterior si existe
+  if (timeoutId) {
+    clearTimeout(timeoutId);
+  }
+
+  // Configurar un nuevo timeout
+  timeoutId = setTimeout(() => {
+    emit("update-data", {
+      startDate: convertToDate(startDate.value),
+      endDate: convertToDate(endDate.value),
+      maxMag: value[0],
+      minMag: value[1],
+      ...selectionState.value,
+    });
+  }, 2000); // Esperar 2 segundos
 };
 
 const customTooltipFormatter = (value) => {
@@ -248,20 +339,11 @@ const convertToDate = (proxyObject) => {
 //StartDate
 const startDate = ref({
   month: new Date().getMonth(),
-  year: new Date().getFullYear(),
+  year: new Date().getFullYear() - 2,
 });
 const errStartDate = ref("Fecha inicio error");
 const disStartDate = ref(false);
 const stateStartDate = ref("enable");
-watch(startDate, (newValue) => {
-  const newStartDate = convertToDate(newValue);
-  emit("update-data", {
-    startDate: newStartDate,
-    endDate: convertToDate(endDate.value),
-    maxMag: magnitudeRange.value[0],
-    minMag: magnitudeRange.value[1],
-  });
-});
 
 //EndDate
 const endDate = ref({
@@ -272,13 +354,13 @@ const errEndDate = ref("Fecha fin error");
 const disEndDate = ref(false);
 const stateEndDate = ref("enable");
 
-watch(endDate, (newValue) => {
-  const newEndDate = convertToDate(newValue);
+watch([startDate, endDate], ([newStartDate, newEndDate]) => {
   emit("update-data", {
-    startDate: convertToDate(startDate.value),
-    endDate: newEndDate,
+    startDate: convertToDate(newStartDate),
+    endDate: convertToDate(newEndDate),
     maxMag: magnitudeRange.value[0],
     minMag: magnitudeRange.value[1],
+    ...selectionState.value,
   });
 });
 
@@ -311,26 +393,31 @@ const maxSelectionReached = computed(
 const selectedItems = computed(() =>
   items.value.filter((item, index) => checkedItems.value[index])
 );
+const selectionState = ref({
+  isSuperficial: false,
+  isIntermediate: false,
+  isDeep: false,
+});
 const handleCheckboxChange = () => {
-  const isSuperficial = checkedItems.value[0]; // Superficiales
-  const isIntermediate = checkedItems.value[1]; // Intermedios
-  const isDeep = checkedItems.value[2]; // Profundos
+  const isSuperficial = checkedItems.value[0];
+  const isIntermediate = checkedItems.value[1];
+  const isDeep = checkedItems.value[2];
 
-  // Imprimir en la consola los valores
-  console.log("Superficiales:", isSuperficial);
-  console.log("Intermedios:", isIntermediate);
-  console.log("Profundos:", isDeep);
+  // Actualizar el estado de selección
+  selectionState.value = {
+    isSuperficial,
+    isIntermediate,
+    isDeep,
+  };
 
   // Emitir los valores dependiendo de lo seleccionado
-  /*  emit("update-data", {
+  emit("update-data", {
     startDate: convertToDate(startDate.value),
-    endDate:  convertToDate(endDate.value),
+    endDate: convertToDate(endDate.value),
     maxMag: magnitudeRange.value[0],
     minMag: magnitudeRange.value[1],
-    isSuperficial, // Será true o false según el checkbox
-    isIntermediate, // Será true o false según el checkbox
-    isDeep, // Será true o false según el checkbox
-  }); */
+    ...selectionState.value, // Esparcir el estado de selección
+  });
 };
 </script>
 <style>

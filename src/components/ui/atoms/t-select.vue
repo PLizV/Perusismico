@@ -17,7 +17,6 @@
         :class="selectClasses"
         class="outline-none myselect w-full text-start border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 text-sm"
       >
-        <option value=""><slot name="elvalor"></slot></option>
         <optgroup
           v-if="groupOpcion"
           v-for="region in itemsgroup"
