@@ -237,7 +237,6 @@ export default {
     },
     setlimits: {
       async handler(newDates) {
-        console.log("aaaa");
         const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
         this.addGeoJSONToMap(geoJSONData);
       },
@@ -247,6 +246,8 @@ export default {
 
   methods: {
     convertCSVToGeoJSON(data) {
+      console.log(this.setlimits)
+      console.log(this.alldata)
       // Filtrar primero por latitud y longitud
       const filteredByCoordinates = data.filter((row) => {
         return (
@@ -317,7 +318,7 @@ export default {
         pointToLayer: (feature, latlng) => {
           // Personalizar estilo según la profundidad
           let radius = 4;
-          let color = "yellow"; // Color por defecto
+          let color = "red"; // Color por defecto
 
           if (feature.properties.depth > 300) {
             radius = 4;

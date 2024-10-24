@@ -66,11 +66,11 @@
         </div>
       </div>
       <div class="col-span-7">
-        <div class="ellipse" >
-        <div class="image-container">
-        <!-- <div class="globe" ref="globeContainer"></div> -->
-        </div>
-      </div>
+        
+        
+         <div class="globe" ref="globeContainer"></div>
+      
+      
         </div>
     </main>
   </div>
@@ -80,32 +80,40 @@
 import theader from "@/components/ui/atoms/t-header.vue";
 /*import mapa from '@/components/views/layout/mapa.jpg';*/
 import { onMounted, ref } from 'vue';
-/* //import createGlobe from 'globe.gl';
+import createGlobe from 'globe.gl';
 
 const globeContainer = ref(null);
-
+setInterval(() => {
+  // Actualizar la animación o los datos del globo
+}, 1000 / 15); // 30 FPS, por ejemplo
 onMounted(() => {
   const world = createGlobe()(globeContainer.value);
   
   if (world) {
     world
       .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
-      .pointOfView({ lat: 0, lng: 0, altitude: 1.5 }) // Cambiar lat/lng para centrar mejor el globo
+      .pointOfView({ lat: 0, lng: 0, altitude: 1.3 }) // Cambiar lat/lng para centrar mejor el globo
       .polygonCapColor(() => 'rgba(0, 0, 255, 0.6)')
       .polygonSideColor(() => 'rgba(0, 80, 0, 0.01)')
    
   
     if (world.controls) {
       world.controls().autoRotate = true;
-      world.controls().autoRotateSpeed = -1.2;
+      world.controls().autoRotateSpeed = -1.1;
     } else {
       console.error('Error: world.controls() no está disponible.');
     }
     // Cargar los datos de los países desde un archivo GeoJSON
    } 
+   window.addEventListener('resize', () => {
+    if (globeContainer.value) {
+      world.width([globeContainer.value.offsetWidth]);
+      world.height([globeContainer.value.offsetHeight]);
+    }
+  });
 
   // Añadir los anillos de propagación utilizando datos aleatorios
-  const N = 50; // Aumentamos el número de anillos para el Cinturón de Fuego
+  const N = 35; // Aumentamos el número de anillos para el Cinturón de Fuego
   const gData = [...Array(N).keys()].map(() => {
   const region = Math.random();
 
@@ -189,30 +197,15 @@ const colorForRegion = (lat, lng) => {
   .ringMaxRadius('maxR')
   .ringPropagationSpeed('propagationSpeed')
   .ringRepeatPeriod('repeatPeriod');
-}); */
+}); 
 </script>
 
 <style scoped>
-.ellipse {
-  width: 50vw; /* Reducir el tamaño para evitar desbordamiento */
-  height: 50vw; /* Ajustar para que sea proporcional al ancho */
-  max-width: 830px; /* Limitar el tamaño máximo */
-  max-height: 830px; /* Limitar el tamaño máximo */
-  display:flex;
-  border-radius: 50%; /* Mantén el círculo */
-  position: absolute;
-  top: 7vh; /* Ajusta según sea necesario para centrar */
-  left: 70%; /* Centra horizontalmente */
-  transform: translateX(-50%); /* Centra horizontalmente */
-  box-shadow: 0 4px 47px 20px rgba(4, 57, 172, 0.692);
-  overflow: hidden;
-}
+
 .image-container {
   width: 100%;
   height: 100%;
   position: relative;
-  top:-3vh;
-  left:-60vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -220,10 +213,15 @@ const colorForRegion = (lat, lng) => {
 
 /* Ajustar el globo */
 .globe {
-  width: 100%; /* Asegura que el globo ocupa el contenedor */
-  height: 100%;
-  object-fit: cover; /* Ajuste proporcional dentro del contenedor */
-  border-radius: 50%; /* Mantiene la forma circular */
+  width: 50vw; /* Ancho proporcional al viewport */
+  height: 50vw; /* Altura igual para mantener la forma circular */
+  max-width: 750px; /* Limitar el tamaño máximo */
+  max-height: 750px; /* Limitar la altura máxima */
+  border-radius: 50%; /* Mantener la forma circular */
+  margin: auto; /* Centrar la elipse */
+  box-shadow: 0 4px 47px 20px rgba(4, 57, 172, 0.692); /* Sombra */
+  overflow: hidden; /* Asegura que no se desborde el contenido */
+  margin-top: 30px; /* Ajusta el valor para mover el globo más abajo */
 }
 
 @keyframes slide-horizontal {
@@ -236,22 +234,20 @@ const colorForRegion = (lat, lng) => {
         }
 @media (max-width: 768px) {
 
-  .image-container {
-    width: 100%;
-    height: 100%;
-    top: -5vh; /* Ajusta la posición superior en pantallas medianas */
-    left: -30vh; /* Ajusta la posición para que no se salga en pantallas medianas */
+  .globe {
+    width: 60vw; /* Ajustar el tamaño en pantallas más pequeñas */
+    height: 60vw; /* Mantener la forma circular */
   }
-  }
+}
+
 
 /* Ajustes para pantallas muy pequeñas */
 @media (max-width: 480px) {
-
-  .image-container {
-    width: 100%;
-    height: 100%;
-    top: 20vh; /* Ajusta la posición superior para pantallas pequeñas */
-    left: 0vh; /* Asegura que la imagen esté centrada horizontalmente en pantallas pequeñas */
+  .globe {
+    width: 80vw; /* Aumentar el tamaño en pantallas muy pequeñas */
+    height: 80vw; /* Mantener la forma circular */
+    max-width: 400px; /* Limitar el tamaño máximo */
+    max-height: 400px;
   }
 }
 </style>
