@@ -86,23 +86,27 @@ const globeContainer = ref(null);
 setInterval(() => {
   // Actualizar la animación o los datos del globo
 }, 1000 / 15); // 30 FPS, por ejemplo
+
 onMounted(() => {
   const world = createGlobe()(globeContainer.value);
-  
   if (world) {
     world
       .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
       .pointOfView({ lat: 0, lng: 0, altitude: 1.3 }) // Cambiar lat/lng para centrar mejor el globo
       .polygonCapColor(() => 'rgba(0, 0, 255, 0.6)')
       .polygonSideColor(() => 'rgba(0, 80, 0, 0.01)')
-   
-  
+     
     if (world.controls) {
       world.controls().autoRotate = true;
       world.controls().autoRotateSpeed = -1.1;
     } else {
       console.error('Error: world.controls() no está disponible.');
     }
+
+    setTimeout(() => {
+      world.width(globeContainer.value.offsetWidth);
+      world.height(globeContainer.value.offsetHeight);
+    }, 100); // Pequeño retraso para asegurarse de que el DOM está listo
     // Cargar los datos de los países desde un archivo GeoJSON
    } 
    window.addEventListener('resize', () => {
@@ -113,7 +117,7 @@ onMounted(() => {
   });
 
   // Añadir los anillos de propagación utilizando datos aleatorios
-  const N = 35; // Aumentamos el número de anillos para el Cinturón de Fuego
+  const N = 34; // Aumentamos el número de anillos para el Cinturón de Fuego
   const gData = [...Array(N).keys()].map(() => {
   const region = Math.random();
 
