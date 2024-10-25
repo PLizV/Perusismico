@@ -24,31 +24,39 @@
             class="col-span-12 font-light pt-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3"
             style="line-height: 2"
           >
-            <span class="font-medium">Perú Sísmico </span>es una plataforma
-            digital de observatorio sísmico creada por el
+            <span class="font-medium">PeSis </span>es una plataforma
+            digital de observación sísmica desarrollada por el 
             <span class="font-medium">Instituto Geofísico del Perú (IGP)</span>,
-            que ofrece acceso a datos en tiempo real sobre la actividad sísmica
-            de Perú y del mundo. Utilizando la información del
-            <span class="font-medium">
-              Centro Sismológico Nacional (CENSIS)
-            </span>
-            y del
-            <span class="font-medium">
-              National Earthquake Information Center (NEIC)
-            </span>
-            , garantiza datos confiables y precisos.
+            que ofrece acceso espacio-temporal a la actividad sísmica ocurrida en el 
+            Perú y en el mundo, de manera visual e interactiva.
+          </p>
+            <p
+            class="col-span-12 font-light pt-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3"
+            style="line-height: 2"
+          >
+            Con una interfaz intuitiva, PerúSis permite filtrar sismos por fecha,región
+            magnitud y profundidad,facilitando el análisis y consulta de eventos sísmicos. Esto la
+            convierte en una herramienta clave para conocer las regiones potencialmente sísmicas y gestionar
+            la educación del riesgo.
           </p>
           <p
             class="col-span-12 font-light pt-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3"
             style="line-height: 2"
           >
-            Con su interfaz intuitiva, permite filtrar sismos por magnitud,
-            región y fecha, facilitando el análisis y la consulta de eventos
-            sísmicos. Dirigida a ciudadanos, investigadores y autoridades, Perú
-            Sísmico es una herramienta clave para mejorar la prevención y
-            gestión del riesgo sísmico de forma eficiente y accesible.
+           En Perú utiliza información del
+                      <span class="font-medium">
+              Centro Sismológico Nacional (CENSIS)
+            </span>
+            y, a nivel mundial, del
+            <span class="font-medium">
+              National Earthquake Information Center (NEIC)
+            </span>
+            de la U.S
+            <span class="font-medium">
+              U.S Geological Survey (USGS)
+            </span>    
           </p>
-
+       
           <div class="col-span-12 flex py-6 mt-4">
             <router-link
               to="/visor"
@@ -66,12 +74,6 @@
         </div>
       </div>
       <div class="col-span-7">
-        <div class="ellipse">
-          <div class="image-container">
-            <div class="globe" ref="globeContainer"></div>
-          </div>
-        </div>
-
         <div class="globe" ref="globeContainer"></div>
       </div>
     </main>
@@ -81,7 +83,6 @@
 <script setup>
 import theader from "@/components/ui/atoms/t-header.vue";
 /*import mapa from '@/components/views/layout/mapa.jpg';*/
-/* import { onMounted, ref } from 'vue';
 import { onMounted, ref } from 'vue';
 import createGlobe from 'globe.gl';
 
@@ -98,6 +99,7 @@ onMounted(() => {
       .pointOfView({ lat: 0, lng: 0, altitude: 1.3 }) // Cambiar lat/lng para centrar mejor el globo
       .polygonCapColor(() => 'rgba(0, 0, 255, 0.6)')
       .polygonSideColor(() => 'rgba(0, 80, 0, 0.01)')
+      .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
      
     if (world.controls) {
       world.controls().autoRotate = true;
@@ -109,7 +111,7 @@ onMounted(() => {
     setTimeout(() => {
       world.width(globeContainer.value.offsetWidth);
       world.height(globeContainer.value.offsetHeight);
-    }, 100); // Pequeño retraso para asegurarse de que el DOM está listo
+    }, 200); // Pequeño retraso para asegurarse de que el DOM está listo
     // Cargar los datos de los países desde un archivo GeoJSON
    } 
    window.addEventListener('resize', () => {
@@ -118,9 +120,15 @@ onMounted(() => {
       world.height([globeContainer.value.offsetHeight]);
     }
   });
-
+  document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    world.controls().autoRotate = false; // Pausar la rotación cuando no sea visible
+  } else {
+    world.controls().autoRotate = true;  // Reanudar la rotación
+  }
+});
   // Añadir los anillos de propagación utilizando datos aleatorios
-  const N = 34; // Aumentamos el número de anillos para el Cinturón de Fuego
+  const N = 30; // Aumentamos el número de anillos para el Cinturón de Fuego
   const gData = [...Array(N).keys()].map(() => {
   const region = Math.random();
 
@@ -204,18 +212,11 @@ const colorForRegion = (lat, lng) => {
   .ringMaxRadius('maxR')
   .ringPropagationSpeed('propagationSpeed')
   .ringRepeatPeriod('repeatPeriod');
-}); */
+}); 
 </script>
 
+
 <style scoped>
-.image-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 .globe {
   width: 50vw; /* Ancho proporcional al viewport */

@@ -313,7 +313,7 @@ export default {
       this.csvLayer = L.geoJSON(geoJSON, {
         pointToLayer: (feature, latlng) => {
           // Definir el color basado en la profundidad
-          let color = "yellow"; // Color por defecto
+          let color = "red"; // Color por defecto
 
           if (feature.properties.depth > 300) {
             color = "blue"; // Profundos (> 300 km)
