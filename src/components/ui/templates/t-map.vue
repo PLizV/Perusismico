@@ -14,9 +14,6 @@ import "leaflet/dist/leaflet.css";
 import { useGeojsonStore } from "@/stores/geojson.js";
 import circulo from "@/assets/icons/icircle.vue";
 import carpeta from "@/assets/icons/vermas.vue";
-import "leaflet.markercluster/dist/MarkerCluster.css"; // Estilos de clustering
-import "leaflet.markercluster/dist/MarkerCluster.Default.css";
-import "leaflet.markercluster"; // Importar Leaflet MarkerCluster
 
 export default {
   components: {
@@ -315,22 +312,32 @@ export default {
       // Agregar la nueva capa al mapa
       this.csvLayer = L.geoJSON(geoJSON, {
         pointToLayer: (feature, latlng) => {
-          // Personalizar estilo según la profundidad
-          let radius = 4;
+          // Definir el color basado en la profundidad
           let color = "yellow"; // Color por defecto
 
           if (feature.properties.depth > 300) {
-            radius = 4;
             color = "blue"; // Profundos (> 300 km)
           } else if (
             feature.properties.depth >= 61 &&
             feature.properties.depth <= 300
           ) {
-            radius = 6;
             color = "green"; // Intermedios (61 km - 300 km)
           } else if (feature.properties.depth <= 60) {
-            radius = 8;
             color = "red"; // Superficiales (< 60 km)
+          }
+
+          // Definir el radio basado en la magnitud
+          let radius = 4; // Radio por defecto
+          const magnitude = feature.properties.mag;
+
+          if (magnitude >= 4 && magnitude <= 5) {
+            radius = 4;
+          } else if (magnitude > 5 && magnitude <= 6) {
+            radius = 6;
+          } else if (magnitude > 6 && magnitude <= 7) {
+            radius = 8;
+          } else if (magnitude > 7 && magnitude <= 9.5) {
+            radius = 15;
           }
 
           return L.circleMarker(latlng, {

@@ -68,7 +68,7 @@
       <div class="col-span-7">
         <div class="ellipse" >
         <div class="image-container">
-        <!-- <div class="globe" ref="globeContainer"></div> -->
+        <div class="globe" ref="globeContainer"></div>
         </div>
       </div>
         </div>
@@ -79,8 +79,8 @@
 <script setup>
 import theader from "@/components/ui/atoms/t-header.vue";
 /*import mapa from '@/components/views/layout/mapa.jpg';*/
-import { onMounted, ref } from 'vue';
-/* //import createGlobe from 'globe.gl';
+/* import { onMounted, ref } from 'vue';
+import createGlobe from 'globe.gl';
 
 const globeContainer = ref(null);
 

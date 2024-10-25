@@ -1,5 +1,6 @@
 <template>
   <div>
+    
     <div
       class="gap-x-1 h-[3rem] sm:h-[3.25rem] md:h-[3.75rem] lg:h-[4rem] xl:h-[4.25rem] 2xl:h-[4.25rem] flex items-center cursor-default select-none"
     >
@@ -24,11 +25,11 @@
           ' bg-igp-blue bg-opacity-10 text-igp-blue px-3 border-igp-blue cursor-default':
             $route.name === 'acercade',
           ' hover:bg-igp-blue hover:bg-opacity-10 h-full px-3 cursor-pointer text-igp-dark-500 hover:text-igp-blue hover:border-igp-blue ':
-            $route.name !== 'acercade'
+            $route.name !== 'acercade',
         }"
       >
         <iconthome class="h-4 mr-3"></iconthome>
-        Acerca de Osis
+        Acerca de PeSis
       </router-link>
       <router-link
         :to="{ name: 'geovisor' }"
@@ -37,11 +38,11 @@
           ' bg-igp-blue bg-opacity-10 text-igp-blue px-3 border-igp-blue cursor-default':
             $route.name === 'geovisor',
           ' hover:bg-igp-blue hover:bg-opacity-10 px-3 h-full cursor-pointer text-igp-dark-500 hover:text-igp-blue hover:border-igp-blue ':
-            $route.name !== 'geovisor'
+            $route.name !== 'geovisor',
         }"
       >
         <iconworld class="h-5 mr-3"></iconworld>
-        Visor Osis
+        Visor PeSis
       </router-link>
       <div class="ml-auto">
         <button
@@ -77,11 +78,11 @@
                 :class="{
                   'text-igp-blue cursor-default': $route.name === 'acercade',
                   '  h-full cursor-pointer text-igp-dark-500 hover:text-igp-blue  ':
-                    $route.name !== 'acercade'
+                    $route.name !== 'acercade',
                 }"
               >
                 <iconthome class="h-3 mr-2"></iconthome>
-                Acerca de Zonifica Perú
+                Acerca de PeSis
               </router-link>
             </li>
             <li class="px-2 py-1 text-gray-700 hover:bg-gray-100">
@@ -91,11 +92,11 @@
                 :class="{
                   'text-igp-blue cursor-default': $route.name === 'geovisor',
                   '  h-full cursor-pointer text-igp-dark-500 hover:text-igp-blue  ':
-                    $route.name !== 'geovisor'
+                    $route.name !== 'geovisor',
                 }"
               >
                 <iconworld class="h-[14px] mr-[7px]"></iconworld>
-                Visor Zonifica Perú
+                Visor PeSis
               </router-link>
             </li>
           </ul>
