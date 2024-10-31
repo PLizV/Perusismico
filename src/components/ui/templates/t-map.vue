@@ -52,6 +52,7 @@ export default {
       initialLatLeng: null,
       setData: null,
       csvLayer: null,
+      flashInterval: null, // Para almacenar el intervalo de destello
     };
   },
   mounted() {
@@ -243,6 +244,41 @@ export default {
   },
 
   methods: {
+    waveCircle(circleMarker, magnitude) {
+      const originalRadius = circleMarker.options.radius; // Almacena el radio original
+      let scale = 1; // Escala inicial
+      let increasing = true; // Estado de crecimiento
+
+      // Determinar el incremento de escala basado en la magnitud
+      let scaleIncrement;
+      if (magnitude >= 5.5 && magnitude < 7) {
+        scaleIncrement = 0.025; // Menos intensidad para magnitudes entre 5.5 y 6.9
+      } else if (magnitude >= 4 && magnitude < 5.5) {
+        scaleIncrement = 0.015; // Mucho menos intensidad para magnitudes entre 4 y 5.4
+      } else {
+        scaleIncrement = 0.05; // Intensidad normal para magnitudes mayores o iguales a 7
+      }
+
+      this.waveInterval = setInterval(() => {
+        if (increasing) {
+          scale += scaleIncrement; // Aumentar la escala
+          if (scale >= 1.4) { // Cambiar a decreciente
+            increasing = false;
+          }
+        } else {
+          scale -= scaleIncrement; // Disminuir la escala
+          if (scale <= 1) { // Volver a la escala original
+            increasing = true; // Cambiar a creciente
+          }
+        }
+
+        // Aplicar el nuevo tamaño al círculo
+        circleMarker.setStyle({
+          radius: originalRadius * scale,
+        });
+      }, 200); // Intervalo para actualizar la animación
+    },
+
     convertCSVToGeoJSON(data) {
       // Filtrar primero por latitud y longitud
       const filteredByCoordinates = data.filter((row) => {
@@ -262,6 +298,7 @@ export default {
       const filteredByMagnitude = filteredByCoordinates.filter((row) => {
         const mag = row.mag;
         return mag >= this.alldata.maxMag && mag <= this.alldata.minMag;
+        
       });
 
       // Finalmente, filtrar por fecha
@@ -339,8 +376,7 @@ export default {
           } else if (magnitude > 7 && magnitude <= 9.5) {
             radius = 15;
           }
-
-          return L.circleMarker(latlng, {
+          const circleMarker = L.circleMarker(latlng, {
             radius: radius,
             fillColor: color,
             color: "#000",
@@ -348,7 +384,13 @@ export default {
             opacity: 1,
             fillOpacity: 0.8,
           });
+          if (magnitude >= 4) {
+            this.waveCircle(circleMarker);
+          }
+
+          return circleMarker;
         },
+        
         onEachFeature: (feature, layer) => {
           // Muestra un popup con la información del sismo
           layer.bindPopup(
@@ -376,6 +418,10 @@ export default {
     },
   },
   beforeUnmount() {
+    // Limpiar el intervalo de destello al desmontar
+    if (this.flashInterval) {
+      clearInterval(this.flashInterval);
+    }
     this.map.remove();
   },
 };
@@ -387,3 +433,4 @@ export default {
   z-index: 0;
 }
 </style>
+ 

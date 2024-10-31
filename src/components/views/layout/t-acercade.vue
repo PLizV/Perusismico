@@ -18,13 +18,13 @@
             Plataforma de Observatorio Sísmico
           </span>
           <p class="col-span-12 text-igp-blue text-7xl font-bold mt-1">
-            Perú<span class="italic font-medium"> Sísmico</span>
+            Perú<span class="italic font-medium"> Sísmico (PerúSis)</span>
           </p>
           <p
             class="col-span-12 font-light pt-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3"
             style="line-height: 2"
           >
-            <span class="font-medium">PeSis </span>es una plataforma
+            <span class="font-medium">PerúSis </span>es una plataforma
             digital de observación sísmica desarrollada por el 
             <span class="font-medium">Instituto Geofísico del Perú (IGP)</span>,
             que ofrece acceso espacio-temporal a la actividad sísmica ocurrida en el 
@@ -34,8 +34,8 @@
             class="col-span-12 font-light pt-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3"
             style="line-height: 2"
           >
-            Con una interfaz intuitiva, PerúSis permite filtrar sismos por fecha,región
-            magnitud y profundidad,facilitando el análisis y consulta de eventos sísmicos. Esto la
+            Con una interfaz intuitiva, PerúSis permite filtrar sismos por fecha, región, 
+            magnitud y profundidad, facilitando el análisis y consulta de eventos sísmicos. Esto la
             convierte en una herramienta clave para conocer las regiones potencialmente sísmicas y gestionar
             la educación del riesgo.
           </p>
@@ -92,14 +92,18 @@ setInterval(() => {
 }, 1000 / 15); // 30 FPS, por ejemplo
 
 onMounted(() => {
+
+
+
   const world = createGlobe()(globeContainer.value);
   if (world) {
     world
-      .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
-      .pointOfView({ lat: 0, lng: 0, altitude: 1.3 }) // Cambiar lat/lng para centrar mejor el globo
-      .polygonCapColor(() => 'rgba(0, 0, 255, 0.6)')
-      .polygonSideColor(() => 'rgba(0, 80, 0, 0.01)')
+      .globeImageUrl('//unpkg.com/three-globe/example/img/earth-day.jpg')
       .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+      .pointOfView({ lat: 0, lng: 0, altitude: 1.3 }) // Cambiar lat/lng para centrar mejor el globo
+      .polygonCapColor(() => 'rgba(0, 0, 255, 0.5)')
+      .polygonSideColor(() => 'rgba(0, 80, 0, 0.3)')
+  
      
     if (world.controls) {
       world.controls().autoRotate = true;
@@ -120,13 +124,20 @@ onMounted(() => {
       world.height([globeContainer.value.offsetHeight]);
     }
   });
-  document.addEventListener('visibilitychange', () => {
-  if (document.hidden) {
-    world.controls().autoRotate = false; // Pausar la rotación cuando no sea visible
-  } else {
-    world.controls().autoRotate = true;  // Reanudar la rotación
-  }
-});
+
+const directionalLight = world.lights().find(light => light.type === 'DirectionalLight');
+
+if (directionalLight) {
+  // Ajustar posición de la luz para iluminar desde arriba a la derecha
+  directionalLight.position.set(2, 2, 6); // Cambia los valores según la dirección deseada
+
+  // Aumentar la intensidad de la luz
+  directionalLight.intensity = 1.5; // Valor mayor para más luz, ajusta según lo que necesites
+
+  // Opcional: Cambiar el color de la luz a un tono cálido
+  directionalLight.color.set('rgb(255, 244, 214)'); // Color cálido similar a la luz del sol
+}
+
   // Añadir los anillos de propagación utilizando datos aleatorios
   const N = 30; // Aumentamos el número de anillos para el Cinturón de Fuego
   const gData = [...Array(N).keys()].map(() => {
@@ -205,16 +216,14 @@ const colorForRegion = (lat, lng) => {
     return 'rgba(255, 0, 0, 0.6)'; // Otros lugares (por ejemplo, Oceanía)
   }
 };
-
   world
   .ringsData(gData)
-  .ringColor(({ lat, lng }) => colorForRegion(lat, lng)) // Asigna un color específico según la región
+  .ringColor(({lat, lng }) => colorForRegion(lat, lng)) // Asigna un color específico según la región
   .ringMaxRadius('maxR')
   .ringPropagationSpeed('propagationSpeed')
   .ringRepeatPeriod('repeatPeriod');
 }); 
 </script>
-
 
 <style scoped>
 
@@ -244,7 +253,6 @@ const colorForRegion = (lat, lng) => {
     height: 60vw; /* Mantener la forma circular */
   }
 }
-
 /* Ajustes para pantallas muy pequeñas */
 @media (max-width: 480px) {
   .globe {

@@ -29,7 +29,7 @@
         }"
       >
         <iconthome class="h-4 mr-3"></iconthome>
-        Acerca de PeSis
+        Acerca de PerúSis
       </router-link>
       <router-link
         :to="{ name: 'geovisor' }"
@@ -42,7 +42,7 @@
         }"
       >
         <iconworld class="h-5 mr-3"></iconworld>
-        Visor PeSis
+        Visor PerúSis
       </router-link>
       <div class="ml-auto">
         <button
@@ -82,7 +82,7 @@
                 }"
               >
                 <iconthome class="h-3 mr-2"></iconthome>
-                Acerca de PeSis
+                Acerca de PerúSis
               </router-link>
             </li>
             <li class="px-2 py-1 text-gray-700 hover:bg-gray-100">
@@ -96,7 +96,7 @@
                 }"
               >
                 <iconworld class="h-[14px] mr-[7px]"></iconworld>
-                Visor PeSis
+                Visor PerúSis
               </router-link>
             </li>
           </ul>
