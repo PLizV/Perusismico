@@ -244,9 +244,11 @@ export default {
   },
 
   methods: {
+
     waveCircle(circleMarker, magnitude) {
       const originalRadius = circleMarker.options.radius; // Almacena el radio original
       let scale = 1; // Escala inicial
+      let opacity = 0.8; // Opacidad inicial
       let increasing = true; // Estado de crecimiento
 
       // Determinar el incremento de escala basado en la magnitud
@@ -258,6 +260,7 @@ export default {
       } else {
         scaleIncrement = 0.05; // Intensidad normal para magnitudes mayores o iguales a 7
       }
+    
 
       this.waveInterval = setInterval(() => {
         if (increasing) {
@@ -275,6 +278,7 @@ export default {
         // Aplicar el nuevo tamaño al círculo
         circleMarker.setStyle({
           radius: originalRadius * scale,
+          fillOpacity: opacity,
         });
       }, 200); // Intervalo para actualizar la animación
     },
@@ -374,12 +378,12 @@ export default {
           } else if (magnitude > 6 && magnitude <= 7) {
             radius = 8;
           } else if (magnitude > 7 && magnitude <= 9.5) {
-            radius = 15;
+            radius = 18;
           }
           const circleMarker = L.circleMarker(latlng, {
             radius: radius,
             fillColor: color,
-            color: "#0b180f",
+            color: "#0e2716",
             weight: 1,
             opacity: 1,
             fillOpacity: 0.9,
@@ -387,7 +391,6 @@ export default {
           if (magnitude >= 4) {
             this.waveCircle(circleMarker);
           }
-
           return circleMarker;
         },
         

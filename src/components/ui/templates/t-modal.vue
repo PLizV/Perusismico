@@ -1,7 +1,8 @@
 <template>
-  <div class="relative flex items-center pl-10 justify-start z-10 pt-[6.25rem] scroll-auto select-none">
-    <div class="grid grid-cols-12 bg-white rounded-t-2xl">
-      <div class="col-span-6 flex">
+  <div class="relative flex flex-col items-center px-4 md:px-10 justify-start z-10 pt-4 md:pt-[6.25rem] scroll-auto select-none w-full overflow-visible">
+    <!-- Panel de control -->
+    <div class="grid grid-cols-1 sm:grid-cols-6 md:grid-cols-12 bg-white rounded-t-2xl w-full max-w-full md:max-w-[450px]">
+      <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
         <!-- Botón Global -->
         <button @click="setActiveTab('global')" :class="{
           'bg-white text-igp-blue font-semibold border-t border-l border-r': activeTab === 'global',
@@ -12,7 +13,7 @@
         </button>
       </div>
 
-      <div class="col-span-6 flex">
+      <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
         <!-- Botón Perú -->
         <button @click="setActiveTab('peru')" :class="{
           'bg-white text-igp-blue font-semibold border-t border-l border-r': activeTab === 'peru',
@@ -23,74 +24,69 @@
         </button>
       </div>
     </div>
-    <div class="px-4 pt-3 grid grid-cols-12 bg-white rounded-b-2xl w-[450px]">
+
+    <div class="px-4 pt-3 grid grid-cols-1 md:grid-cols-12 bg-white rounded-b-2xl w-full max-w-full md:max-w-[450px]">
       <p class="col-span-12 font-light text-xs leading-[18px] ml-2">
-        <span class="font-semibold"> Importante:</span> Configura libremente los
-        parámetros sísmicos para ver los eventos en el visor.
+        <span class="font-semibold">Importante:</span> Configura libremente los parámetros sísmicos para ver los eventos en el visor.
       </p>
-      <tLabel v-if="activeTab === 'global'" color="blue" size="md" weight="400"
-        class="col-span-12 flex mt-2 ml-[0.90rem]">
+      <tLabel v-if="activeTab === 'global'" color="blue" size="md" weight="400" class="col-span-12 flex mt-2 ml-2">
         <img :src="gps" alt="img_gps" height="20" width="20" class="mr-1" />
         Seleccione una ubicación:
       </tLabel>
-      <tLabel v-if="activeTab === 'peru'" color="blue" size="md" weight="400"
-        class="col-span-12 flex mt-2 ml-[0.93rem]">
+      <tLabel v-if="activeTab === 'peru'" color="blue" size="md" weight="400" class="col-span-12 flex mt-2 ml-2">
         <img :src="idatabase" alt="img_db" height="20" width="20" class="mr-1" />
         Seleccione una base de datos sísmicos:
       </tLabel>
-      <div v-if="activeTab === 'global'" class="grid grid-cols-12 col-span-12">
-        <tSelect class="col-span-12 pl-3 mt-2" :state="stateContinente" v-bind:modelValue="selContinente"
-          v-on:update:modelValue="selContinente = $event" :groupOpcion="false" isRequired="reqContinente"
-          :selectedItems="dataContinente">
+
+      <div v-if="activeTab === 'global'" class="grid grid-cols-1 md:grid-cols-12 col-span-12">
+        <tSelect class="col-span-12 pl-3 mt-2" :state="stateContinente" v-bind:modelValue="selContinente" v-on:update:modelValue="selContinente = $event" :groupOpcion="false" isRequired="reqContinente" :selectedItems="dataContinente">
           <template v-slot:name> Seleccionar continente </template>
           <template v-slot:error> {{ errContinente }} </template>
         </tSelect>
       </div>
-      <div v-if="activeTab === 'peru'" class="grid grid-cols-12 col-span-12">
-        <tSelect class="col-span-12 pl-3 mt-2" :state="statePeru" v-bind:modelValue="selPeru"
-          v-on:update:modelValue="selPeru = $event" :groupOpcion="false" isRequired="reqPeru" :selectedItems="dataPeru"
-          @change="handleChangePE">
+
+      <div v-if="activeTab === 'peru'" class="grid grid-cols-1 md:grid-cols-12 col-span-12">
+        <tSelect class="col-span-12 pl-3 mt-2" :state="statePeru" v-bind:modelValue="selPeru" v-on:update:modelValue="selPeru = $event" :groupOpcion="false" isRequired="reqPeru" :selectedItems="dataPeru" @change="handleChangePE">
           <template v-slot:name> Seleccionar historial</template>
           <template v-slot:error> {{ errPeru }} </template>
         </tSelect>
       </div>
+
       <tLabel color="blue" size="md" weight="400" class="col-span-12 flex pt-4 items-center ml-4">
         <img :src="magnitud" alt="img_mag" height="16" width="16" class="mr-2" />
         Defina un rango de magnitud:
       </tLabel>
+      
       <!-- SELECCION DE CAPAS CHECK -->
       <div class="col-span-12 pl-3">
         <div class="slider">
-          <Slider v-model:value="magnitudeRange" :marks="marks" :min="4" :max="9.5" :step="0.1"
-            :tooltipFormatter="customTooltipFormatter" range @change="handleChange" />
+          <Slider v-model:value="magnitudeRange" :marks="marks" :min="4" :max="9.5" :step="0.1" :tooltipFormatter="customTooltipFormatter" range @change="handleChange" />
         </div>
       </div>
 
+      <span v-if="showExplosion" class="exploding-circle" :style="redCircleStyle"></span>
+      
       <tLabel color="blue" size="md" weight="400" class="col-span-12 flex pl-4">
         <img :src="profundidad" alt="img_prof" height="20" width="18" class="mr-2" />
         Escoja un rango de profundidad:
       </tLabel>
+
       <div class="col-span-12 mt-2 p-0">
         <div class="flex flex-col justify-between mb-4">
           <div v-for="(item, index) in items" :key="index" class="flex items-center ml-8">
             <div class="flex">
-              <input type="checkbox" :id="'checkbox-' + index" v-model="checkedItems[index]" class="mr-4"
-                :disabled="maxSelectionReached && !checkedItems[index]" :class="{
-                  'cursor-not-allowed':
-                    maxSelectionReached && !checkedItems[index],
-                }" @change="handleCheckboxChange" />
+              <input type="checkbox" :id="'checkbox-' + index" v-model="checkedItems[index]" class="mr-4" :disabled="maxSelectionReached && !checkedItems[index]" :class="{ 'cursor-not-allowed': maxSelectionReached && !checkedItems[index] }" @change="handleCheckboxChange" />
               <label :for="'checkbox-' + index" class="text-sm select-none font-light leading-6 text-igp-dark">
                 {{ item.name }}
-                <!-- Círculos personalizados para cada item -->
-                <span v-if="item.key === '1'" :style="redCircleStyle"></span> <!-- Círculo rojo para Superficiales -->
-                <span v-else-if="item.key === '2'" :style="greenCircleStyle"></span> <!-- Círculo verde para Intermedios -->
-                <span v-else-if="item.key === '3'" :style="blueCircleStyle"></span> <!-- Círculo azul para Profundos -->
-               
+                <span v-if="item.key === '1'" :style="redCircleStyle"></span>
+                <span v-else-if="item.key === '2'" :style="greenCircleStyle"></span>
+                <span v-else-if="item.key === '3'" :style="blueCircleStyle"></span>
               </label>
             </div>
           </div>
         </div>
       </div>
+
       <tLabel v-if="activeTab === 'global'" color="blue" size="md" weight="400" class="col-span-12 flex ml-4">
         <img :src="calendario" alt="img_calen" height="18" width="18" class="mr-1" />
         Seleccione un rango de años:
@@ -98,18 +94,17 @@
 
       <tCalendar v-if="activeTab === 'global'" class="col-span-6 mt-2 pl-4" :state="stateStartDate">
         <template v-slot:calendar>
-          <VueDatePicker v-model="startDate" format="MMM/yyyy" locale="es" :autoApply="true" :disabled="disStartDate"
-            month-picker></VueDatePicker>
+          <VueDatePicker v-model="startDate" format="MMM/yyyy" locale="es" :autoApply="true" :disabled="disStartDate" month-picker></VueDatePicker>
         </template>
         <template v-slot:name> Fecha de inicio </template>
         <template v-slot:error> {{ errStartDate }} </template>
       </tCalendar>
+      
       <tCalendar v-if="activeTab === 'global'" class="col-span-6 mt-2 pl-4" :state="stateEndDate">
         <template v-slot:calendar>
-          <VueDatePicker v-model="endDate" format="MMM/yyyy" locale="es" :autoApply="true" :disabled="disEndDate"
-            month-picker></VueDatePicker>
+          <VueDatePicker v-model="endDate" format="MMM/yyyy" locale="es" :autoApply="true" :disabled="disEndDate" month-picker></VueDatePicker>
         </template>
-        <template v-slot:name> Fecha de fín </template>
+        <template v-slot:name> Fecha de fin </template>
         <template v-slot:error> {{ errEndDate }} </template>
       </tCalendar>
 
@@ -466,7 +461,6 @@ watch([startDate, endDate], ([newStartDate, newEndDate]) => {
     ...selectionState.value,
   });
 });
-
 
 //CHECK LIST
 const items = ref([
