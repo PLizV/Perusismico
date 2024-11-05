@@ -379,10 +379,10 @@ export default {
           const circleMarker = L.circleMarker(latlng, {
             radius: radius,
             fillColor: color,
-            color: "#000",
+            color: "#0b180f",
             weight: 1,
             opacity: 1,
-            fillOpacity: 0.8,
+            fillOpacity: 0.9,
           });
           if (magnitude >= 4) {
             this.waveCircle(circleMarker);

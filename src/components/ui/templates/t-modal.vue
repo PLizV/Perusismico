@@ -79,14 +79,13 @@
                   'cursor-not-allowed':
                     maxSelectionReached && !checkedItems[index],
                 }" @change="handleCheckboxChange" />
-              <label :for="'checkbox-' + index" :class="{
-                'font-light': checkedItems[index],
-                'font-semibold': checkedItems[index],
-                'hover:font-semibold':
-                  !checkedItems.some((item) => item) ||
-                  checkedItems.filter((item) => item).length < 2,
-              }" class="text-sm select-none font-light leading-6 text-igp-dark">
+              <label :for="'checkbox-' + index" class="text-sm select-none font-light leading-6 text-igp-dark">
                 {{ item.name }}
+                <!-- Círculos personalizados para cada item -->
+                <span v-if="item.key === '1'" :style="redCircleStyle"></span> <!-- Círculo rojo para Superficiales -->
+                <span v-else-if="item.key === '2'" :style="greenCircleStyle"></span> <!-- Círculo verde para Intermedios -->
+                <span v-else-if="item.key === '3'" :style="blueCircleStyle"></span> <!-- Círculo azul para Profundos -->
+               
               </label>
             </div>
           </div>
@@ -169,6 +168,36 @@ import { Slider } from "ant-design-vue";
 const emit = defineEmits(["update-data", "update-limits"]);
 
 const activeTab = ref("global");
+// Estilos para los círculos personalizados
+const redCircleStyle = {
+  display: 'inline-block',
+  width: '12px',
+  height: '12px',
+  backgroundColor: '#FF0000', // Rojo
+  borderRadius: '50%',
+  marginRight: '5px',
+  border: '1px solid black', // Borde negro delgado
+};
+
+const greenCircleStyle = {
+  display: 'inline-block',
+  width: '12px',
+  height: '12px',
+  backgroundColor: '#009900', // Verde
+  borderRadius: '50%',
+  marginRight: '5px',
+  border: '1px solid black', // Borde negro delgado
+};
+
+const blueCircleStyle = {
+  display: 'inline-block',
+  width: '12px',
+  height: '12px',
+  backgroundColor: '#0000FF', // Azul
+  borderRadius: '50%',
+  marginRight: '5px',
+  border: '1px solid black', // Borde negro delgado
+};
 function setActiveTab(tab) {
   activeTab.value = tab;
 
@@ -438,22 +467,23 @@ watch([startDate, endDate], ([newStartDate, newEndDate]) => {
   });
 });
 
+
 //CHECK LIST
 const items = ref([
   {
     key: "1",
     value: "Superficiales",
-    name: "Superficiales (< 60km)🔴",
+    name: "Superficiales (< 60km)",
   },
   {
     key: "2",
     value: "Intermedios",
-    name: "Intermedios (61km - 300km) 🟢",
+    name: "Intermedios (61km - 300km) ",
   },
   {
     key: "3",
     value: "isDeep",
-    name: "Profundos (> 300km) 🔵",
+    name: "Profundos (> 300km) ",
   },
 ]);
 const checkedItems = ref([true, true, true]);
