@@ -1,6 +1,7 @@
 <template>
   <div
-    class="relative flex flex-col items-center px-4 md:px-10 justify-start z-10 pt-4 md:pt-[6.25rem] scroll-auto select-none w-full overflow-visible"
+  class="relative flex items-center pl-10 justify-start z-10 pt-[5.25rem] scroll-auto select-none"
+
   >
     <!-- Panel de control -->
     <div
@@ -143,11 +144,7 @@
         </div>
       </div>
 
-      <span
-        v-if="showExplosion"
-        class="exploding-circle"
-        :style="redCircleStyle"
-      ></span>
+  
 
       <tLabel color="blue" size="md" weight="400" class="col-span-12 flex pl-4">
         <img

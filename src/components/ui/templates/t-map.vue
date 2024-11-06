@@ -235,7 +235,6 @@ export default {
     },
     setlimits: {
       async handler(newDates) {
-        console.log("aaaa");
         const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
         this.addGeoJSONToMap(geoJSONData);
       },
