@@ -235,7 +235,6 @@ export default {
     },
     setlimits: {
       async handler(newDates) {
-        console.log("aaaa");
         const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
         this.addGeoJSONToMap(geoJSONData);
       },
@@ -250,17 +249,6 @@ export default {
       let scale = 1; // Escala inicial
       let opacity = 0.8; // Opacidad inicial
       let increasing = true; // Estado de crecimiento
-
-      // Determinar el incremento de escala basado en la magnitud
-      let scaleIncrement;
-      if (magnitude >= 5.5 && magnitude < 7) {
-        scaleIncrement = 0.025; // Menos intensidad para magnitudes entre 5.5 y 6.9
-      } else if (magnitude >= 4 && magnitude < 5.5) {
-        scaleIncrement = 0.015; // Mucho menos intensidad para magnitudes entre 4 y 5.4
-      } else {
-        scaleIncrement = 0.05; // Intensidad normal para magnitudes mayores o iguales a 7
-      }
-    
 
       this.waveInterval = setInterval(() => {
         if (increasing) {
@@ -368,29 +356,46 @@ export default {
           }
 
           // Definir el radio basado en la magnitud
-          let radius = 4; // Radio por defecto
+          let radius = 1; // Radio por defecto
           const magnitude = feature.properties.mag;
 
           if (magnitude >= 4 && magnitude <= 5) {
-            radius = 4;
+            radius = 1.5;
           } else if (magnitude > 5 && magnitude <= 6) {
-            radius = 6;
+            radius = 2.5;
           } else if (magnitude > 6 && magnitude <= 7) {
-            radius = 8;
+            radius = 4.5;
           } else if (magnitude > 7 && magnitude <= 9.5) {
-            radius = 18;
+            radius = 9;
           }
+          
           const circleMarker = L.circleMarker(latlng, {
             radius: radius,
             fillColor: color,
-            color: "#0e2716",
+            color: "#353836",
             weight: 1,
             opacity: 1,
             fillOpacity: 0.9,
-          });
-          if (magnitude >= 4) {
-            this.waveCircle(circleMarker);
-          }
+           });
+           
+        setInterval(() => {
+        circleMarker.setStyle({ fillOpacity: 1, color: "#ffffff" });
+        setTimeout(() => {
+        circleMarker.setStyle({ fillOpacity: 0.9, color: "#0e2716" });
+        }, 500); // Duración del destello
+      }, 1500); // Intervalo del destello
+
+      if (magnitude > 7) {
+        setInterval(() => {
+          circleMarker.setStyle({ radius: radius * 1.5, fillOpacity: 0.5 });
+          setTimeout(() => {
+            circleMarker.setStyle({ radius: radius, fillOpacity: 0 });
+          }, 300); // Duración de la explosión
+          setTimeout(() => {
+            circleMarker.setStyle({ radius: radius, fillOpacity: 0.9 });
+          }, 800); // Restablece al tamaño original
+        }, 1500); // Intervalo de tiempo entre "explosiones"
+      }
           return circleMarker;
         },
         
@@ -431,9 +436,9 @@ export default {
 </script>
 
 <style>
+
 #map {
   width: 100%;
   z-index: 0;
 }
 </style>
- 

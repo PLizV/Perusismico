@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex flex-col items-center px-4 md:px-10 justify-start z-10 pt-4 md:pt-[6.25rem] scroll-auto select-none w-full overflow-visible"
+    class="relative flex items-center pl-10 justify-start z-10 pt-[5.25rem] scroll-auto select-none"
   >
     <!-- Panel de control -->
     <div
@@ -9,6 +9,7 @@
       <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
         <!-- Botón Global -->
         <button
+          :disabled="ableGlobal"
           @click="setActiveTab('global')"
           :class="{
             'bg-white text-igp-blue font-semibold border-t border-l border-r':
@@ -26,6 +27,7 @@
       <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
         <!-- Botón Perú -->
         <button
+          :disabled="ablePeru"
           @click="setActiveTab('peru')"
           :class="{
             'bg-white text-igp-blue font-semibold border-t border-l border-r':
@@ -142,12 +144,6 @@
           />
         </div>
       </div>
-
-      <span
-        v-if="showExplosion"
-        class="exploding-circle"
-        :style="redCircleStyle"
-      ></span>
 
       <tLabel color="blue" size="md" weight="400" class="col-span-12 flex pl-4">
         <img
@@ -341,6 +337,8 @@ import tCalendar from "@/components/ui/atoms/t-calendar.vue";
 import { Slider } from "ant-design-vue";
 const emit = defineEmits(["update-data", "update-limits"]);
 
+const ablePeru = ref(false);
+const ableGlobal = ref(true);
 const activeTab = ref("global");
 // Estilos para los círculos personalizados
 const redCircleStyle = {
@@ -376,6 +374,9 @@ function setActiveTab(tab) {
   activeTab.value = tab;
 
   if (tab === "peru") {
+    selPeru.value = "actual";
+    ablePeru.value = true;
+    ableGlobal.value = false;
     emit("update-limits", {
       minLatitude: -18.35,
       maxLatitude: -0.03,
@@ -395,6 +396,8 @@ function setActiveTab(tab) {
       ...selectionState.value,
     });
   } else {
+    ablePeru.value = false;
+    ableGlobal.value = true;
     selContinente.value = "";
     emit("update-limits", {
       minLatitude: -55.0,

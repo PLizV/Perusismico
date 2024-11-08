@@ -6,8 +6,8 @@
       <theader></theader>
     </div>
 
-    <main class="grid grid-cols-12" style="height: calc(100vh - 4.25rem)">
-      <div class="col-span-5 py-16 pl-20">
+    <main class="grid grid-cols-1 md:grid-cols-12" style="height: calc(100vh - 4.25rem)">
+      <div class="col-span-12 md:col-span-5 py-8 px-4 md:px-20">
         <div
           class="grid grid-cols-12 px-4 py-4 bg-white rounded-2xl select-none"
         >
@@ -17,7 +17,7 @@
           >
             Plataforma de Observatorio Sísmico
           </span>
-          <p class="col-span-12 text-igp-blue text-7xl font-bold mt-1">
+          <p class="col-span-12 text-igp-blue text-4xl md:text-7xl font-bold mt-1">
             Perú<span class="italic font-medium"> Sísmico (PerúSis)</span>
           </p>
           <p
@@ -57,7 +57,7 @@
             </span>    
           </p>
        
-          <div class="col-span-12 flex py-6 mt-4">
+          <div class="col-span-12 flex flex-col md:flex-row py-6 mt-4">
             <router-link
               to="/visor"
               class="bg-igp-blue text-igp-white px-16 hover:bg-igp-blue-600 shadow-lg rounded-lg justify-center py-2 flex sm:inline md:inline lg:inline xl:inline 2xl:inline text-sm sm:text-sm md:text-base lg:text-base xl:text-base 2xl:text-base"
@@ -73,7 +73,7 @@
           </div>
         </div>
       </div>
-      <div class="col-span-7">
+      <div class="col-span-12 md:col-span-7">
         <div class="globe" ref="globeContainer"></div>
       </div>
     </main>
@@ -228,15 +228,15 @@ const colorForRegion = (lat, lng) => {
 <style scoped>
 
 .globe {
-  width: 50vw; /* Ancho proporcional al viewport */
-  height: 50vw; /* Altura igual para mantener la forma circular */
+  width: 100%; /* Ahora ocupa todo el ancho */
+  height: 100%; /* Ocupa todo el alto de su contenedor */
   max-width: 750px; /* Limitar el tamaño máximo */
-  max-height: 750px; /* Limitar la altura máxima */
+  max-height: 750px;
   border-radius: 50%; /* Mantener la forma circular */
   margin: auto; /* Centrar la elipse */
   box-shadow: 0 4px 47px 20px rgba(4, 57, 172, 0.692); /* Sombra */
-  overflow: hidden; /* Asegura que no se desborde el contenido */
-  margin-top: 30px; /* Ajusta el valor para mover el globo más abajo */
+  overflow: hidden;
+  margin-top: 20px; /* Ajuste de espacio */
 }
 
 @keyframes slide-horizontal {
