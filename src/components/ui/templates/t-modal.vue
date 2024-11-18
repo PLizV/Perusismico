@@ -4,15 +4,17 @@
   >
     <!-- Panel de control -->
     <div
-  class="px-4 pt-2 grid grid-cols-1 md:grid-cols-12 bg-orange-50 rounded-2xl w-full max-w-full md:max-w-[450px] mt-4 mb-4 border border-orange-500"
->
-<p class="col-span-12 font-light text-orange-600 text-base leading-[20px] px-3 py-2">
-  <span class="font-semibold">Importante:</span> Configura libremente los
-  parámetros sísmicos para ver los eventos en el visor.
-</p>
-</div>
+      class="px-4 pt-2 grid grid-cols-1 md:grid-cols-12 bg-orange-50 rounded-2xl w-full max-w-full md:max-w-[450px] mt-4 mb-4 border border-orange-500 shadow-[0px_4px_4px_0px_#00000024]"
+    >
+      <p
+        class="col-span-12 font-light text-orange-600 text-base leading-[20px] px-3 py-2"
+      >
+        <span class="font-semibold">Importante:</span> Configura libremente los
+        parámetros sísmicos para ver los eventos en el visor.
+      </p>
+    </div>
     <div
-      class="grid grid-cols-1 sm:grid-cols-6 md:grid-cols-12 bg-white rounded-t-2xl w-full max-w-full md:max-w-[450px]"
+      class="grid grid-cols-1 sm:grid-cols-6 md:grid-cols-12 bg-white rounded-t-2xl w-full max-w-full md:max-w-[450px] border-x border-t border-igp-blue"
     >
       <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
         <!-- Botón Global -->
@@ -51,9 +53,9 @@
     </div>
 
     <div
-      class="px-4 pt-3 grid grid-cols-1 md:grid-cols-12 bg-white rounded-b-2xl w-full max-w-full md:max-w-[450px]"
+      class="px-4 pt-3 grid grid-cols-1 md:grid-cols-12 bg-white rounded-b-2xl w-full max-w-full md:max-w-[450px] border-x border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
     >
-        <tLabel
+      <tLabel
         v-if="activeTab === 'global'"
         color="blue"
         size="md"
@@ -110,7 +112,6 @@
           :groupOpcion="false"
           isRequired="reqPeru"
           :selectedItems="dataPeru"
-          @change="handleChangePE"
         >
           <template v-slot:name> Seleccionar historial</template>
           <template v-slot:error> {{ errPeru }} </template>
@@ -118,7 +119,6 @@
       </div>
 
       <tLabel
-        v-if="activeTab === 'global'"
         color="blue"
         size="md"
         weight="400"
@@ -134,11 +134,7 @@
         Seleccione un rango de años:
       </tLabel>
 
-      <tCalendar
-        v-if="activeTab === 'global'"
-        class="col-span-6 mt-2 pl-4"
-        :state="stateStartDate"
-      >
+      <tCalendar class="col-span-6 mt-2 pl-4" :state="stateStartDate">
         <template v-slot:calendar>
           <VueDatePicker
             v-model="startDate"
@@ -153,11 +149,7 @@
         <template v-slot:error> {{ errStartDate }} </template>
       </tCalendar>
 
-      <tCalendar
-        v-if="activeTab === 'global'"
-        class="col-span-6 mt-2 pl-4"
-        :state="stateEndDate"
-      >
+      <tCalendar class="col-span-6 mt-2 pl-4" :state="stateEndDate">
         <template v-slot:calendar>
           <VueDatePicker
             v-model="endDate"
@@ -173,63 +165,10 @@
       </tCalendar>
 
       <tLabel
-        v-if="activeTab === 'peru'"
-        color="darkMuted"
-        size="md"
-        weight="400"
-        class="col-span-12 flex mt-4 ml-4"
-      >
-        <img
-          :src="darkcalendario"
-          alt="img_darkcalen"
-          height="18"
-          width="18"
-          class="mr-1"
-        />
-        Seleccione un rango de años:
-      </tLabel>
-
-      <tCalendar
-        v-if="activeTab === 'peru'"
-        class="col-span-6 mt-2 pl-4"
-        state="disable"
-      >
-        <template v-slot:calendar>
-          <VueDatePicker
-            v-model="startDate"
-            format="MMM/yyyy"
-            locale="es"
-            :autoApply="true"
-            :disabled="true"
-            month-picker
-          ></VueDatePicker>
-        </template>
-        <template v-slot:name> Fecha de inicio </template>
-        <template v-slot:error> {{ errStartDate }} </template>
-      </tCalendar>
-      <tCalendar
-        v-if="activeTab === 'peru'"
-        class="col-span-6 mt-2 pl-4"
-        state="disable"
-      >
-        <template v-slot:calendar>
-          <VueDatePicker
-            v-model="endDate"
-            format="MMM/yyyy"
-            locale="es"
-            :autoApply="true"
-            :disabled="true"
-            month-picker
-          ></VueDatePicker>
-        </template>
-        <template v-slot:name> Fecha de fín </template>
-        <template v-slot:error> {{ errEndDate }} </template>
-      </tCalendar>
-      <tLabel
         color="blue"
         size="md"
         weight="400"
-        class="col-span-12 flex pt-2 items-center ml-4"
+        class="col-span-12 flex items-center ml-4"
       >
         <img
           :src="magnitud"
@@ -331,13 +270,14 @@ import profundidad from "@/assets/icons/profundidad.svg";
 import gps from "@/assets/icons/gps.svg";
 import magnitud from "@/assets/icons/magnitud.svg";
 import calendario from "@/assets/icons/calendario.svg";
-import darkcalendario from "@/assets/icons/mutedCalendario.svg";
 import iconworld from "@/assets/icons/world.vue";
 import idatabase from "@/assets/icons/database.svg";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import tCalendar from "@/components/ui/atoms/t-calendar.vue";
 import { Slider } from "ant-design-vue";
-const emit = defineEmits(["update-data", "update-limits"]);
+import { useGeojsonStore } from "@/stores/geojson";
+
+const useGeojson = useGeojsonStore();
 
 const ablePeru = ref(false);
 const ableGlobal = ref(true);
@@ -347,139 +287,335 @@ const redCircleStyle = {
   display: "inline-block",
   width: "12px",
   height: "12px",
-  backgroundColor: "#FF0000", // Rojo
+  backgroundColor: "#ff0000", // Rojo
   borderRadius: "50%",
   marginRight: "5px",
-  border: "1px solid black", // Borde negro delgado
+  border: "1px solid #ff0000", // Borde negro delgado
 };
 
 const greenCircleStyle = {
   display: "inline-block",
   width: "12px",
   height: "12px",
-  backgroundColor: "#009900", // Verde
+  backgroundColor: "#39ff14", // Verde
   borderRadius: "50%",
   marginRight: "5px",
-  border: "1px solid black", // Borde negro delgado
+  border: "1px solid #39ff14", // Borde negro delgado
 };
 
 const blueCircleStyle = {
   display: "inline-block",
   width: "12px",
   height: "12px",
-  backgroundColor: "#0000FF", // Azul
+  backgroundColor: "#007aff", // Azul
   borderRadius: "50%",
   marginRight: "5px",
-  border: "1px solid black", // Borde negro delgado
+  border: "1px solid #007aff", // Borde negro delgado
 };
+
 function setActiveTab(tab) {
   activeTab.value = tab;
 
   if (tab === "peru") {
-    selPeru.value = "actual";
     ablePeru.value = true;
     ableGlobal.value = false;
-    emit("update-limits", {
+    useGeojson.continente = {
       minLatitude: -18.35,
       maxLatitude: -0.03,
       minLongitude: -81.33,
       maxLongitude: -68.65,
-    });
-
-    const act = {
-      month: new Date().getMonth(),
-      year: new Date().getFullYear(),
     };
-    emit("update-data", {
-      startDate: convertToDate({ month: 0, year: 1960 }),
-      endDate: convertToDate(act),
-      maxMag: magnitudeRange.value[0],
-      minMag: magnitudeRange.value[1],
-      ...selectionState.value,
-    });
   } else {
     ablePeru.value = false;
     ableGlobal.value = true;
     selContinente.value = "";
-    emit("update-limits", {
+    useGeojson.continente = {
       minLatitude: -55.0,
       maxLatitude: 81.0,
       minLongitude: -168.0,
       maxLongitude: 180.0,
-    });
-
-    emit("update-data", {
-      startDate: convertToDate(startDate.value),
-      endDate: convertToDate(endDate.value),
-      maxMag: magnitudeRange.value[0],
-      minMag: magnitudeRange.value[1],
-      ...selectionState.value,
-    });
+    };
   }
 }
-/* 
-import { useGeojsonStore } from "@/stores/geojson.js";
-
-const useGeojson = useGeojsonStore();
-const setEnableRange = ref(true);
-const rangeInput = ref(null);
-const setDefaultValueRange = ref(0.8); */
 
 // PERU
-const selPeru = ref("actual");
+const selPeru = ref("");
 const statePeru = ref("enable");
 const errPeru = ref("Peru error");
 const dataPeru = ref([
-  { value: "actual", name: "Sísmica actual 1960 - 2024" },
-  { value: "historica", name: "Sísmica histórica 1471 - 1959" },
-  { value: "amazonas", name: "Amazonas", boundaries: { minLatitude: -5.0, maxLatitude: -3.5, minLongitude: -78.5, maxLongitude: -76.5 } },
-  { value: "ancash", name: "Áncash", boundaries: { minLatitude: -10.2, maxLatitude: -8.0, minLongitude: -78.5, maxLongitude: -76.5 } },
-  { value: "apurimac", name: "Apurímac", boundaries: { minLatitude: -14.1, maxLatitude: -13.1, minLongitude: -74.2, maxLongitude: -72.5 } },
-  { value: "arequipa", name: "Arequipa", boundaries: { minLatitude: -17.5, maxLatitude: -15.2, minLongitude: -73.0, maxLongitude: -71.0 } },
-  { value: "ayacucho", name: "Ayacucho", boundaries: { minLatitude: -14.5, maxLatitude: -12.5, minLongitude: -75.0, maxLongitude: -73.0 } },
-  { value: "cajamarca", name: "Cajamarca", boundaries: { minLatitude: -7.0, maxLatitude: -5.0, minLongitude: -79.5, maxLongitude: -77.5 } },
-  { value: "callao", name: "Callao", boundaries: { minLatitude: -12.1, maxLatitude: -11.9, minLongitude: -77.3, maxLongitude: -77.1 } },
-  { value: "cusco", name: "Cusco", boundaries: { minLatitude: -14.3, maxLatitude: -12.4, minLongitude: -73.4, maxLongitude: -70.6 } },
-  { value: "huancavelica", name: "Huancavelica", boundaries: { minLatitude: -13.5, maxLatitude: -12.4, minLongitude: -75.5, maxLongitude: -74.2 } },
-  { value: "huanuco", name: "Huánuco", boundaries: { minLatitude: -10.3, maxLatitude: -8.3, minLongitude: -76.5, maxLongitude: -74.0 } },
-  { value: "ica", name: "Ica", boundaries: { minLatitude: -15.2, maxLatitude: -13.3, minLongitude: -76.7, maxLongitude: -75.0 } },
-  { value: "junin", name: "Junín", boundaries: { minLatitude: -12.5, maxLatitude: -10.5, minLongitude: -76.8, maxLongitude: -74.9 } },
-  { value: "la_libertad", name: "La Libertad", boundaries: { minLatitude: -8.5, maxLatitude: -6.8, minLongitude: -80.5, maxLongitude: -77.8 } },
-  { value: "lambayeque", name: "Lambayeque", boundaries: { minLatitude: -7.0, maxLatitude: -5.5, minLongitude: -80.6, maxLongitude: -79.2 } },
-  { value: "lima", name: "Lima", boundaries: { minLatitude: -12.9, maxLatitude: -10.6, minLongitude: -77.8, maxLongitude: -76.3 } },
-  { value: "loreto", name: "Loreto", boundaries: { minLatitude: -5.3, maxLatitude: -0.0, minLongitude: -76.6, maxLongitude: -70.2 } },
-  { value: "madre_de_dios", name: "Madre de Dios", boundaries: { minLatitude: -13.2, maxLatitude: -10.5, minLongitude: -70.8, maxLongitude: -68.7 } },
-  { value: "moquegua", name: "Moquegua", boundaries: { minLatitude: -17.6, maxLatitude: -15.8, minLongitude: -71.8, maxLongitude: -70.4 } },
-  { value: "pasco", name: "Pasco", boundaries: { minLatitude: -11.1, maxLatitude: -9.6, minLongitude: -76.8, maxLongitude: -75.1 } },
-  { value: "piura", name: "Piura", boundaries: { minLatitude: -5.9, maxLatitude: -4.0, minLongitude: -81.1, maxLongitude: -79.3 } },
-  { value: "puno", name: "Puno", boundaries: { minLatitude: -17.2, maxLatitude: -13.3, minLongitude: -70.0, maxLongitude: -68.6 } },
-  { value: "san_martin", name: "San Martín", boundaries: { minLatitude: -8.8, maxLatitude: -6.0, minLongitude: -77.8, maxLongitude: -75.5 } },
-  { value: "tacna", name: "Tacna", boundaries: { minLatitude: -18.0, maxLatitude: -16.2, minLongitude: -70.6, maxLongitude: -69.4 } },
-  { value: "tumbes", name: "Tumbes", boundaries: { minLatitude: -4.3, maxLatitude: -3.2, minLongitude: -80.9, maxLongitude: -80.3 } },
-  { value: "ucayali", name: "Ucayali", boundaries: { minLatitude: -10.6, maxLatitude: -7.0, minLongitude: -75.6, maxLongitude: -72.4 } },
+{
+    value: "",
+    name: "Todo el Perú",
+    boundaries: {
+      minLatitude: -18.35,
+      maxLatitude: -0.03,
+      minLongitude: -81.33,
+      maxLongitude: -68.65,
+    },
+  },
+  {
+    value: "amazonas",
+    name: "Amazonas",
+    boundaries: {
+      minLatitude: -5.0,
+      maxLatitude: -3.5,
+      minLongitude: -78.5,
+      maxLongitude: -76.5,
+    },
+  },
+  {
+    value: "ancash",
+    name: "Áncash",
+    boundaries: {
+      minLatitude: -10.2,
+      maxLatitude: -8.0,
+      minLongitude: -78.5,
+      maxLongitude: -76.5,
+    },
+  },
+  {
+    value: "apurimac",
+    name: "Apurímac",
+    boundaries: {
+      minLatitude: -14.1,
+      maxLatitude: -13.1,
+      minLongitude: -74.2,
+      maxLongitude: -72.5,
+    },
+  },
+  {
+    value: "arequipa",
+    name: "Arequipa",
+    boundaries: {
+      minLatitude: -17.5,
+      maxLatitude: -15.2,
+      minLongitude: -73.0,
+      maxLongitude: -71.0,
+    },
+  },
+  {
+    value: "ayacucho",
+    name: "Ayacucho",
+    boundaries: {
+      minLatitude: -14.5,
+      maxLatitude: -12.5,
+      minLongitude: -75.0,
+      maxLongitude: -73.0,
+    },
+  },
+  {
+    value: "cajamarca",
+    name: "Cajamarca",
+    boundaries: {
+      minLatitude: -7.0,
+      maxLatitude: -5.0,
+      minLongitude: -79.5,
+      maxLongitude: -77.5,
+    },
+  },
+  {
+    value: "callao",
+    name: "Callao",
+    boundaries: {
+      minLatitude: -12.1,
+      maxLatitude: -11.9,
+      minLongitude: -77.3,
+      maxLongitude: -77.1,
+    },
+  },
+  {
+    value: "cusco",
+    name: "Cusco",
+    boundaries: {
+      minLatitude: -14.3,
+      maxLatitude: -12.4,
+      minLongitude: -73.4,
+      maxLongitude: -70.6,
+    },
+  },
+  {
+    value: "huancavelica",
+    name: "Huancavelica",
+    boundaries: {
+      minLatitude: -13.5,
+      maxLatitude: -12.4,
+      minLongitude: -75.5,
+      maxLongitude: -74.2,
+    },
+  },
+  {
+    value: "huanuco",
+    name: "Huánuco",
+    boundaries: {
+      minLatitude: -10.3,
+      maxLatitude: -8.3,
+      minLongitude: -76.5,
+      maxLongitude: -74.0,
+    },
+  },
+  {
+    value: "ica",
+    name: "Ica",
+    boundaries: {
+      minLatitude: -15.2,
+      maxLatitude: -13.3,
+      minLongitude: -76.7,
+      maxLongitude: -75.0,
+    },
+  },
+  {
+    value: "junin",
+    name: "Junín",
+    boundaries: {
+      minLatitude: -12.5,
+      maxLatitude: -10.5,
+      minLongitude: -76.8,
+      maxLongitude: -74.9,
+    },
+  },
+  {
+    value: "la_libertad",
+    name: "La Libertad",
+    boundaries: {
+      minLatitude: -8.5,
+      maxLatitude: -6.8,
+      minLongitude: -80.5,
+      maxLongitude: -77.8,
+    },
+  },
+  {
+    value: "lambayeque",
+    name: "Lambayeque",
+    boundaries: {
+      minLatitude: -7.0,
+      maxLatitude: -5.5,
+      minLongitude: -80.6,
+      maxLongitude: -79.2,
+    },
+  },
+  {
+    value: "lima",
+    name: "Lima",
+    boundaries: {
+      minLatitude: -12.9,
+      maxLatitude: -10.6,
+      minLongitude: -77.8,
+      maxLongitude: -76.3,
+    },
+  },
+  {
+    value: "loreto",
+    name: "Loreto",
+    boundaries: {
+      minLatitude: -5.3,
+      maxLatitude: -0.0,
+      minLongitude: -76.6,
+      maxLongitude: -70.2,
+    },
+  },
+  {
+    value: "madre_de_dios",
+    name: "Madre de Dios",
+    boundaries: {
+      minLatitude: -13.2,
+      maxLatitude: -10.5,
+      minLongitude: -70.8,
+      maxLongitude: -68.7,
+    },
+  },
+  {
+    value: "moquegua",
+    name: "Moquegua",
+    boundaries: {
+      minLatitude: -17.6,
+      maxLatitude: -15.8,
+      minLongitude: -71.8,
+      maxLongitude: -70.4,
+    },
+  },
+  {
+    value: "pasco",
+    name: "Pasco",
+    boundaries: {
+      minLatitude: -11.1,
+      maxLatitude: -9.6,
+      minLongitude: -76.8,
+      maxLongitude: -75.1,
+    },
+  },
+  {
+    value: "piura",
+    name: "Piura",
+    boundaries: {
+      minLatitude: -5.9,
+      maxLatitude: -4.0,
+      minLongitude: -81.1,
+      maxLongitude: -79.3,
+    },
+  },
+  {
+    value: "puno",
+    name: "Puno",
+    boundaries: {
+      minLatitude: -17.2,
+      maxLatitude: -13.3,
+      minLongitude: -70.0,
+      maxLongitude: -68.6,
+    },
+  },
+  {
+    value: "san_martin",
+    name: "San Martín",
+    boundaries: {
+      minLatitude: -8.8,
+      maxLatitude: -6.0,
+      minLongitude: -77.8,
+      maxLongitude: -75.5,
+    },
+  },
+  {
+    value: "tacna",
+    name: "Tacna",
+    boundaries: {
+      minLatitude: -18.0,
+      maxLatitude: -16.2,
+      minLongitude: -70.6,
+      maxLongitude: -69.4,
+    },
+  },
+  {
+    value: "tumbes",
+    name: "Tumbes",
+    boundaries: {
+      minLatitude: -4.3,
+      maxLatitude: -3.2,
+      minLongitude: -80.9,
+      maxLongitude: -80.3,
+    },
+  },
+  {
+    value: "ucayali",
+    name: "Ucayali",
+    boundaries: {
+      minLatitude: -10.6,
+      maxLatitude: -7.0,
+      minLongitude: -75.6,
+      maxLongitude: -72.4,
+    },
+  },
 ]);
 
-const handleChangePE = () => {
-  const selectedDepartment = dataPeru.value.find(dept => dept.value === selPeru.value);
+watch(selPeru, (newValue) => {
+  const depSeleccionado = dataPeru.value.find(
+    (departamento) => departamento.value === newValue
+  );
 
-  if (selectedDepartment && selectedDepartment.boundaries) {
-    emit("update-limits", selectedDepartment.boundaries);
-  } else if (selPeru.value === "historica") {
-    emit("update-data", {
-      startDate: convertToDate({ month: 0, year: 1471 }),
-      endDate: convertToDate({ month: 11, year: 1959 }),
-    });
-  } else if (selPeru.value === "actual") {
-    const act = {
-      month: new Date().getMonth(),
-      year: new Date().getFullYear(),
-    };
-    emit("update-data", {
-      startDate: convertToDate({ month: 0, year: 1960 }),
-      endDate: convertToDate(act),
-    });
+  if (depSeleccionado) {
+    const boundaries = depSeleccionado.boundaries;
+    useGeojson.continente = boundaries;
   }
-};
+});
+
 //CONTINENTE
 const selContinente = ref("");
 const stateContinente = ref("enable");
@@ -574,7 +710,7 @@ watch(selContinente, (newValue) => {
 
   if (continenteSeleccionado) {
     const boundaries = continenteSeleccionado.boundaries;
-    emit("update-limits", boundaries);
+    useGeojson.continente = boundaries;
   }
 });
 
@@ -603,23 +739,12 @@ const handleChange = (value) => {
   }
 
   // Configurar un nuevo timeout
-  timeoutId = setTimeout(
-    () => {
-      if (activeTab.value === "global") {
-        emit("update-data", {
-          startDate: convertToDate(startDate.value),
-          endDate: convertToDate(endDate.value),
-          maxMag: value[0],
-          minMag: value[1],
-          ...selectionState.value,
-        });
-      } else if (activeTab.value === "peru") {
-        handleChangePE();
-      }
-    },
-
-    2000
-  ); // Esperar 2 segundos
+  timeoutId = setTimeout(() => {
+    useGeojson.rangoMagnitud = {
+      maxMag: value[0],
+      minMag: value[1],
+    };
+  }, 2000); // Esperar 2 segundos
 };
 
 const customTooltipFormatter = (value) => {
@@ -659,13 +784,10 @@ const disEndDate = ref(false);
 const stateEndDate = ref("enable");
 
 watch([startDate, endDate], ([newStartDate, newEndDate]) => {
-  emit("update-data", {
+  useGeojson.rangoFechas = {
     startDate: convertToDate(newStartDate),
     endDate: convertToDate(newEndDate),
-    maxMag: magnitudeRange.value[0],
-    minMag: magnitudeRange.value[1],
-    ...selectionState.value,
-  });
+  };
 });
 
 //CHECK LIST
@@ -713,21 +835,10 @@ const handleCheckboxChange = () => {
     isIntermediate,
     isDeep,
   };
-
-  // Emitir los valores dependiendo de lo seleccionado
-  if (activeTab.value === "global") {
-    emit("update-data", {
-      startDate: convertToDate(startDate.value),
-      endDate: convertToDate(endDate.value),
-      maxMag: value[0],
-      minMag: value[1],
-      ...selectionState.value,
-    });
-  } else if (activeTab.value === "peru") {
-    handleChangePE();
-  }
+  useGeojson.profundidad = selectionState.value;
 };
 </script>
+
 <style>
 .ant-slider-mark {
   font-size: 5px;
@@ -744,7 +855,8 @@ const handleCheckboxChange = () => {
 .slider {
   width: 90%;
   max-width: 1000px;
-  margin: 15px;
+  margin-left: 15px;
+  margin-right: 15px;
   padding: 6px 0;
   position: relative;
 }

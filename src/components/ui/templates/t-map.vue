@@ -11,48 +11,25 @@ import * as L from "leaflet/dist/leaflet-src.js";
 import Papa from "papaparse";
 import "leaflet.pattern";
 import "leaflet/dist/leaflet.css";
-import { useGeojsonStore } from "@/stores/geojson.js";
 import circulo from "@/assets/icons/icircle.vue";
 import carpeta from "@/assets/icons/vermas.vue";
+import { useGeojsonStore } from "@/stores/geojson.js";
 
 export default {
   components: {
     circulo,
     carpeta,
   },
-  props: {
-    alldata: {
-      type: Object,
-      required: true,
-      default: () => ({
-        startDate: null,
-        endDate: null,
-        maxMag: null,
-        minMag: null,
-        isSuperficial: null,
-        isIntermediate: null,
-        isDeep: null,
-      }),
-    },
-    setlimits: {
-      type: Object,
-      required: true,
-      default: () => ({
-        minLatitude: null,
-        maxLatitude: null,
-        minLongitude: null,
-        maxLongitude: null,
-      }),
-    },
-  },
   data() {
     return {
       map: null,
+      useGeojson: useGeojsonStore(),
       initialZoom: null,
       initialLatLeng: null,
       setData: null,
       csvLayer: null,
       flashInterval: null, // Para almacenar el intervalo de destello
+      sumarProf: 0,
     };
   },
   mounted() {
@@ -138,7 +115,7 @@ export default {
       zoom: this.initialZoom,
       layers: [luzNotable], // cambiar favorito
       fullscreenControlOptions: { position: "bottomright" },
-      preferCanvas: true,
+      preferCanvas: false,
       maxBounds: bounds, // Fija los límites del mapa
       maxBoundsViscosity: 1.0,
     });
@@ -225,16 +202,29 @@ export default {
       });
   },
   watch: {
-    // Observa el objeto dates completamente
-    alldata: {
-      async handler(newDates) {
+    "useGeojson.continente": {
+      async handler() {
         const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
         this.addGeoJSONToMap(geoJSONData);
       },
       deep: true,
     },
-    setlimits: {
-      async handler(newDates) {
+    "useGeojson.rangoFechas": {
+      async handler() {
+        const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
+        this.addGeoJSONToMap(geoJSONData);
+      },
+      deep: true,
+    },
+    "useGeojson.rangoMagnitud": {
+      async handler() {
+        const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
+        this.addGeoJSONToMap(geoJSONData);
+      },
+      deep: true,
+    },
+    "useGeojson.profundidad": {
+      async handler() {
         const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
         this.addGeoJSONToMap(geoJSONData);
       },
@@ -243,78 +233,60 @@ export default {
   },
 
   methods: {
-
-    waveCircle(circleMarker, magnitude) {
-      const originalRadius = circleMarker.options.radius; // Almacena el radio original
-      let scale = 1; // Escala inicial
-      let opacity = 0.8; // Opacidad inicial
-      let increasing = true; // Estado de crecimiento
-
-      this.waveInterval = setInterval(() => {
-        if (increasing) {
-          scale += scaleIncrement; // Aumentar la escala
-          if (scale >= 1.4) { // Cambiar a decreciente
-            increasing = false;
-          }
-        } else {
-          scale -= scaleIncrement; // Disminuir la escala
-          if (scale <= 1) { // Volver a la escala original
-            increasing = true; // Cambiar a creciente
-          }
-        }
-
-        // Aplicar el nuevo tamaño al círculo
-        circleMarker.setStyle({
-          radius: originalRadius * scale,
-          fillOpacity: opacity,
-        });
-      }, 200); // Intervalo para actualizar la animación
-    },
-
     convertCSVToGeoJSON(data) {
-      // Filtrar primero por latitud y longitud
+      console.log(this.useGeojson.continente);
+      // Filtrar por latitud y longitud
       const filteredByCoordinates = data.filter((row) => {
         return (
           !isNaN(row.latitude) &&
           !isNaN(row.longitude) &&
           row.latitude !== null &&
           row.longitude !== null &&
-          row.latitude >= this.setlimits.minLatitude &&
-          row.latitude <= this.setlimits.maxLatitude &&
-          row.longitude >= this.setlimits.minLongitude &&
-          row.longitude <= this.setlimits.maxLongitude
+          row.latitude >= this.useGeojson.continente.minLatitude &&
+          row.latitude <= this.useGeojson.continente.maxLatitude &&
+          row.longitude >= this.useGeojson.continente.minLongitude &&
+          row.longitude <= this.useGeojson.continente.maxLongitude
         );
       });
 
-      // Luego, filtrar por magnitud
+      // Filtrar por magnitud
       const filteredByMagnitude = filteredByCoordinates.filter((row) => {
         const mag = row.mag;
-        return mag >= this.alldata.maxMag && mag <= this.alldata.minMag;
-        
+        return (
+          mag >= this.useGeojson.rangoMagnitud.maxMag &&
+          mag <= this.useGeojson.rangoMagnitud.minMag
+        );
       });
 
-      // Finalmente, filtrar por fecha
+      // Filtrar por fecha
       const filteredByDate = filteredByMagnitude.filter((row) => {
         const eventDate = new Date(row.time);
         return (
-          eventDate >= this.alldata.startDate &&
-          eventDate <= this.alldata.endDate
+          eventDate >= this.useGeojson.rangoFechas.startDate &&
+          eventDate <= this.useGeojson.rangoFechas.endDate
         );
       });
+
+      // Filtrar por profunidad
       const filteredByDepth = filteredByDate.filter((row) => {
         const depth = row.depth;
 
-        if (this.alldata.isSuperficial && depth <= 60) {
+        if (this.useGeojson.profundidad.isSuperficial && depth <= 60) {
           return true;
         }
-        if (this.alldata.isIntermediate && depth > 60 && depth <= 300) {
+        if (
+          this.useGeojson.profundidad.isIntermediate &&
+          depth > 60 &&
+          depth <= 300
+        ) {
           return true;
         }
-        if (this.alldata.isDeep && depth > 300) {
+        if (this.useGeojson.profundidad.isDeep && depth > 300) {
           return true;
         }
         return false; // No cumple con las condiciones de profundidad
       });
+
       return {
         type: "FeatureCollection",
         features: filteredByDepth.map((row) => ({
@@ -332,7 +304,7 @@ export default {
         })),
       };
     },
-    addGeoJSONToMap(geoJSON) {
+    /*     addGeoJSONToMap(geoJSON) {
       // Eliminar la capa CSV anterior si existe
       if (this.csvLayer) {
         this.map.removeLayer(this.csvLayer); // Elimina la capa anterior del mapa
@@ -342,17 +314,17 @@ export default {
       this.csvLayer = L.geoJSON(geoJSON, {
         pointToLayer: (feature, latlng) => {
           // Definir el color basado en la profundidad
-          let color = "red"; // Color por defecto
+          let color = "#ff0000"; // Color por defecto RED
 
           if (feature.properties.depth > 300) {
-            color = "blue"; // Profundos (> 300 km)
+            color = "#007aff"; // Profundos (> 300 km) BLUE
           } else if (
             feature.properties.depth >= 61 &&
             feature.properties.depth <= 300
           ) {
-            color = "green"; // Intermedios (61 km - 300 km)
+            color = "#39ff14"; // Intermedios (61 km - 300 km) GREEN
           } else if (feature.properties.depth <= 60) {
-            color = "red"; // Superficiales (< 60 km)
+            color = "#ff0000"; // Superficiales (< 60 km) RED
           }
 
           // Definir el radio basado en la magnitud
@@ -360,45 +332,27 @@ export default {
           const magnitude = feature.properties.mag;
 
           if (magnitude >= 4 && magnitude <= 5) {
-            radius = 1.5;
+            radius = 3.5;
           } else if (magnitude > 5 && magnitude <= 6) {
-            radius = 2.5;
-          } else if (magnitude > 6 && magnitude <= 7) {
             radius = 4.5;
+          } else if (magnitude > 6 && magnitude <= 7) {
+            radius = 5.5;
           } else if (magnitude > 7 && magnitude <= 9.5) {
-            radius = 9;
+            radius = 13;
           }
-          
-          const circleMarker = L.circleMarker(latlng, {
-            radius: radius,
+
+          return L.circleMarker(latlng, {
+            className:'pulse',
+            radius: radius + this.sumarProf,
             fillColor: color,
-            color: "#353836",
-            weight: 1,
+            opactiy: 0.5,
+            color: "#000",
+            weight: 0.5, //valor para el borde
             opacity: 1,
             fillOpacity: 0.9,
-           });
-           
-        setInterval(() => {
-        circleMarker.setStyle({ fillOpacity: 1, color: "#ffffff" });
-        setTimeout(() => {
-        circleMarker.setStyle({ fillOpacity: 0.9, color: "#0e2716" });
-        }, 500); // Duración del destello
-      }, 1500); // Intervalo del destello
-
-      if (magnitude > 7) {
-        setInterval(() => {
-          circleMarker.setStyle({ radius: radius * 1.5, fillOpacity: 0.5 });
-          setTimeout(() => {
-            circleMarker.setStyle({ radius: radius, fillOpacity: 0 });
-          }, 300); // Duración de la explosión
-          setTimeout(() => {
-            circleMarker.setStyle({ radius: radius, fillOpacity: 0.9 });
-          }, 800); // Restablece al tamaño original
-        }, 1500); // Intervalo de tiempo entre "explosiones"
-      }
-          return circleMarker;
+          });
         },
-        
+
         onEachFeature: (feature, layer) => {
           // Muestra un popup con la información del sismo
           layer.bindPopup(
@@ -415,12 +369,120 @@ export default {
 
       // Ajustar el mapa a los límites definidos
       const bounds = L.latLngBounds([
-        [this.setlimits.minLatitude, this.setlimits.minLongitude],
-        [this.setlimits.maxLatitude, this.setlimits.maxLongitude],
+        [
+          this.useGeojson.continente.minLatitude,
+          this.useGeojson.continente.minLongitude,
+        ],
+        [
+          this.useGeojson.continente.maxLatitude,
+          this.useGeojson.continente.maxLongitude,
+        ],
       ]);
 
       // Verifica si hay datos y ajusta el mapa a los límites
       if (geoJSON.features.length > 0) {
+        this.map.fitBounds(bounds);
+      }
+    },
+ */
+
+    addGeoJSONToMap(geoJSON) {
+      // Eliminar la capa CSV anterior si existe
+      if (this.csvLayer) {
+        this.map.removeLayer(this.csvLayer);
+      }
+
+      // Crear un grupo de capas vacío para los puntos
+      this.csvLayer = L.layerGroup().addTo(this.map);
+
+      // Dividir los puntos en bloques de 10
+      const features = geoJSON.features;
+      const chunkSize = 1; // CANTIDAD DE PUNTOS APARECER
+      let currentIndex = 0;
+
+      const addChunk = () => {
+        const chunk = features.slice(currentIndex, currentIndex + chunkSize);
+
+        chunk.forEach((feature) => {
+          const latlng = [
+            feature.geometry.coordinates[1],
+            feature.geometry.coordinates[0],
+          ];
+
+          // Definir el color basado en la profundidad
+          let color = "#ff0000"; // Color por defecto RED
+          if (feature.properties.depth > 300) {
+            color = "#007aff"; // Profundos (> 300 km) BLUE
+          } else if (
+            feature.properties.depth >= 61 &&
+            feature.properties.depth <= 300
+          ) {
+            color = "#39ff14"; // Intermedios (61 km - 300 km) GREEN
+          } else if (feature.properties.depth <= 60) {
+            color = "#ff0000"; // Superficiales (< 60 km) RED
+          }
+
+          // Definir el radio basado en la magnitud
+          let radius = 1; // Radio por defecto
+          const magnitude = feature.properties.mag;
+          if (magnitude >= 4 && magnitude <= 5) {
+            radius = 3.5;
+          } else if (magnitude > 5 && magnitude <= 6) {
+            radius = 4.5;
+          } else if (magnitude > 6 && magnitude <= 7) {
+            radius = 5.5;
+          } else if (magnitude > 7 && magnitude <= 9.5) {
+            radius = 13;
+          }
+
+          // Crear el marcador
+          var marker = L.circleMarker(latlng, {
+            radius: radius + this.sumarProf,
+            fillColor: color,
+            className: "pulse",
+            color: "#000",
+            weight: 0.5, // Borde
+            opacity: 1,
+            fillOpacity: 0.9,
+          });
+          // Agregar un popup
+          marker.bindPopup(
+            `Lugar: ${feature.properties.place}<br>Magnitud: ${
+              feature.properties.mag
+            }<br>Profundidad: ${
+              feature.properties.depth
+            } km<br>Fecha: ${new Date(
+              feature.properties.time
+            ).toLocaleString()}`
+          );
+
+          // Agregar el marcador al grupo
+          this.csvLayer.addLayer(marker);
+        });
+
+        // Actualizar el índice y verificar si quedan más puntos
+        currentIndex += chunkSize;
+        if (currentIndex < features.length) {
+          setTimeout(addChunk, 100); // CAMBIAR TIEMPO DE APARECION DE PUNTOS
+        }
+      };
+
+      // Iniciar la animación
+      addChunk();
+
+      // Ajustar el mapa a los límites definidos
+      const bounds = L.latLngBounds([
+        [
+          this.useGeojson.continente.minLatitude,
+          this.useGeojson.continente.minLongitude,
+        ],
+        [
+          this.useGeojson.continente.maxLatitude,
+          this.useGeojson.continente.maxLongitude,
+        ],
+      ]);
+
+      if (features.length > 0) {
         this.map.fitBounds(bounds);
       }
     },
@@ -436,9 +498,13 @@ export default {
 </script>
 
 <style>
-
 #map {
   width: 100%;
   z-index: 0;
 }
+
+
+
+
+.pulse{animation:flicker 1.5s linear infinite both} @keyframes flicker{0%,100%{opacity:1}41.99%{opacity:1}42%{opacity:0}43%{opacity:0}43.01%{opacity:1}47.99%{opacity:1}48%{opacity:0}49%{opacity:0}49.01%{opacity:1}}
 </style>
