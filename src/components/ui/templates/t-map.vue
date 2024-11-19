@@ -9,7 +9,7 @@
 import axios from "axios";
 import * as L from "leaflet/dist/leaflet-src.js";
 import Papa from "papaparse";
-import "leaflet.pattern";
+//import "leaflet.pattern";
 import "leaflet/dist/leaflet.css";
 import circulo from "@/assets/icons/icircle.vue";
 import carpeta from "@/assets/icons/vermas.vue";
@@ -30,6 +30,7 @@ export default {
       csvLayer: null,
       flashInterval: null, // Para almacenar el intervalo de destello
       sumarProf: 0,
+      intervalId: null,
     };
   },
   mounted() {
@@ -113,7 +114,7 @@ export default {
       maxZoom: 18,
       center: this.initialLatLeng,
       zoom: this.initialZoom,
-      layers: [luzNotable], // cambiar favorito
+      layers: [dark], // cambiar favorito
       fullscreenControlOptions: { position: "bottomright" },
       preferCanvas: false,
       maxBounds: bounds, // Fija los límites del mapa
@@ -234,7 +235,6 @@ export default {
 
   methods: {
     convertCSVToGeoJSON(data) {
-      console.log(this.useGeojson.continente);
       // Filtrar por latitud y longitud
       const filteredByCoordinates = data.filter((row) => {
         return (
@@ -304,14 +304,22 @@ export default {
         })),
       };
     },
-    /*     addGeoJSONToMap(geoJSON) {
+
+    addGeoJSONToMap(geoJSON) {
       // Eliminar la capa CSV anterior si existe
       if (this.csvLayer) {
-        this.map.removeLayer(this.csvLayer); // Elimina la capa anterior del mapa
+        this.map.removeLayer(this.csvLayer); // Elimina la capa anterior
+        this.csvLayer = null; // Limpia la referencia
       }
 
-      // Agregar la nueva capa al mapa
-      this.csvLayer = L.geoJSON(geoJSON, {
+      // Detener cualquier intervalo en ejecución
+      if (this.intervalId) {
+        clearInterval(this.intervalId); // Detener el intervalo anterior
+        this.intervalId = null; // Reiniciar la variable
+      }
+
+      // Crear una nueva capa GeoJSON vacía
+      this.csvLayer = L.geoJSON(null, {
         pointToLayer: (feature, latlng) => {
           // Definir el color basado en la profundidad
           let color = "#ff0000"; // Color por defecto RED
@@ -340,14 +348,13 @@ export default {
           } else if (magnitude > 7 && magnitude <= 9.5) {
             radius = 13;
           }
-
           return L.circleMarker(latlng, {
-            className:'pulse',
+            className: "pulse",
             radius: radius + this.sumarProf,
             fillColor: color,
-            opactiy: 0.5,
+            opacity: 0.5,
             color: "#000",
-            weight: 0.5, //valor para el borde
+            weight: 0.5, // Valor para el borde
             opacity: 1,
             fillOpacity: 0.9,
           });
@@ -365,7 +372,7 @@ export default {
             ).toLocaleString()}`
           );
         },
-      }).addTo(this.map); // Almacenar la nueva capa en this.csvLayer
+      }).addTo(this.map);
 
       // Ajustar el mapa a los límites definidos
       const bounds = L.latLngBounds([
@@ -383,10 +390,34 @@ export default {
       if (geoJSON.features.length > 0) {
         this.map.fitBounds(bounds);
       }
-    },
- */
 
-    addGeoJSONToMap(geoJSON) {
+      // Reiniciar `features` con los datos actuales
+      const features = geoJSON.features; // Datos filtrados actuales
+      const chunkSize = 10; // Tamaño del grupo - 10 en 10
+      const segundos = 1; //cantidad de segundos - 1 segundo
+      let index = 0; // Índice inicial
+
+      // Añadir los puntos en intervalos
+      const addPointsInChunks = () => {
+        if (index >= features.length) {
+          clearInterval(this.intervalId); // Detener el intervalo al finalizar
+          return;
+        }
+
+        // Seleccionar el siguiente grupo de puntos
+        const chunk = features.slice(index, index + chunkSize);
+        chunk.forEach((feature) => {
+          this.csvLayer.addData(feature); // Agregar los puntos al mapa
+        });
+
+        index += chunkSize; // Avanzar el índice
+      };
+
+      // Iniciar un nuevo intervalo
+      this.intervalId = setInterval(addPointsInChunks, segundos * 1000);
+    },
+
+    /*  addGeoJSONToMap(geoJSON) {
       // Eliminar la capa CSV anterior si existe
       if (this.csvLayer) {
         this.map.removeLayer(this.csvLayer);
@@ -485,7 +516,7 @@ export default {
       if (features.length > 0) {
         this.map.fitBounds(bounds);
       }
-    },
+    }, */
   },
   beforeUnmount() {
     // Limpiar el intervalo de destello al desmontar
@@ -500,11 +531,24 @@ export default {
 <style>
 #map {
   width: 100%;
+  width: 100%;
   z-index: 0;
 }
 
-
-
-
-.pulse{animation:flicker 1.5s linear infinite both} @keyframes flicker{0%,100%{opacity:1}41.99%{opacity:1}42%{opacity:0}43%{opacity:0}43.01%{opacity:1}47.99%{opacity:1}48%{opacity:0}49%{opacity:0}49.01%{opacity:1}}
+.pulse {
+  animation: pulsate 2s ease-out;
+  -webkit-animation-iteration-count: infinite;
+  opacity: 0;
+}
+@keyframes pulsate {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 </style>

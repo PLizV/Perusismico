@@ -129,7 +129,7 @@
           alt="img_calen"
           height="18"
           width="18"
-          class="mr-1"
+          class="mr-[6px]"
         />
         Seleccione un rango de años:
       </tLabel>
@@ -163,25 +163,41 @@
         <template v-slot:name> Fecha de fin </template>
         <template v-slot:error> {{ errEndDate }} </template>
       </tCalendar>
-
-      <tLabel
-        color="blue"
-        size="md"
-        weight="400"
-        class="col-span-12 flex items-center ml-4"
-      >
-        <img
-          :src="magnitud"
-          alt="img_mag"
-          height="16"
-          width="16"
-          class="mr-2"
-        />
-        Defina un rango de magnitud:
-      </tLabel>
-
+      <div class="col-span-12 flex items-center">
+        <tLabel
+          color="blue"
+          size="md"
+          weight="400"
+          class="flex items-center ml-2"
+        >
+          <img
+            :src="magnitud"
+            alt="img_mag"
+            height="16"
+            width="16"
+            class="mr-2"
+          />
+          Defina un rango de magnitud:
+        </tLabel>
+        <button
+          data-tooltip-target="tooltip-defaultP"
+          type="button"
+          class="border-2 rounded-lg px-3 py-[2px] absolute right-5 items-center hover:bg-igp-white-100 text-igp-blue hover:text-igp-blue-500"
+          @click="togglePlay"
+        >
+          <iplay class="w-4 h-4"></iplay>
+        </button>
+        <div
+          id="tooltip-defaultP"
+          role="tooltip"
+          class="absolute z-10 invisible inline-block px-3 py-2 text-xs text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip"
+        >
+          Visualizar 
+          <div class="tooltip-arrow" data-popper-arrow></div>
+        </div>
+      </div>
       <!-- SELECCION DE CAPAS CHECK -->
-      <div class="col-span-12 pl-3">
+      <div class="col-span-12 pl-3 mt-2">
         <div class="slider">
           <Slider
             v-model:value="magnitudeRange"
@@ -191,7 +207,6 @@
             :step="0.1"
             :tooltipFormatter="customTooltipFormatter"
             range
-            @change="handleChange"
           />
         </div>
       </div>
@@ -276,6 +291,8 @@ import VueDatePicker from "@vuepic/vue-datepicker";
 import tCalendar from "@/components/ui/atoms/t-calendar.vue";
 import { Slider } from "ant-design-vue";
 import { useGeojsonStore } from "@/stores/geojson";
+import iplay from "@/assets/icons/iplay.vue";
+import "flowbite";
 
 const useGeojson = useGeojsonStore();
 
@@ -343,7 +360,7 @@ const selPeru = ref("");
 const statePeru = ref("enable");
 const errPeru = ref("Peru error");
 const dataPeru = ref([
-{
+  {
     value: "",
     name: "Todo el Perú",
     boundaries: {
@@ -730,22 +747,6 @@ const marks = {
   9: "9",
   9.5: "9.5",
 };
-let timeoutId = null;
-
-const handleChange = (value) => {
-  // Cancelar el timeout anterior si existe
-  if (timeoutId) {
-    clearTimeout(timeoutId);
-  }
-
-  // Configurar un nuevo timeout
-  timeoutId = setTimeout(() => {
-    useGeojson.rangoMagnitud = {
-      maxMag: value[0],
-      minMag: value[1],
-    };
-  }, 2000); // Esperar 2 segundos
-};
 
 const customTooltipFormatter = (value) => {
   return `M ${value.toFixed(1)}`; // Cambia el formato del tooltip
@@ -782,13 +783,6 @@ const endDate = ref({
 const errEndDate = ref("Fecha fin error");
 const disEndDate = ref(false);
 const stateEndDate = ref("enable");
-
-watch([startDate, endDate], ([newStartDate, newEndDate]) => {
-  useGeojson.rangoFechas = {
-    startDate: convertToDate(newStartDate),
-    endDate: convertToDate(newEndDate),
-  };
-});
 
 //CHECK LIST
 const items = ref([
@@ -835,7 +829,21 @@ const handleCheckboxChange = () => {
     isIntermediate,
     isDeep,
   };
+};
+
+const togglePlay = () => {
+  useGeojson.rangoMagnitud = {
+    maxMag: magnitudeRange.value[0],
+    minMag: magnitudeRange.value[1],
+  };
+
+  useGeojson.rangoFechas = {
+    startDate: convertToDate(startDate.value),
+    endDate: convertToDate(endDate.value),
+  };
   useGeojson.profundidad = selectionState.value;
+
+  console.log("hola bldo");
 };
 </script>
 

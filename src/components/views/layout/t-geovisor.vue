@@ -16,7 +16,6 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import tmap from "@/components/ui/templates/t-map.vue";
 import theader from "@/components/ui/atoms/t-header.vue";
 import tmodal from "@/components/ui/templates/t-modal.vue";

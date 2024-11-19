@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useGeojsonStore = defineStore('geojson', () => {
-    const dataGeojson = ref([]);
+    const estadoPl = ref(false);
 
     const currentDate = new Date();
     const twoYearsAgo = new Date();
@@ -32,7 +32,7 @@ export const useGeojsonStore = defineStore('geojson', () => {
     });
 
     return {
-        dataGeojson,
+        estadoPl,
         continente, rangoFechas, rangoMagnitud, profundidad
     };
 });

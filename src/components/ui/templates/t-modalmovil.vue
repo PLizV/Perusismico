@@ -1,93 +1,230 @@
 <template>
   <div>version movil aun no disponible</div>
   <!-- 
-   <template>
+  <template>
   <div
-    class="flex px-6 sm:px-6 md:px-10 z-10 pt-[5.25rem] scroll-auto select-none overflow-auto"
+    class="relative flex items-center pl-10 justify-start z-10 pt-[5.25rem] scroll-auto select-none"
   >
+     Panel de control
     <div
-      class="px-3 sm:px-6 md:px-10 pb-6 grid grid-cols-12 bg-white fixed rounded-2xl w-[90svw] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.8)]"
-      ref="draggableDiv"
-      :class="{ 'transition-transform duration-300': isAnimating }"
+      class="px-4 pt-2 grid grid-cols-1 md:grid-cols-12 bg-orange-50 rounded-2xl w-full max-w-full md:max-w-[450px] mt-4 mb-4 border border-orange-500 shadow-[0px_4px_4px_0px_#00000024]"
     >
-      <div
-        class="h-1 bg-igp-muted cursor-pointer col-span-4 flex mt-3 col-start-5"
-        @click="toggleOpen"
-      ></div>
-      <tLabel color="blue" size="sm" weight="400" class="col-span-12 flex mt-3">
-        <img :src="filter" alt="filter" height="12" width="10" class="mr-1" />
-        Filtrar visor por:
+      <p
+        class="col-span-12 font-light text-orange-600 text-base leading-[20px] px-3 py-2"
+      >
+        <span class="font-semibold">Importante:</span> Configura libremente los
+        parámetros sísmicos para ver los eventos en el visor.
+      </p>
+    </div>
+    <div
+      class="grid grid-cols-1 sm:grid-cols-6 md:grid-cols-12 bg-white rounded-t-2xl w-full max-w-full md:max-w-[450px] border-x border-t border-igp-blue"
+    >
+      <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
+         Botón Global
+        <button
+          :disabled="ableGlobal"
+          @click="setActiveTab('global')"
+          :class="{
+            'bg-white text-igp-blue font-semibold border-t border-l border-r':
+              activeTab === 'global',
+            'bg-igp-muted-100 text-igp-muted-400 border':
+              activeTab !== 'global',
+          }"
+          class="flex items-center justify-center focus:outline-none w-full h-full py-5 rounded-tl-2xl"
+        >
+          <iconworld class="h-5 mr-1"></iconworld>
+          Global
+        </button>
+      </div>
+
+      <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
+         Botón Perú
+        <button
+          :disabled="ablePeru"
+          @click="setActiveTab('peru')"
+          :class="{
+            'bg-white text-igp-blue font-semibold border-t border-l border-r':
+              activeTab === 'peru',
+            'bg-igp-muted-100 text-igp-muted-400 border': activeTab !== 'peru',
+          }"
+          class="flex items-center justify-center focus:outline-none w-full h-full py-5 rounded-tr-2xl"
+        >
+          <iconworld class="h-5 mr-1"></iconworld>
+          Perú
+        </button>
+      </div>
+    </div>
+
+    <div
+      class="px-4 pt-3 grid grid-cols-1 md:grid-cols-12 bg-white rounded-b-2xl w-full max-w-full md:max-w-[450px] border-x border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
+    >
+      <tLabel
+        v-if="activeTab === 'global'"
+        color="blue"
+        size="md"
+        weight="400"
+        class="col-span-12 flex mt-2 ml-2"
+      >
+        <img :src="gps" alt="img_gps" height="20" width="20" class="mr-1" />
+        Seleccione una ubicación:
       </tLabel>
-      <form class="grid grid-cols-12 col-span-12" method="dialog">
+      <tLabel
+        v-if="activeTab === 'peru'"
+        color="blue"
+        size="md"
+        weight="400"
+        class="col-span-12 flex mt-2 ml-2"
+      >
+        <img
+          :src="idatabase"
+          alt="img_db"
+          height="20"
+          width="20"
+          class="mr-1"
+        />
+        Seleccione una base de datos sísmicos:
+      </tLabel>
+
+      <div
+        v-if="activeTab === 'global'"
+        class="grid grid-cols-1 md:grid-cols-12 col-span-12"
+      >
         <tSelect
           class="col-span-12 pl-3 mt-2"
-          :state="stateDepartamento"
-          v-bind:modelValue="selDepartamento"
-          v-on:update:modelValue="selDepartamento = $event"
+          :state="stateContinente"
+          v-bind:modelValue="selContinente"
+          v-on:update:modelValue="selContinente = $event"
           :groupOpcion="false"
-          isRequired="reqDepartamento"
-          :selectedItems="dataDepartamento"
+          isRequired="reqContinente"
+          :selectedItems="dataContinente"
         >
-          <template v-slot:name> Seleccionar Departamento </template>
-          <template v-slot:elvalor>Ver todos</template>
-          <template v-slot:error> {{ errDepartamento }} </template>
+          <template v-slot:name> Seleccionar continente </template>
+          <template v-slot:error> {{ errContinente }} </template>
         </tSelect>
+      </div>
+
+      <div
+        v-if="activeTab === 'peru'"
+        class="grid grid-cols-1 md:grid-cols-12 col-span-12"
+      >
         <tSelect
-          class="col-span-12 pl-3 mt-3"
-          :state="stateDistrito"
-          v-bind:modelValue="selDistrito"
-          v-on:update:modelValue="selDistrito = $event"
+          class="col-span-12 pl-3 mt-2"
+          :state="statePeru"
+          v-bind:modelValue="selPeru"
+          v-on:update:modelValue="selPeru = $event"
           :groupOpcion="false"
-          isRequired="reqDistrito"
-          :selectedItems="dataDistrito"
+          isRequired="reqPeru"
+          :selectedItems="dataPeru"
         >
-          <template v-slot:name>Seleccionar Distrito</template>
-          <template v-slot:elvalor>{{ mensajeDistrito }}</template>
-          <template v-slot:error> {{ errDistrito }} </template>
+          <template v-slot:name> Seleccionar historial</template>
+          <template v-slot:error> {{ errPeru }} </template>
         </tSelect>
-        <div class="col-span-12 sm:col-span-6 mt-3 pr-2 sm:pr-0">
-          <tButton
-            @click="actVisualizar"
-            type="sumit"
-            class="mx-3 mb-1 w-full"
-            color="skyBlue"
-            size="sm"
-            round="md"
-          >
-            Visualizar
-          </tButton>
-        </div>
-      </form>
+      </div>
+
       <tLabel
         color="blue"
-        size="sm"
+        size="md"
         weight="400"
-        class="col-span-12 flex pt-3 items-center"
+        class="col-span-12 flex mt-4 ml-2"
       >
-        <img :src="selec" alt="filter" height="14" width="14" class="mr-1" />
-        Seleccionar tipo de estudio
-        <a class="ml-auto text-xs">{{ selectedCount }}/2</a>
+        <img
+          :src="calendario"
+          alt="img_calen"
+          height="18"
+          width="18"
+          class="mr-1"
+        />
+        Seleccione un rango de años:
       </tLabel>
-      <p class="col-span-12 font-light text-sm leading-[18px] ml-5">
-        Para una mejor visualización de información, puede elegir y comparar
-        hasta dos capas de todas las disponibles.
-      </p>
-      <div class="col-span-12 pt-2">
+
+      <tCalendar class="col-span-6 mt-2 pl-4" :state="stateStartDate">
+        <template v-slot:calendar>
+          <VueDatePicker
+            v-model="startDate"
+            format="MMM/yyyy"
+            locale="es"
+            :autoApply="true"
+            :disabled="disStartDate"
+            month-picker
+          ></VueDatePicker>
+        </template>
+        <template v-slot:name> Fecha de inicio </template>
+        <template v-slot:error> {{ errStartDate }} </template>
+      </tCalendar>
+
+      <tCalendar class="col-span-6 mt-2 pl-4" :state="stateEndDate">
+        <template v-slot:calendar>
+          <VueDatePicker
+            v-model="endDate"
+            format="MMM/yyyy"
+            locale="es"
+            :autoApply="true"
+            :disabled="disEndDate"
+            month-picker
+          ></VueDatePicker>
+        </template>
+        <template v-slot:name> Fecha de fin </template>
+        <template v-slot:error> {{ errEndDate }} </template>
+      </tCalendar>
+
+      <tLabel
+        color="blue"
+        size="md"
+        weight="400"
+        class="col-span-12 flex items-center ml-4"
+      >
+        <img
+          :src="magnitud"
+          alt="img_mag"
+          height="16"
+          width="16"
+          class="mr-2"
+        />
+        Defina un rango de magnitud:
+      </tLabel>
+
+       SELECCION DE CAPAS CHECK
+      <div class="col-span-12 pl-3">
+        <div class="slider">
+          <Slider
+            v-model:value="magnitudeRange"
+            :marks="marks"
+            :min="4"
+            :max="9.5"
+            :step="0.1"
+            :tooltipFormatter="customTooltipFormatter"
+            range
+            @change="handleChange"
+          />
+        </div>
+      </div>
+
+      <tLabel color="blue" size="md" weight="400" class="col-span-12 flex pl-4">
+        <img
+          :src="profundidad"
+          alt="img_prof"
+          height="20"
+          width="18"
+          class="mr-2"
+        />
+        Escoja un rango de profundidad:
+      </tLabel>
+
+      <div class="col-span-12 mt-2 p-0">
         <div class="flex flex-col justify-between mb-4">
           <div
             v-for="(item, index) in items"
             :key="index"
-            class="flex items-center ml-2"
+            class="flex items-center ml-8"
           >
-            <div class="flex items-center">
+            <div class="flex">
               <input
                 type="checkbox"
                 :id="'checkbox-' + index"
                 v-model="checkedItems[index]"
-                class="mr-1"
+                class="mr-4"
                 :disabled="maxSelectionReached && !checkedItems[index]"
                 :class="{
-                  'h-5 w-5': true,
                   'cursor-not-allowed':
                     maxSelectionReached && !checkedItems[index],
                 }"
@@ -95,99 +232,24 @@
               />
               <label
                 :for="'checkbox-' + index"
-                :class="{
-                  'text-igp-muted': !checkedItems[index] && maxSelectionReached,
-                  'text-gray-500 cursor-not-allowed text-sm':
-                    maxSelectionReached && !checkedItems[index],
-                  'text-igp-dark': checkedItems[index],
-                  'font-light': checkedItems[index],
-                  'font-semibold': checkedItems[index],
-                  'hover:font-semibold':
-                    !checkedItems.some((item) => item) ||
-                    checkedItems.filter((item) => item).length < 2,
-                }"
-                class="text-xs select-none font-light leading-6"
-                style="padding: 0.5rem; line-height: 1.25"
-                @click="toggleCheckbox(index)"
+                class="text-sm select-none font-light leading-6 text-igp-dark"
               >
                 {{ item.name }}
+                <span v-if="item.key === '1'" :style="redCircleStyle"></span>
+                <span
+                  v-else-if="item.key === '2'"
+                  :style="greenCircleStyle"
+                ></span>
+                <span
+                  v-else-if="item.key === '3'"
+                  :style="blueCircleStyle"
+                ></span>
               </label>
-            </div>
-            <div class="tooltipmodal flex ml-auto">
-              <input
-                :disabled="!checkedItems[index]"
-                type="range"
-                min="0.3"
-                max="1"
-                step="0.1"
-                :value="setDefaultValueRange"
-                @input="setRangeSlide(item.key, $event)"
-                ref="rangeInput"
-                class="h-[2px] w-[40px] bg-gray-200 range-lg rounded-lg appearance-none cursor-pointer"
-                :class="{
-                  'accent-igp-muted cursor-not-allowed': !checkedItems[index],
-                  'accent-igp-sky-blue-750 cursor-pointer': checkedItems[index],
-                  hidden: index >= 5 && index <= 7,
-                }"
-              />
-
-              <span class="tooltiptextmodal" v-if="checkedItems[index]"
-                >Ajusta transparencia de capa</span
-              >
-              <span class="tooltiptextmodal" v-if="!checkedItems[index]"
-                >Activar capa</span
-              >
             </div>
           </div>
         </div>
       </div>
-      <tLabel color="blue" size="sm" weight="400" class="col-span-12 flex">
-        <img :src="infoload" alt="filter" height="14" width="14" class="mr-1" />
-        Información complementaria
-      </tLabel>
-      <div class="col-span-12 mt-4 p-0">
-        <tTab :cantinfo="filteredData">
-          <template v-slot:Informes>
-            <tInformes
-              :departamento="selDepartamento"
-              :distrito="selDistrito"
-              :datajson="jsonData"
-              :selecteditems="selectedItems"
-            />
-          </template>
-          <template v-slot:Leyenda>
-            <tLeyenda
-              :departamento="selDepartamento"
-              :distrito="selDistrito"
-              :idcapa1="selectedItemsId[0]"
-              :capa1="selectedItems[0]"
-              :namecapa1="selectedItemsName[0]"
-              :idcapa2="selectedItemsId[1]"
-              :capa2="selectedItems[1]"
-              :namecapa2="selectedItemsName[1]"
-              :jsonleyendacapa1="jsonleyendaCapa1"
-              :jsonleyendacapa2="jsonleyendaCapa2"
-            />
-          </template>
-          <template v-slot:Archivos>
-            <tArchivos
-              :departamento="selDepartamento"
-              :distrito="selDistrito"
-              :capa1="selectedItems[0]"
-              :namecapa1="selectedItemsName[0]"
-              :idcapa1="selectedItemsId[0]"
-              :linkcapa1="selectedItemsLink[0]"
-              :tematico1="selectedItemsLinkT[0]"
-              :capa2="selectedItems[1]"
-              :namecapa2="selectedItemsName[1]"
-              :idcapa2="selectedItemsId[1]"
-              :linkcapa2="selectedItemsLink[1]"
-              :tematico2="selectedItemsLinkT[1]"
-            />
-          </template>
-        </tTab>
-      </div>
-
+        <div class="col-span-5 pt-4">
         <tButton
           @click="actCompartir"
           class="mx-3 mb-1 w-full"
@@ -198,513 +260,638 @@
           <img :src="share" class="w-[18px] h-[18px]" alt="" />
           Compartir
         </tButton>
-      </div> 
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
-import axios from "axios";
-import tTab from "@/components/ui/molecules/t-tab.vue";
+import { ref, computed, watch, onMounted } from "vue";
 import tLabel from "@/components/ui/atoms/t-label.vue";
 import tSelect from "@/components/ui/atoms/t-select.vue";
-import infoload from "@/assets/icons/infoload.svg";
-import filter from "@/assets/icons/filter.svg";
-import share from "@/assets/icons/share.svg";
-import selec from "@/assets/icons/select.svg";
-import tButton from "@/components/ui/atoms/t-button.vue";
-import tLeyenda from "@/components/ui/molecules/tabs/t-leyenda.vue";
-import tArchivos from "@/components/ui/molecules/tabs/t-archivos.vue";
-import tInformes from "@/components/ui/molecules/tabs/t-informes.vue";
-import tAlerta from "@/assets/icons/alerta.svg";
-import { useGeojsonStore } from "@/stores/geojson.js";
-
-//////////////////////////////////////
-import Hammer from "hammerjs";
-const draggableDiv = ref(null);
-let initialY = 0;
-let currentY = 0;
-let yOffset = 0;
-let isDragging = false;
-let isOpen = false; // Estado para trackear si el div está abierto o cerrado
-const isAnimating = ref(false); // Estado para manejar la animación
-
-const toggleOpen = () => {
-  const maxTopOffset = 0; // Posición superior completamente visible
-  const maxBottomOffset =
-    window.innerHeight - draggableDiv.value.offsetHeight / 3; // Posición inferior oculta a la mitad
-
-  if (isOpen) {
-    // Ocultar el div hasta la mitad
-    currentY = maxBottomOffset;
-  } else {
-    // Mostrar el div completamente
-    currentY = maxTopOffset;
-  }
-
-  // Activar la animación y aplicar la transformación
-  isAnimating.value = true;
-  draggableDiv.value.style.transform = `translateY(${currentY}px)`;
-
-  // Desactivar la animación después de que termine la transición
-  setTimeout(() => {
-    isAnimating.value = false;
-    yOffset = currentY; // Actualizar yOffset después de la animación
-  }, 300); // Duración de la transición en ms
-
-  // Actualizar el estado
-  isOpen = !isOpen;
-};
-
-const handleGesture = (event) => {
-  const divHeight = draggableDiv.value.offsetHeight;
-  const maxBottomOffset = window.innerHeight - divHeight / 3; // El div puede ocultarse hasta la mitad
-
-  switch (event.type) {
-    case "panstart":
-      isAnimating.value = false; // Desactivar la animación durante el arrastre
-      isDragging = true;
-      initialY = event.center.y;
-      break;
-    case "panmove":
-      if (isDragging) {
-        currentY = event.center.y - initialY + yOffset;
-        // Permitir movimiento ilimitado hacia arriba y limitar hacia abajo
-        currentY = Math.min(maxBottomOffset, currentY);
-        draggableDiv.value.style.transform = `translateY(${currentY}px)`;
-      }
-      break;
-    case "panend":
-      yOffset = currentY;
-      isDragging = false;
-      break;
-  }
-};
-
-onMounted(() => {
-  const divHeight = draggableDiv.value.offsetHeight;
-  const initialHiddenPosition = window.innerHeight - divHeight / 2;
-  currentY = initialHiddenPosition;
-  yOffset = currentY;
-  draggableDiv.value.style.transform = `translateY(${currentY}px)`;
-
-  const hammer = new Hammer(draggableDiv.value);
-  hammer.get("pan").set({ direction: Hammer.DIRECTION_VERTICAL });
-
-  hammer.on("panstart panmove panend", handleGesture);
-});
-
-onBeforeUnmount(() => {
-  if (draggableDiv.value) {
-    const hammer = new Hammer(draggableDiv.value);
-    hammer.off("panstart panmove panend", handleGesture);
-  }
-});
-////////////////////////
+import profundidad from "@/assets/icons/profundidad.svg";
+import gps from "@/assets/icons/gps.svg";
+import magnitud from "@/assets/icons/magnitud.svg";
+import calendario from "@/assets/icons/calendario.svg";
+import iconworld from "@/assets/icons/world.vue";
+import idatabase from "@/assets/icons/database.svg";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import tCalendar from "@/components/ui/atoms/t-calendar.vue";
+import { Slider } from "ant-design-vue";
+import { useGeojsonStore } from "@/stores/geojson";
 
 const useGeojson = useGeojsonStore();
-const setEnableRange = ref(true);
-const rangeInput = ref(null);
-const setDefaultValueRange = ref(0.8);
 
-//DEPARTAMENTO
-const selDepartamento = ref("");
-const stateDepartamento = ref("enable");
-//DISTRITO
-const selDistrito = ref("");
-const stateDistrito = ref("enable");
-const mensajeDistrito = ref("Seleccionar departamento");
+const ablePeru = ref(false);
+const ableGlobal = ref(true);
+const activeTab = ref("global");
+// Estilos para los círculos personalizados
+const redCircleStyle = {
+  display: "inline-block",
+  width: "12px",
+  height: "12px",
+  backgroundColor: "#ff0000", // Rojo
+  borderRadius: "50%",
+  marginRight: "5px",
+  border: "1px solid #ff0000", // Borde negro delgado
+};
+
+const greenCircleStyle = {
+  display: "inline-block",
+  width: "12px",
+  height: "12px",
+  backgroundColor: "#39ff14", // Verde
+  borderRadius: "50%",
+  marginRight: "5px",
+  border: "1px solid #39ff14", // Borde negro delgado
+};
+
+const blueCircleStyle = {
+  display: "inline-block",
+  width: "12px",
+  height: "12px",
+  backgroundColor: "#007aff", // Azul
+  borderRadius: "50%",
+  marginRight: "5px",
+  border: "1px solid #007aff", // Borde negro delgado
+};
+
+function setActiveTab(tab) {
+  activeTab.value = tab;
+
+  if (tab === "peru") {
+    ablePeru.value = true;
+    ableGlobal.value = false;
+    useGeojson.continente = {
+      minLatitude: -18.35,
+      maxLatitude: -0.03,
+      minLongitude: -81.33,
+      maxLongitude: -68.65,
+    };
+  } else {
+    ablePeru.value = false;
+    ableGlobal.value = true;
+    selContinente.value = "";
+    useGeojson.continente = {
+      minLatitude: -55.0,
+      maxLatitude: 81.0,
+      minLongitude: -168.0,
+      maxLongitude: 180.0,
+    };
+  }
+}
+
+// PERU
+const selPeru = ref("");
+const statePeru = ref("enable");
+const errPeru = ref("Peru error");
+const dataPeru = ref([
+{
+    value: "",
+    name: "Todo el Perú",
+    boundaries: {
+      minLatitude: -18.35,
+      maxLatitude: -0.03,
+      minLongitude: -81.33,
+      maxLongitude: -68.65,
+    },
+  },
+  {
+    value: "amazonas",
+    name: "Amazonas",
+    boundaries: {
+      minLatitude: -5.0,
+      maxLatitude: -3.5,
+      minLongitude: -78.5,
+      maxLongitude: -76.5,
+    },
+  },
+  {
+    value: "ancash",
+    name: "Áncash",
+    boundaries: {
+      minLatitude: -10.2,
+      maxLatitude: -8.0,
+      minLongitude: -78.5,
+      maxLongitude: -76.5,
+    },
+  },
+  {
+    value: "apurimac",
+    name: "Apurímac",
+    boundaries: {
+      minLatitude: -14.1,
+      maxLatitude: -13.1,
+      minLongitude: -74.2,
+      maxLongitude: -72.5,
+    },
+  },
+  {
+    value: "arequipa",
+    name: "Arequipa",
+    boundaries: {
+      minLatitude: -17.5,
+      maxLatitude: -15.2,
+      minLongitude: -73.0,
+      maxLongitude: -71.0,
+    },
+  },
+  {
+    value: "ayacucho",
+    name: "Ayacucho",
+    boundaries: {
+      minLatitude: -14.5,
+      maxLatitude: -12.5,
+      minLongitude: -75.0,
+      maxLongitude: -73.0,
+    },
+  },
+  {
+    value: "cajamarca",
+    name: "Cajamarca",
+    boundaries: {
+      minLatitude: -7.0,
+      maxLatitude: -5.0,
+      minLongitude: -79.5,
+      maxLongitude: -77.5,
+    },
+  },
+  {
+    value: "callao",
+    name: "Callao",
+    boundaries: {
+      minLatitude: -12.1,
+      maxLatitude: -11.9,
+      minLongitude: -77.3,
+      maxLongitude: -77.1,
+    },
+  },
+  {
+    value: "cusco",
+    name: "Cusco",
+    boundaries: {
+      minLatitude: -14.3,
+      maxLatitude: -12.4,
+      minLongitude: -73.4,
+      maxLongitude: -70.6,
+    },
+  },
+  {
+    value: "huancavelica",
+    name: "Huancavelica",
+    boundaries: {
+      minLatitude: -13.5,
+      maxLatitude: -12.4,
+      minLongitude: -75.5,
+      maxLongitude: -74.2,
+    },
+  },
+  {
+    value: "huanuco",
+    name: "Huánuco",
+    boundaries: {
+      minLatitude: -10.3,
+      maxLatitude: -8.3,
+      minLongitude: -76.5,
+      maxLongitude: -74.0,
+    },
+  },
+  {
+    value: "ica",
+    name: "Ica",
+    boundaries: {
+      minLatitude: -15.2,
+      maxLatitude: -13.3,
+      minLongitude: -76.7,
+      maxLongitude: -75.0,
+    },
+  },
+  {
+    value: "junin",
+    name: "Junín",
+    boundaries: {
+      minLatitude: -12.5,
+      maxLatitude: -10.5,
+      minLongitude: -76.8,
+      maxLongitude: -74.9,
+    },
+  },
+  {
+    value: "la_libertad",
+    name: "La Libertad",
+    boundaries: {
+      minLatitude: -8.5,
+      maxLatitude: -6.8,
+      minLongitude: -80.5,
+      maxLongitude: -77.8,
+    },
+  },
+  {
+    value: "lambayeque",
+    name: "Lambayeque",
+    boundaries: {
+      minLatitude: -7.0,
+      maxLatitude: -5.5,
+      minLongitude: -80.6,
+      maxLongitude: -79.2,
+    },
+  },
+  {
+    value: "lima",
+    name: "Lima",
+    boundaries: {
+      minLatitude: -12.9,
+      maxLatitude: -10.6,
+      minLongitude: -77.8,
+      maxLongitude: -76.3,
+    },
+  },
+  {
+    value: "loreto",
+    name: "Loreto",
+    boundaries: {
+      minLatitude: -5.3,
+      maxLatitude: -0.0,
+      minLongitude: -76.6,
+      maxLongitude: -70.2,
+    },
+  },
+  {
+    value: "madre_de_dios",
+    name: "Madre de Dios",
+    boundaries: {
+      minLatitude: -13.2,
+      maxLatitude: -10.5,
+      minLongitude: -70.8,
+      maxLongitude: -68.7,
+    },
+  },
+  {
+    value: "moquegua",
+    name: "Moquegua",
+    boundaries: {
+      minLatitude: -17.6,
+      maxLatitude: -15.8,
+      minLongitude: -71.8,
+      maxLongitude: -70.4,
+    },
+  },
+  {
+    value: "pasco",
+    name: "Pasco",
+    boundaries: {
+      minLatitude: -11.1,
+      maxLatitude: -9.6,
+      minLongitude: -76.8,
+      maxLongitude: -75.1,
+    },
+  },
+  {
+    value: "piura",
+    name: "Piura",
+    boundaries: {
+      minLatitude: -5.9,
+      maxLatitude: -4.0,
+      minLongitude: -81.1,
+      maxLongitude: -79.3,
+    },
+  },
+  {
+    value: "puno",
+    name: "Puno",
+    boundaries: {
+      minLatitude: -17.2,
+      maxLatitude: -13.3,
+      minLongitude: -70.0,
+      maxLongitude: -68.6,
+    },
+  },
+  {
+    value: "san_martin",
+    name: "San Martín",
+    boundaries: {
+      minLatitude: -8.8,
+      maxLatitude: -6.0,
+      minLongitude: -77.8,
+      maxLongitude: -75.5,
+    },
+  },
+  {
+    value: "tacna",
+    name: "Tacna",
+    boundaries: {
+      minLatitude: -18.0,
+      maxLatitude: -16.2,
+      minLongitude: -70.6,
+      maxLongitude: -69.4,
+    },
+  },
+  {
+    value: "tumbes",
+    name: "Tumbes",
+    boundaries: {
+      minLatitude: -4.3,
+      maxLatitude: -3.2,
+      minLongitude: -80.9,
+      maxLongitude: -80.3,
+    },
+  },
+  {
+    value: "ucayali",
+    name: "Ucayali",
+    boundaries: {
+      minLatitude: -10.6,
+      maxLatitude: -7.0,
+      minLongitude: -75.6,
+      maxLongitude: -72.4,
+    },
+  },
+]);
+
+watch(selPeru, (newValue) => {
+  const depSeleccionado = dataPeru.value.find(
+    (departamento) => departamento.value === newValue
+  );
+
+  if (depSeleccionado) {
+    const boundaries = depSeleccionado.boundaries;
+    useGeojson.continente = boundaries;
+  }
+});
+
+//CONTINENTE
+const selContinente = ref("");
+const stateContinente = ref("enable");
+const errContinente = ref("Continente error");
+const dataContinente = ref([
+  {
+    value: "",
+    name: "Todos Global",
+    boundaries: {
+      minLatitude: -55.0,
+      maxLatitude: 81.0,
+      minLongitude: -168.0,
+      maxLongitude: 180.0,
+    },
+  },
+  {
+    value: "suramerica",
+    name: "América del Sur",
+    boundaries: {
+      minLatitude: -55.0,
+      maxLatitude: 12.0,
+      minLongitude: -81.0,
+      maxLongitude: -34.0,
+    },
+  },
+  {
+    value: "noramerica",
+    name: "América del Norte",
+    boundaries: {
+      minLatitude: 23.0,
+      maxLatitude: 50.0,
+      minLongitude: -168.0,
+      maxLongitude: -53.0,
+    },
+  },
+  {
+    value: "centroamerica",
+    name: "América Central",
+    boundaries: {
+      minLatitude: 7.0,
+      maxLatitude: 20.0,
+      minLongitude: -92.0,
+      maxLongitude: -77.0,
+    },
+  },
+  {
+    value: "asia",
+    name: "Asia",
+    boundaries: {
+      minLatitude: 1.0,
+      maxLatitude: 81.0,
+      minLongitude: 26.0,
+      maxLongitude: 169.0,
+    },
+  },
+  {
+    value: "europa",
+    name: "Europa",
+    boundaries: {
+      minLatitude: 35.0,
+      maxLatitude: 71.0,
+      minLongitude: -31.0,
+      maxLongitude: 50.0,
+    },
+  },
+  {
+    value: "africa",
+    name: "África",
+    boundaries: {
+      minLatitude: -35.0,
+      maxLatitude: 37.0,
+      minLongitude: -17.0,
+      maxLongitude: 51.0,
+    },
+  },
+  {
+    value: "oceania",
+    name: "Oceanía",
+    boundaries: {
+      minLatitude: -55.0,
+      maxLatitude: 0.0,
+      minLongitude: 110.0,
+      maxLongitude: 180.0,
+    },
+  },
+]);
+
+watch(selContinente, (newValue) => {
+  const continenteSeleccionado = dataContinente.value.find(
+    (continente) => continente.value === newValue
+  );
+
+  if (continenteSeleccionado) {
+    const boundaries = continenteSeleccionado.boundaries;
+    useGeojson.continente = boundaries;
+  }
+});
+
+//MAGNITUD
+const magnitudeRange = ref([4, 9.5]);
+const marks = {
+  4: "4",
+  4.5: "4.5",
+  5: "5",
+  5.5: "5.5",
+  6: "6",
+  6.5: "6.5",
+  7: "7",
+  7.5: "7.5",
+  8: "8",
+  8.5: "8.5",
+  9: "9",
+  9.5: "9.5",
+};
+let timeoutId = null;
+
+const handleChange = (value) => {
+  // Cancelar el timeout anterior si existe
+  if (timeoutId) {
+    clearTimeout(timeoutId);
+  }
+
+  // Configurar un nuevo timeout
+  timeoutId = setTimeout(() => {
+    useGeojson.rangoMagnitud = {
+      maxMag: value[0],
+      minMag: value[1],
+    };
+  }, 2000); // Esperar 2 segundos
+};
+
+const customTooltipFormatter = (value) => {
+  return `M ${value.toFixed(1)}`; // Cambia el formato del tooltip
+};
+
+//FUNCION PARA CONVERTR FECHA
+const convertToDate = (proxyObject) => {
+  if (
+    proxyObject &&
+    proxyObject.month !== undefined &&
+    proxyObject.year !== undefined
+  ) {
+    const date = new Date(proxyObject.year, proxyObject.month + 1);
+    date.setDate(date.getDate() - 1);
+    return date;
+  }
+  return null;
+};
+
+//StartDate
+const startDate = ref({
+  month: new Date().getMonth(),
+  year: new Date().getFullYear() - 2,
+});
+const errStartDate = ref("Fecha inicio error");
+const disStartDate = ref(false);
+const stateStartDate = ref("enable");
+
+//EndDate
+const endDate = ref({
+  month: new Date().getMonth(),
+  year: new Date().getFullYear(),
+});
+const errEndDate = ref("Fecha fin error");
+const disEndDate = ref(false);
+const stateEndDate = ref("enable");
+
+watch([startDate, endDate], ([newStartDate, newEndDate]) => {
+  useGeojson.rangoFechas = {
+    startDate: convertToDate(newStartDate),
+    endDate: convertToDate(newEndDate),
+  };
+});
 
 //CHECK LIST
 const items = ref([
   {
     key: "1",
-    link: "geomorfologia",
-    tematico: "geomorfologia",
-    id: "geomorfologia",
-    name: "Geomorfología",
+    value: "Superficiales",
+    name: "Superficiales (< 60km)",
   },
   {
     key: "2",
-    link: "geologia",
-    tematico: "geologia",
-    id: "geologia",
-    name: "Geología",
+    value: "Intermedios",
+    name: "Intermedios (61km - 300km) ",
   },
   {
     key: "3",
-    link: "geodinamica",
-    tematico: "geodinamica",
-    id: "geodinamica",
-    name: "Geodinámica",
-  },
-  {
-    key: "4",
-    link: "sucs",
-    tematico: "sucs",
-    id: "suelos",
-    name: "Suelos (SUCS)",
-  },
-  {
-    key: "5",
-    link: "capacidadportante",
-    tematico: "capacidadportante",
-    id: "capacidad portante",
-    name: "Capacidad de carga admisible",
-  },
-  {
-    key: "6",
-    link: "zonificacion/hv/HV",
-    tematico: "zonificacion/hv",
-    id: "vibracion ambiental",
-    name: "Vibración Ambiental",
-  },
-  {
-    key: "7",
-    link: "zonificacion/masw/MASW",
-    tematico: "zonificacion/masw",
-    id: "MASW MAM",
-    name: " MASW - MAM ",
-  },
-  {
-    key: "8",
-    link: "zonificacion/ert/ERT",
-    tematico: "zonificacion/ert",
-    id: "tomografia electrica",
-    name: "Tomografía Eléctrica",
-  },
-  {
-    key: "9",
-    link: "zonificacion",
-    tematico: "zonificacion",
-    id: "zonificacion",
-    name: "Zonificación Geofísica - Geotécnica",
+    value: "isDeep",
+    name: "Profundos (> 300km) ",
   },
 ]);
-const checkedItems = ref([
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-]);
-const maxSelection = ref(0);
+const checkedItems = ref([true, true, true]);
+const maxSelection = ref(3);
 const selectedCount = computed(
   () => checkedItems.value.filter((item) => item).length
 );
 const maxSelectionReached = computed(
   () => selectedCount.value >= maxSelection.value
 );
-function handleCheckboxChange() {
-  if (selectedCount.value > maxSelection.value) {
-    const lastCheckedIndex = checkedItems.value.findIndex(
-      (item, index) => item && !this.checkedItems[index]
-    );
-    checkedItems.value[lastCheckedIndex] = false;
-  }
-}
-
-watch(
-  () => useGeojson.mapDistrito,
-  (newVal) => {
-    if (newVal) {
-      maxSelection.value = 2;
-      setEnableRange.value = false;
-    } else {
-      checkedItems.value = [];
-      maxSelection.value = 0;
-      setEnableRange.value = true;
-    }
-  },
-  { deep: true }
+const selectedItems = computed(() =>
+  items.value.filter((item, index) => checkedItems.value[index])
 );
+const selectionState = ref({
+  isSuperficial: true,
+  isIntermediate: true,
+  isDeep: true,
+});
+const handleCheckboxChange = () => {
+  const isSuperficial = checkedItems.value[0];
+  const isIntermediate = checkedItems.value[1];
+  const isDeep = checkedItems.value[2];
 
-watch(selDistrito, (newVal) => {
-  checkedItems.value = [];
-  setDefaultValueRange.value = 0.8;
-  setEnableRange.value = true;
-  maxSelection.value = 0;
-});
-watch(selDepartamento, (newVal) => {
-  selDistrito.value = "";
-  mensajeDistrito.value = "--- Seleccionar ---";
-  checkedItems.value = [];
-  maxSelection.value = 0;
-  if (!newVal) {
-    selDistrito.value = "";
-    mensajeDistrito.value = "Seleccionar departamento";
-  }
-});
-function toggleCheckbox(index) {
-  if (maxSelection.value > selectedCount.value || checkedItems.value[index]) {
-    checkedItems.value[index] = !checkedItems.value[index];
-    handleCheckboxChange();
-  }
-}
-// ENVIAR DATOS A ARCHIVOS
-const selectedItems = computed(() => {
-  return items.value
-    .filter((item, index) => checkedItems.value[index])
-    .map((item) => item.key);
-});
-const selectedItemsId = computed(() => {
-  return items.value
-    .filter((item, index) => checkedItems.value[index])
-    .map((item) => item.id);
-});
-const selectedItemsName = computed(() => {
-  return items.value
-    .filter((item, index) => checkedItems.value[index])
-    .map((item) => item.name);
-});
-const selectedItemsLink = computed(() => {
-  return items.value
-    .filter((item, index) => checkedItems.value[index])
-    .map((item) => item.link);
-});
-const selectedItemsLinkT = computed(() => {
-  return items.value
-    .filter((item, index) => checkedItems.value[index])
-    .map((item) => item.tematico);
-});
-//CARGAR DATOS DE DEPARTAMENTOS
-const jsonData = ref([]);
-
-axios
-  .get("https://api.npoint.io/0d76410d0ba5f0d024b8")
-  .then((response) => {
-    jsonData.value = response.data;
-  })
-  .catch((error) => {
-    console.error("Error fetching data:", error);
-  });
-
-const dataDepartamento = computed(() => {
-  if (!jsonData.value) return [];
-
-  return Object.keys(jsonData.value)
-    .sort((a, b) => a.localeCompare(b)) // Ordena alfabéticamente los nombres de los departamentos
-    .map((departamento) => ({
-      value: departamento,
-      name: departamento,
-    }));
-});
-
-// LLENADO DE DISTRITO
-const dataDistrito = computed(() => {
-  if (!jsonData.value || !selDepartamento.value) return [];
-
-  return jsonData.value[selDepartamento.value]
-    .slice() // Creamos una copia del array para no modificar el original
-    .sort((a, b) => a.ciudad.localeCompare(b.ciudad)) // Ordenamos alfabéticamente
-    .map((distrito) => ({
-      value: distrito.ciudad,
-      name: distrito.ciudad,
-    }));
-});
-// LLENADO DE CANTIDAD DE INFORMES
-const filteredData = computed(() => {
-  const data = jsonData.value[selDepartamento.value];
-  let resultado = "";
-  if (data === undefined) {
-    resultado = "";
-  } else {
-    resultado = `(${data.length})`;
-  }
-  return resultado;
-});
-// LLENADO DE LEYENDA
-const jsonleyendaCapa1 = ref([]);
-const jsonleyendaCapa2 = ref([]);
-async function get_leyenda_global_info(capa) {
-  let url = "";
-  if (capa === "MapServer") {
-    url = `https://ide.igp.gob.pe/arcgis/rest/services/cienciastierrasolida/EstudiosZonificacion/MapServer/9?f=pjson`;
-  } else {
-    url = `https://ide.igp.gob.pe/arcgis/rest/services/cienciastierrasolida/EstudiosZonificacion/MapServer/${capa}?f=pjson`;
-  }
-
-  let data = await fetch(url);
-  let datajson = await data.json();
-  let styles = {
-    geometria: datajson["geometryType"],
+  // Actualizar el estado de selección
+  selectionState.value = {
+    isSuperficial,
+    isIntermediate,
+    isDeep,
   };
-  if (datajson["drawingInfo"]["renderer"]["uniqueValueInfos"]) {
-    styles["campo"] = datajson["drawingInfo"]["renderer"]["field1"];
-    datajson["drawingInfo"]["renderer"]["uniqueValueInfos"].forEach(
-      (element) => {
-        let llave = element["value"];
-        let fondo =
-          element["symbol"]["color"] || element["symbol"]["imageData"];
-        let borde =
-          element["symbol"]["outline"] && element["symbol"]["outline"]["color"];
-        styles[llave] = [fondo, borde];
-        //            styles[llave] = fondo;
-      }
-    );
-  } else {
-    let fondo =
-      datajson["drawingInfo"]["renderer"]["symbol"]["color"] ||
-      datajson["drawingInfo"]["renderer"]["symbol"]["imageData"];
-    //console.log("sdsdsd", datajson);
-    let borde =
-      datajson["drawingInfo"]["renderer"]["symbol"]["outline"] &&
-      datajson["drawingInfo"]["renderer"]["symbol"]["outline"]["color"];
-    styles[" "] = [fondo, borde];
-  }
-
-  return styles;
-}
-
-async function get_leyenda_local_info({ capa, departamento, ciudad }) {
-  const url = `https://ide.igp.gob.pe/arcgis/rest/services/cienciastierrasolida/EstudiosZonificacion/MapServer/${capa}/query?where=departamen%3D%27${departamento}%27+and+ciudad%3D%27${ciudad}%27&text=&objectIds=&time=&timeRelation=esriTimeRelationOverlaps&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=false&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&sqlFormat=none&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=pjson`;
-  let styles = await get_leyenda_global_info(capa);
-
-  let data = await fetch(url);
-  let datajson = await data.json();
-
-  let resp = {
-    geometria: styles["geometria"],
-  };
-  if (styles["campo"]) {
-    let campo = styles["campo"];
-    datajson["features"].forEach((feature) => {
-      resp[feature["attributes"][campo]] = {
-        ...styles[feature["attributes"][campo]],
-        simbolo: feature["attributes"]["simbolo"],
-      };
-    });
-  } else {
-    resp[" "] = {
-      ...styles[" "],
-      simbolo: datajson["features"].map(
-        (feature) => feature["attributes"]["simbolo"]
-      ),
-    };
-  }
-
-  if (capa === "2") {
-    datajson["features"].forEach((feature, index) => {
-      if (feature["attributes"]["símbolo"]) {
-        const name = feature["attributes"]["unidades"];
-        resp[name] = resp[name] || {};
-        resp[name][2] = feature["attributes"]["símbolo"];
-      }
-    });
-  }
-
-  return resp;
-}
-const get_leyenda = async (capa, departamento, ciudad) => {
-  if (capa && departamento && ciudad) {
-    try {
-      const resp = await get_leyenda_local_info({ capa, departamento, ciudad });
-      return resp;
-    } catch (error) {
-      throw new Error("Error obteniendo la leyenda de información local");
-    }
-  }
+  useGeojson.profundidad = selectionState.value;
 };
-
-watch(selDistrito, async (newValue, oldValue) => {
-  jsonleyendaCapa1.value = [];
-  try {
-    jsonleyendaCapa1.value = await get_leyenda(
-      selectedItems.value[0],
-      toUpperCase(selDepartamento.value),
-      newValue
-    );
-  } catch (error) {
-    console.error(error);
-  }
-
-  jsonleyendaCapa2.value = [];
-  try {
-    jsonleyendaCapa2.value = await get_leyenda(
-      selectedItems.value[1],
-      toUpperCase(selDepartamento.value),
-      newValue
-    );
-  } catch (error) {
-    console.error(error);
-  }
-});
-
-watch(selectedItems, async (newValue, oldValue) => {
-  jsonleyendaCapa1.value = [];
-  try {
-    jsonleyendaCapa1.value = await get_leyenda(
-      newValue[0],
-      toUpperCase(selDepartamento.value),
-      selDistrito.value
-    );
-  } catch (error) {
-    console.error(error);
-  }
-
-  jsonleyendaCapa2.value = [];
-  try {
-    jsonleyendaCapa2.value = await get_leyenda(
-      newValue[1],
-      toUpperCase(selDepartamento.value),
-      selDistrito.value
-    );
-  } catch (error) {
-    console.error(error);
-  }
-});
-
-// EXTRAS FUNCNIONES
-const toUpperCase = (texto) => {
-  return texto.toUpperCase();
-};
-//ENVIAR VALORES A MAP
-watch(
-  () => selectedItems.value[0],
-  (newValue, oldValue) => {
-    useGeojson.mapCapa1 = newValue;
-  }
-);
-watch(
-  () => selectedItems.value[1],
-  (newValue, oldValue) => {
-    useGeojson.mapCapa2 = newValue;
-    if (useGeojson.mapOpacity1) {
-      useGeojson.mapOpacity1 = 0.8;
-    }
-  }
-);
-const actVisualizar = () => {
-  useGeojson.mapDepartamento = selDepartamento.value;
-  useGeojson.mapDistrito = selDistrito.value;
-};
-const setRangeSlide = (key, valor) => {
-  const value = event.target.value;
-  const sendCapa1 = selectedItems.value[0];
-  const sendCapa2 = selectedItems.value[1];
-
-  if (sendCapa1 === key) {
-    useGeojson.mapOpacity1 = value;
-  } else if (sendCapa2 === key) {
-    useGeojson.mapOpacity2 = value;
-  }
-};
-
-/* const actCompartir = () => {
-  get_leyenda(selectedItems.value[1], "ANCASH", "Casma");
-}; */
-
-/*   const selectedItems = items.value.filter(
-    (item, index) => checkedItems.value[index]
-  );
-  console.log("SELECCIONADOS", selectedItems[0]); */
 </script>
+
 <style>
+.ant-slider-mark {
+  font-size: 5px;
+  /* Cambia este valor para ajustar el tamaño de la fuente */
+  color: #2f0f79;
+  /* Cambia el color del texto */
+}
+
+.ant-slider-tooltip {
+  font-size: 12px !important;
+  /* Tamaño de la fuente */
+}
+
+.slider {
+  width: 90%;
+  max-width: 1000px;
+  margin-left: 15px;
+  margin-right: 15px;
+  padding: 6px 0;
+  position: relative;
+}
+
+.slider input {
+  --start: 10%;
+  --stop: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  background: none;
+  pointer-events: none;
+  position: absolute;
+  height: 4px;
+  width: 100%;
+}
+
+.slider input:first-of-type {
+  background-image: linear-gradient(
+    to right,
+    lightgrey var(--start),
+    dodgerblue var(--start),
+    dodgerblue var(--stop),
+    lightgrey var(--stop)
+  );
+}
+
+.slider ::-moz-range-thumb,
+.slider ::-webkit-slider-thumb {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
 .tooltipmodal {
   position: relative;
   display: inline-block;
@@ -731,15 +918,7 @@ const setRangeSlide = (key, valor) => {
   visibility: visible;
   opacity: 1;
 }
-.translate-y-full {
-  transform: translateY(100%);
-}
-.translate-y-0 {
-  transform: translateY(30%);
-}
-</style>
-
-   -->
+</style>  -->
 </template>
 
 
