@@ -1,16 +1,7 @@
 <template>
-  <div>
-    <div
-      v-show="showContent"
-      class="z-10 relative bg-white px-4 sm:px-10 md:px-10 lg:px-10 xl:px-10 2xl:px-10 shadow-[0px_4px_4px_0px_#00000024]"
-    >
-      <theader></theader>
-    </div>
-    <div
-      class="fixed inset-0 bg-cover bg-[url(//unpkg.com/three-globe/example/img/night-sky.png)] h-full w-full flex items-center bg-no-repeat"
-      style="background-position: center bottom 80%"
-    >
-      <!-- Imagen central pequeña con efecto de zoom y movimiento a la derecha -->
+  <div class="h-screen" :style="{ backgroundImage: 'url(//unpkg.com/three-globe/example/img/night-sky.png)', backgroundSize: 'cover', backgroundPosition: 'center' }">
+    <!-- Imagen central pequeña con efecto de zoom y movimiento a la derecha -->
+    <div v-show="!showContent" class="absolute inset-0 flex justify-center items-center">
       <div class="globe zoom-animation" :class="imageClass">
         <img
           v-show="!showImageInGlobe"
@@ -20,85 +11,48 @@
         />
       </div>
     </div>
+
     <!-- Contenido que aparece con efecto de barras aleatorias -->
-    <main
-      v-show="showContent"
-      class="grid grid-cols-1 md:grid-cols-12 transition-opacity duration-1000 relative"
-      style="height: calc(100vh - 4.25rem)"
-    >
-      <div
-        class="col-span-12 md:col-span-5 py-8 px-4 md:px-20 bg-center bg-cover"
-      >
-        <div
-          class="grid grid-cols-12 px-4 py-4 rounded-2xl select-none bg-center bg-cover"
-        >
+    <div v-show="showContent" class="z-10 relative bg-white px-4 sm:px-10 md:px-10 lg:px-10 xl:px-10 2xl:px-10 shadow-[0px_4px_4px_0px_#00000024]">
+      <theader></theader>
+    </div>
+
+    <main v-show="showContent" class="grid grid-cols-1 md:grid-cols-12 transition-opacity duration-1000" style="height: calc(100vh - 4.25rem)">
+      <div class="col-span-12 md:col-span-5 py-8 px-4 md:px-20" :style="{ backgroundImage: 'url(//unpkg.com/three-globe/example/img/night-sky.png)', backgroundSize: 'cover', backgroundPosition: 'center' }">
+        <div class="grid grid-cols-12 px-4 py-4 bg-white rounded-2xl select-none" :style="{ backgroundImage: 'url(//unpkg.com/three-globe/example/img/night-sky.png)', backgroundSize: 'cover', backgroundPosition: 'center' }">
           <!-- Texto de bienvenida con animación de barras -->
-          <p
-            class="col-span-12 text-igp-white text-7xl md:text-8xl font-bold leading-none fade-bar"
-            style="--delay: 0.1s"
-          >
+          <p class="col-span-12 text-igp-white text-7xl md:text-8xl font-bold mt-1 leading-none fade-bar" style="--delay: 0.1s">
             Perú
-            <br />
-            <span
-              class="italic font-medium block"
-              style="
-                background: linear-gradient(to top, grey, white);
-                background-clip: text;
-                -webkit-text-fill-color: transparent;
-              "
-              >Sísmico</span
-            >
+            <br>
+            <span class="italic font-medium block" style="background: linear-gradient(to top, grey, white); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Sísmico</span>
           </p>
-          <p
-            class="col-span-12 font-light pt-4 text-igp-white text-sm sm:text-base md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3 fade-bar"
-            style="line-height: 2; --delay: 0.3s"
-          >
-            <span class="font-medium">PerúSis </span>es una plataforma digital
-            de observación sísmica desarrollada por el
+          <p class="col-span-12 font-light pt-4 text-igp-white text-sm sm:text-base md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3 fade-bar" style="line-height: 2; --delay: 0.3s">
+            <span class="font-medium">PerúSis </span>es una plataforma
+            digital de observación sísmica desarrollada por el 
             <span class="font-medium">Instituto Geofísico del Perú (IGP)</span>,
-            que ofrece acceso espacio-temporal a la actividad sísmica ocurrida
-            en el Perú y en el mundo, de manera visual e interactiva.
+            que ofrece acceso espacio-temporal a la actividad sísmica ocurrida en el 
+            Perú y en el mundo, de manera visual e interactiva.
           </p>
-          <p
-            class="col-span-12 font-light pt-4 text-igp-white text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3 fade-bar"
-            style="line-height: 2; --delay: 0.5s"
-          >
-            Con una interfaz intuitiva, PerúSis permite filtrar sismos por
-            fecha, región, magnitud y profundidad, facilitando el análisis y
-            consulta de eventos sísmicos. Esto la convierte en una herramienta
-            clave para conocer las regiones potencialmente sísmicas y gestionar
+          <p class="col-span-12 font-light pt-4 text-igp-white text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3 fade-bar" style="line-height: 2; --delay: 0.5s">
+            Con una interfaz intuitiva, PerúSis permite filtrar sismos por fecha, región, 
+            magnitud y profundidad, facilitando el análisis y consulta de eventos sísmicos. Esto la
+            convierte en una herramienta clave para conocer las regiones potencialmente sísmicas y gestionar
             la educación del riesgo.
           </p>
-          <p
-            class="col-span-12 font-light pt-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3 fade-bar"
-            style="line-height: 2; --delay: 0.7s"
-          >
+          <p class="col-span-12 font-light pt-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3 fade-bar" style="line-height: 2; --delay: 0.7s">
             En Perú utiliza información del
-            <span class="font-medium"
-              >Centro Sismológico Nacional (CENSIS)</span
-            >
+            <span class="font-medium">Centro Sismológico Nacional (CENSIS)</span>
             y, a nivel mundial, del
-            <span class="font-medium"
-              >National Earthquake Information Center (NEIC)</span
-            >
+            <span class="font-medium">National Earthquake Information Center (NEIC)</span>
             de la U.S
-            <span class="font-medium">U.S Geological Survey (USGS)</span>
+            <span class="font-medium">U.S Geological Survey (USGS)</span>    
           </p>
-
-          <div
-            class="col-span-12 flex flex-col md:flex-row py-6 mt-4 fade-bar"
-            style="--delay: 0.9s"
-          >
-            <router-link
-              to="/visor"
-              class="bg-igp-blue text-igp-white px-16 hover:bg-igp-blue-600 shadow-lg rounded-lg justify-center py-2 flex sm:inline md:inline lg:inline xl:inline 2xl:inline text-sm sm:text-sm md:text-base lg:text-base xl:text-base 2xl:text-base"
-            >
+       
+          <div class="col-span-12 flex flex-col md:flex-row py-6 mt-4 fade-bar" style="--delay: 0.9s">
+            <router-link to="/visor" class="bg-igp-blue text-igp-white px-16 hover:bg-igp-blue-600 shadow-lg rounded-lg justify-center py-2 flex sm:inline md:inline lg:inline xl:inline 2xl:inline text-sm sm:text-sm md:text-base lg:text-base xl:text-base 2xl:text-base">
               Iniciar
             </router-link>
-            <router-link
-              to="/creditos"
-              class="bg-igp-white text-igp-blue px-16 hover:bg-igp-dark-50 border ml-4 border-igp-blue shadow-lg rounded-lg justify-center py-2 flex sm:inline md:inline lg:inline xl:inline 2xl:inline text-sm sm:text-sm md:text-base lg:text-base xl:text-base 2xl:text-base"
-            >
+            <router-link to="/creditos" class="bg-igp-white text-igp-blue px-16 hover:bg-igp-dark-50 border ml-4 border-igp-blue shadow-lg rounded-lg justify-center py-2 flex sm:inline md:inline lg:inline xl:inline 2xl:inline text-sm sm:text-sm md:text-base lg:text-base xl:text-base 2xl:text-base">
               Créditos
             </router-link>
           </div>
@@ -121,7 +75,7 @@
 
 <script setup>
 import theader from "@/components/ui/atoms/t-header.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted } from 'vue';
 
 const showContent = ref(false); // Controla el contenido principal
 const showImageInGlobe = ref(false); // Controla cuándo mostrar la imagen final en el globo
