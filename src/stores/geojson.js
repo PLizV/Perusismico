@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useGeojsonStore = defineStore('geojson', () => {
-    const estadoPl = ref(false);
+    const estadoPl = ref("enable");
 
     const currentDate = new Date();
     const twoYearsAgo = new Date();

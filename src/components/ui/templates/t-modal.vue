@@ -179,21 +179,51 @@
           />
           Defina un rango de magnitud:
         </tLabel>
-        <button
-          data-tooltip-target="tooltip-defaultP"
-          type="button"
-          class="border-2 rounded-lg px-3 py-[2px] absolute right-5 items-center hover:bg-igp-white-100 text-igp-blue hover:text-igp-blue-500"
-          @click="togglePlay"
-        >
-          <iplay class="w-4 h-4"></iplay>
-        </button>
-        <div
-          id="tooltip-defaultP"
-          role="tooltip"
-          class="absolute z-10 invisible inline-block px-3 py-2 text-xs text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip"
-        >
-          Visualizar 
-          <div class="tooltip-arrow" data-popper-arrow></div>
+        <div class="absolute right-5">
+          <button
+            data-tooltip-target="tooltip-defaultP"
+            type="button"
+            class="border-2 mr-2 rounded-lg px-3 py-[2px] items-center"
+            :class="
+              statePlay === 'enable'
+                ? 'hover:bg-igp-white-100 text-igp-blue hover:text-igp-blue-500'
+                : 'bg-gray-100 text-igp-dark-500 select-none cursor-not-allowed'
+            "
+            @click="togglePlay"
+            :disabled="statePlay === 'disable'"
+          >
+            <iplay class="w-4 h-4"></iplay>
+          </button>
+          <div
+            id="tooltip-defaultP"
+            role="tooltip"
+            class="absolute text-center z-10 invisible inline-block px-3 py-2 text-xs text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip"
+          >
+            Visualizar sismos
+            <div class="tooltip-arrow" data-popper-arrow></div>
+          </div>
+          <button
+            data-tooltip-target="tooltip-defaultS"
+            type="button"
+            class="border-2 mr-2 rounded-lg px-3 py-[2px] items-center"
+            :class="
+              stateStop === 'enable'
+                ? 'hover:bg-igp-white-100 text-igp-red hover:text-igp-red-500'
+                : 'bg-gray-100 text-igp-dark-500 select-none cursor-not-allowed'
+            "
+            @click="toggleStop"
+            :disabled="stateStop === 'disable'"
+          >
+            <istop class="w-4 h-4"></istop>
+          </button>
+          <div
+            id="tooltip-defaultS"
+            role="tooltip"
+            class="absolute text-center z-10 invisible inline-block px-3 py-2 text-xs text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip"
+          >
+            Parar visualización
+            <div class="tooltip-arrow" data-popper-arrow></div>
+          </div>
         </div>
       </div>
       <!-- SELECCION DE CAPAS CHECK -->
@@ -235,10 +265,9 @@
                 :id="'checkbox-' + index"
                 v-model="checkedItems[index]"
                 class="mr-4"
-                :disabled="maxSelectionReached && !checkedItems[index]"
+                :disabled="isDisabled(index)"
                 :class="{
-                  'cursor-not-allowed':
-                    maxSelectionReached && !checkedItems[index],
+                  'cursor-not-allowed': isDisabled(index),
                 }"
                 @change="handleCheckboxChange"
               />
@@ -292,9 +321,12 @@ import tCalendar from "@/components/ui/atoms/t-calendar.vue";
 import { Slider } from "ant-design-vue";
 import { useGeojsonStore } from "@/stores/geojson";
 import iplay from "@/assets/icons/iplay.vue";
+import istop from "@/assets/icons/istop.vue";
 import "flowbite";
 
 const useGeojson = useGeojsonStore();
+const stateStop = ref("enable");
+const statePlay = ref("disable");
 
 const ablePeru = ref(false);
 const ableGlobal = ref(true);
@@ -331,8 +363,8 @@ const blueCircleStyle = {
 };
 
 function setActiveTab(tab) {
-  activeTab.value = tab;
-
+  activeTab.value = tab; // quitar si en caso no quiere que cuando se cambie a peru, se ponga play solo
+  togglePlay();
   if (tab === "peru") {
     ablePeru.value = true;
     ableGlobal.value = false;
@@ -357,7 +389,7 @@ function setActiveTab(tab) {
 
 // PERU
 const selPeru = ref("");
-const statePeru = ref("enable");
+const statePeru = ref("disable");
 const errPeru = ref("Peru error");
 const dataPeru = ref([
   {
@@ -635,7 +667,7 @@ watch(selPeru, (newValue) => {
 
 //CONTINENTE
 const selContinente = ref("");
-const stateContinente = ref("enable");
+const stateContinente = ref("disable");
 const errContinente = ref("Continente error");
 const dataContinente = ref([
   {
@@ -772,8 +804,8 @@ const startDate = ref({
   year: new Date().getFullYear() - 2,
 });
 const errStartDate = ref("Fecha inicio error");
-const disStartDate = ref(false);
-const stateStartDate = ref("enable");
+const disStartDate = ref(true);
+const stateStartDate = ref("disable");
 
 //EndDate
 const endDate = ref({
@@ -781,8 +813,8 @@ const endDate = ref({
   year: new Date().getFullYear(),
 });
 const errEndDate = ref("Fecha fin error");
-const disEndDate = ref(false);
-const stateEndDate = ref("enable");
+const disEndDate = ref(true);
+const stateEndDate = ref("disable");
 
 //CHECK LIST
 const items = ref([
@@ -803,6 +835,7 @@ const items = ref([
   },
 ]);
 const checkedItems = ref([true, true, true]);
+const stateCheckList = ref("disable");
 const maxSelection = ref(3);
 const selectedCount = computed(
   () => checkedItems.value.filter((item) => item).length
@@ -831,7 +864,38 @@ const handleCheckboxChange = () => {
   };
 };
 
+const isDisabled = (index) => {
+  if (stateCheckList.value === "disable") {
+    // Si el estado es 'disable', el checkbox no puede ser modificado
+    return checkedItems.value[index] ? true : false;
+  }
+  return false; // Si está habilitado, el checkbox se comporta normalmente
+};
+
+watch(
+  () => useGeojson.estadoPl, // Observar la propiedad estadoPl
+  (newValue) => {
+    console.log(newValue); // Imprime el nuevo valor de estadoPl
+    if (newValue === "enable") {
+      statePlay.value = "disable";
+      stateStop.value = "enable";
+    } else if (newValue === "disable") {
+      stateStop.value = "disable";
+      statePlay.value = "enable";
+    }
+  }
+);
+
 const togglePlay = () => {
+  useGeojson.estadoPl = "enable";
+  statePeru.value = "disable";
+  stateStartDate.value = "disable";
+  disStartDate.value = true;
+  stateEndDate.value = "disable";
+  disEndDate.value = true;
+  stateContinente.value = "disable";
+  stateCheckList.value = "disable";
+
   useGeojson.rangoMagnitud = {
     maxMag: magnitudeRange.value[0],
     minMag: magnitudeRange.value[1],
@@ -842,8 +906,18 @@ const togglePlay = () => {
     endDate: convertToDate(endDate.value),
   };
   useGeojson.profundidad = selectionState.value;
+};
 
-  console.log("hola bldo");
+const toggleStop = () => {
+  useGeojson.estadoPl = "disable";
+
+  statePeru.value = "enable";
+  stateStartDate.value = "enable";
+  disStartDate.value = false;
+  stateEndDate.value = "enable";
+  disEndDate.value = false;
+  stateContinente.value = "enable";
+  stateCheckList.value = "enable";
 };
 </script>
 

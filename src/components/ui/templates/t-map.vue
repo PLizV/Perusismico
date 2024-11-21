@@ -348,13 +348,22 @@ export default {
           } else if (magnitude > 7 && magnitude <= 9.5) {
             radius = 13;
           }
+          console.log(
+            L.circleMarker(latlng, {
+              className: "pulse",
+              radius: radius + this.sumarProf,
+              fillColor: color,
+              opacity: 0.5,
+              color: "#000",
+              opacity: 1,
+              fillOpacity: 0.9,
+            })
+          );
           return L.circleMarker(latlng, {
             className: "pulse",
             radius: radius + this.sumarProf,
             fillColor: color,
             opacity: 0.5,
-            color: "#000",
-            weight: 0.5, // Valor para el borde
             opacity: 1,
             fillOpacity: 0.9,
           });
@@ -394,13 +403,18 @@ export default {
       // Reiniciar `features` con los datos actuales
       const features = geoJSON.features; // Datos filtrados actuales
       const chunkSize = 10; // Tamaño del grupo - 10 en 10
-      const segundos = 1; //cantidad de segundos - 1 segundo
+      const segundos = 0.5; //cantidad de segundos - 1 segundo
       let index = 0; // Índice inicial
 
       // Añadir los puntos en intervalos
       const addPointsInChunks = () => {
-        if (index >= features.length) {
+        if (
+          index >= features.length ||
+          this.useGeojson.estadoPl === "disable"
+        ) {
           clearInterval(this.intervalId); // Detener el intervalo al finalizar
+          console.log("YA PARE");
+          this.useGeojson.estadoPl = "disable";
           return;
         }
 
@@ -536,19 +550,24 @@ export default {
 }
 
 .pulse {
-  animation: pulsate 2s ease-out;
-  -webkit-animation-iteration-count: infinite;
-  opacity: 0;
+  animation: pulsate 1s ease-out;
+  opacity: 1;
+  stroke-width: 0.04rem;
+  stroke: black;
 }
 @keyframes pulsate {
   0% {
-    opacity: 0;
+    fill: white;
+    opacity: 1;
+    stroke-width: 15px;
+    stroke: white;
   }
   50% {
-    opacity: 1;
-  }
-  100% {
     opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
   }
 }
 </style>
