@@ -150,9 +150,7 @@ export default {
 
     // Cargar el archivo GeoJSON usando axios
     axios
-      .get(
-        `${import.meta.env.VITE_LINK}:${import.meta.env.VITE_PORT}/placas.json`
-      )
+      .get("/placas.json")
 
       .then((response) => {
         // Crear clones del GeoJSON para simular repetición
@@ -188,19 +186,17 @@ export default {
       });
 
     // Cargar el archivo CSV
-    axios
-      .get(`${import.meta.env.VITE_LINK}:${import.meta.env.VITE_PORT}/data.csv`)
-      .then((response) => {
-        Papa.parse(response.data, {
-          header: true,
-          dynamicTyping: true,
-          complete: (result) => {
-            const geoJSONData = this.convertCSVToGeoJSON(result.data);
-            this.setData = result.data;
-            this.addGeoJSONToMap(geoJSONData);
-          },
-        });
+    axios.get("/data.csv").then((response) => {
+      Papa.parse(response.data, {
+        header: true,
+        dynamicTyping: true,
+        complete: (result) => {
+          const geoJSONData = this.convertCSVToGeoJSON(result.data);
+          this.setData = result.data;
+          this.addGeoJSONToMap(geoJSONData);
+        },
       });
+    });
   },
   watch: {
     "useGeojson.continente": {
