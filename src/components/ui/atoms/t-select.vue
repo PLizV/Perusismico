@@ -15,7 +15,8 @@
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
         :class="selectClasses"
-        class="outline-none myselect w-full text-start border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 text-sm"
+        class="text-igp-blue outline-none myselect w-full text-start border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 text-sm"
+        style="color: blue"
       >
         <optgroup
           v-if="groupOpcion"

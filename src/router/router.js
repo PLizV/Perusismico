@@ -1,25 +1,28 @@
-import { createRouter, createWebHistory } from 'vue-router'
-//ACERCA DE 
-import acercade from '@/components/views/layout/t-acercade.vue'
+import { createRouter, createWebHistory } from "vue-router";
+//ACERCA DE
+import acercade from "@/components/views/layout/t-acercade.vue";
 // GEOVISOR
-import geovisor from '@/components/views/layout/t-geovisor.vue'
+import geovisor from "@/components/views/layout/t-geovisor.vue";
+// CREDITOS
+import creditos from "@/components/views/layout/t-creditos.vue";
 // PAGINAS DE ERROR
-import errorNotFound from '@/components/views/pages/errorNotFound.vue'
-import accessDenied from '@/components/views/pages/accessDenied.vue'
+import errorNotFound from "@/components/views/pages/errorNotFound.vue";
+import accessDenied from "@/components/views/pages/accessDenied.vue";
 
 const linkAccess = import.meta.env.VITE_PUBLIC_PATH;
 const routes = [
-    { path: '/', name: 'acercade', component: acercade },
-    { path: '/visor', name: 'geovisor', component: geovisor },
-    { path: "/:catchAll(.*)*", component: errorNotFound },
-    { path: '/acceso-denegado', component: accessDenied },
-]
+  { path: "/", name: "acercade", component: acercade },
+  { path: "/visor", name: "geovisor", component: geovisor },
+  { path: "/creditos", name: "creditos", component: creditos },
+  { path: "/:catchAll(.*)*", component: errorNotFound },
+  { path: "/acceso-denegado", component: accessDenied },
+];
 const router = createRouter({
-    history: createWebHistory(linkAccess),
-    routes,
-    pathToRegexpOptions: {
-        sensitive: true,
-    },
+  history: createWebHistory(linkAccess),
+  routes,
+  pathToRegexpOptions: {
+    sensitive: true,
+  },
 });
 
 // router.beforeEach(async (to, from, next) => {
@@ -50,5 +53,4 @@ const router = createRouter({
 //     return next();
 // });
 
-
-export default router
+export default router;

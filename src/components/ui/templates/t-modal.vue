@@ -143,6 +143,7 @@
             :autoApply="true"
             :disabled="disStartDate"
             month-picker
+            style="color: blue !important"
           ></VueDatePicker>
         </template>
         <template v-slot:name> Fecha de inicio </template>
@@ -307,7 +308,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, watch } from "vue";
 import tLabel from "@/components/ui/atoms/t-label.vue";
 import tSelect from "@/components/ui/atoms/t-select.vue";
 import profundidad from "@/assets/icons/profundidad.svg";
@@ -836,16 +837,7 @@ const items = ref([
 ]);
 const checkedItems = ref([true, true, true]);
 const stateCheckList = ref("disable");
-const maxSelection = ref(3);
-const selectedCount = computed(
-  () => checkedItems.value.filter((item) => item).length
-);
-const maxSelectionReached = computed(
-  () => selectedCount.value >= maxSelection.value
-);
-const selectedItems = computed(() =>
-  items.value.filter((item, index) => checkedItems.value[index])
-);
+
 const selectionState = ref({
   isSuperficial: true,
   isIntermediate: true,
@@ -996,5 +988,12 @@ const toggleStop = () => {
 .tooltipmodal:hover .tooltiptextmodal {
   visibility: visible;
   opacity: 1;
+}
+.dp__disabled.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg {
+  color: #0032ff !important;
+}
+
+.dp__pointer.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg {
+  color: #0032ff !important;
 }
 </style>

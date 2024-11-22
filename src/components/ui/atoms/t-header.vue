@@ -44,6 +44,19 @@
         <iconworld class="h-5 mr-3"></iconworld>
         Visor PerúSis
       </router-link>
+       <router-link
+        :to="{ name: 'creditos' }"
+        class="text-md sm:text-md md:text-md lg:text-md xl:text-lg 2xl:text-lg hidden h-full items-center justify-center ml-8 outline-none font-light sm:hidden md:hidden lg:flex xl:flex 2xl:flex"
+        :class="{
+          ' bg-igp-blue bg-opacity-10 text-igp-blue px-3 border-igp-blue cursor-default':
+            $route.name === 'creditos',
+          ' hover:bg-igp-blue hover:bg-opacity-10 px-3 h-full cursor-pointer text-igp-dark-500 hover:text-igp-blue hover:border-igp-blue ':
+            $route.name !== 'creditos',
+        }"
+      >
+        <iconworld class="h-5 mr-3"></iconworld>
+        Creditos
+      </router-link>
       <div class="ml-auto">
         <button
           @click="toggleContent"
