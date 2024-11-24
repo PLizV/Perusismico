@@ -114,7 +114,7 @@ export default {
       maxZoom: 18,
       center: this.initialLatLeng,
       zoom: this.initialZoom,
-      layers: [dark], // cambiar favorito
+      layers: [luzNotable], // cambiar favorito
       fullscreenControlOptions: { position: "bottomright" },
       preferCanvas: false,
       maxBounds: bounds, // Fija los límites del mapa

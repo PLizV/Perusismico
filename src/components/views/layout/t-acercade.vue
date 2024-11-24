@@ -2,35 +2,40 @@
   <div>
     <div
       v-show="showContent"
-      class="z-10 relative bg-white px-4 sm:px-10 md:px-10 lg:px-10 xl:px-10 2xl:px-10 shadow-[0px_4px_4px_0px_#00000024]"
+      class="z-10 relative bg-white px-4 sm:px-20 md:px-20 lg:px-20 xl:px-20 2xl:px-20 shadow-[0px_4px_4px_0px_#00000024] theader-animation"
     >
       <theader></theader>
     </div>
     <div
-      class="fixed inset-0 bg-cover bg-[url(//unpkg.com/three-globe/example/img/night-sky.png)] h-full w-full flex items-center bg-no-repeat"
-      style="background-position: center bottom 80%"
+      class="fixed inset-0 bg-cover bg-[#14212b] h-full w-full flex items-center bg-no-repeat"
     >
+      <div class="points-container absolute inset-0 z-0">
+        <div
+          v-for="(dot, index) in dots"
+          :key="index"
+          class="dot absolute"
+          :style="dot.style"
+        ></div>
+      </div>
       <!-- Imagen central pequeña con efecto de zoom y movimiento a la derecha -->
       <div class="globe zoom-animation" :class="imageClass">
         <img
           v-show="!showImageInGlobe"
-          src="https://s3-alpha-sig.figma.com/img/682a/9f8d/19703eb90dc816e2f5d89e658917d25f?Expires=1732492800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=b6xZM~P3W88TRSPhyATrizo9ozx8Xi7-fiZLvDcZ-X9simYH3tPLhNhiuf6l6uLvQ66Cow43RCAm-oEchv7pY6Idbql7yVAGJEErZ0rTXgwWOQfiUrQMqted~z4~uz0D87SyqDjEffdhzdpKII4rcXke2YrDcM0c9ZbXyF2-hN3YU3vPe8LlM3~CIn-2EHBh63D3dRlZ~VhVPfClhV4SNhOnuRiSU2qH5bvSGzPJzTpWRRKjpb2oLwFgsAF99SxVFsMvxz8c3aph2E3ap5WN9Tyt-Ou6gn0~clb1LJRR7JRxyrUk35-1-3HNm8Ao6-5b~ZClzIxKI3LZXQrbIWXomQ__"
+          src="/img/globo.gif"
           alt="Descripción del GIF"
-          class="w-full h-full object-cover large-image"
+          class="object-cover large-image"
         />
       </div>
     </div>
     <!-- Contenido que aparece con efecto de barras aleatorias -->
     <main
       v-show="showContent"
-      class="grid grid-cols-1 md:grid-cols-12 transition-opacity duration-1000 relative"
+      class="grid grid-cols-12 md:grid-cols-12 transition-opacity duration-1000 relative"
       style="height: calc(100vh - 4.25rem)"
     >
-      <div
-        class="col-span-12 md:col-span-5 py-8 px-4 md:px-20 bg-center bg-cover"
-      >
+      <div class="col-span-6 py-8 pl-28 bg-center bg-cover">
         <div
-          class="grid grid-cols-12 px-4 py-4 rounded-2xl select-none bg-center bg-cover"
+          class="grid grid-cols-12 pt-16 rounded-2xl select-none bg-center bg-cover"
         >
           <!-- Texto de bienvenida con animación de barras -->
           <p
@@ -40,27 +45,27 @@
             Perú
             <br />
             <span
-              class="italic font-medium block"
+              class="italic font-bold"
               style="
-                background: linear-gradient(to top, grey, white);
+                background: linear-gradient(to top, #14212b 10%, white 50%);
                 background-clip: text;
+                -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
               "
-              >Sísmico</span
-            >
+              >Sísmico
+            </span>
           </p>
           <p
-            class="col-span-12 font-light pt-4 text-igp-white text-sm sm:text-base md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3 fade-bar"
+            class="col-span-12 font-semibold pt-4 text-igp-white text-sm sm:text-base md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3 fade-bar"
             style="line-height: 2; --delay: 0.3s"
           >
-            <span class="font-medium">PerúSis </span>es una plataforma digital
-            de observación sísmica desarrollada por el
-            <span class="font-medium">Instituto Geofísico del Perú (IGP)</span>,
-            que ofrece acceso espacio-temporal a la actividad sísmica ocurrida
-            en el Perú y en el mundo, de manera visual e interactiva.
+            PerúSis es una plataforma digital de observación sísmica
+            desarrollada por el Instituto Geofísico del Perú (IGP), que ofrece
+            acceso espacio-temporal a la actividad sísmica ocurrida en el Perú y
+            en el mundo, de manera visual e interactiva.
           </p>
           <p
-            class="col-span-12 font-light pt-4 text-igp-white text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3 fade-bar"
+            class="col-span-12 font-semibold pt-4 text-igp-white text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3 fade-bar"
             style="line-height: 2; --delay: 0.5s"
           >
             Con una interfaz intuitiva, PerúSis permite filtrar sismos por
@@ -70,48 +75,41 @@
             la educación del riesgo.
           </p>
           <p
-            class="col-span-12 font-light pt-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3 fade-bar"
+            class="text-igp-white col-span-12 font-semibold pt-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3 fade-bar"
             style="line-height: 2; --delay: 0.7s"
           >
-            En Perú utiliza información del
-            <span class="font-medium"
-              >Centro Sismológico Nacional (CENSIS)</span
-            >
-            y, a nivel mundial, del
-            <span class="font-medium"
-              >National Earthquake Information Center (NEIC)</span
-            >
-            de la U.S
-            <span class="font-medium">U.S Geological Survey (USGS)</span>
+            En Perú utiliza información del >Centro Sismológico Nacional
+            (CENSIS) > y, a nivel mundial, del >National Earthquake Information
+            Center (NEIC) > de la U.S >U.S Geological Survey (USGS)
           </p>
 
           <div
-            class="col-span-12 flex flex-col md:flex-row py-6 mt-4 fade-bar"
+            class="col-span-12 flex flex-col md:flex-row py-6 mt-10 fade-bar"
             style="--delay: 0.9s"
           >
             <router-link
               to="/visor"
-              class="bg-igp-blue text-igp-white px-16 hover:bg-igp-blue-600 shadow-lg rounded-lg justify-center py-2 flex sm:inline md:inline lg:inline xl:inline 2xl:inline text-sm sm:text-sm md:text-base lg:text-base xl:text-base 2xl:text-base"
+              class="bg-[#001EB2] text-igp-white px-[5.6rem] hover:text-[#001EB2] hover:border-[#001EB2] hover:bg-igp-white shadow-lg rounded-lg justify-center py-2 flex sm:inline md:inline lg:inline xl:inline 2xl:inline text-sm sm:text-sm md:text-base lg:text-base xl:text-base 2xl:text-base"
             >
               Iniciar
             </router-link>
             <router-link
               to="/creditos"
-              class="bg-igp-white text-igp-blue px-16 hover:bg-igp-dark-50 border ml-4 border-igp-blue shadow-lg rounded-lg justify-center py-2 flex sm:inline md:inline lg:inline xl:inline 2xl:inline text-sm sm:text-sm md:text-base lg:text-base xl:text-base 2xl:text-base"
+              class="bg-none text-igp-white px-20 hover:bg-igp-white hover:border-[#001EB2] hover:text-[#001EB2] border ml-4 border-igp-white shadow-lg rounded-lg justify-center py-2 flex sm:inline md:inline lg:inline xl:inline 2xl:inline text-sm sm:text-sm md:text-base lg:text-base xl:text-base 2xl:text-base"
             >
               Créditos
             </router-link>
           </div>
         </div>
       </div>
-      <div class="col-span-12 md:col-span-7 flex justify-center items-center">
-        <div class="globe" ref="globeContainer">
+      <div class="col-span-6 flex justify-center items-center">
+        <div class="globe w-full h-full" ref="globeContainer">
           <!-- Imagen final que aparece en el globo -->
           <img
             v-show="showImageInGlobe"
-            src="https://s3-alpha-sig.figma.com/img/682a/9f8d/19703eb90dc816e2f5d89e658917d25f?Expires=1732492800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=b6xZM~P3W88TRSPhyATrizo9ozx8Xi7-fiZLvDcZ-X9simYH3tPLhNhiuf6l6uLvQ66Cow43RCAm-oEchv7pY6Idbql7yVAGJEErZ0rTXgwWOQfiUrQMqted~z4~uz0D87SyqDjEffdhzdpKII4rcXke2YrDcM0c9ZbXyF2-hN3YU3vPe8LlM3~CIn-2EHBh63D3dRlZ~VhVPfClhV4SNhOnuRiSU2qH5bvSGzPJzTpWRRKjpb2oLwFgsAF99SxVFsMvxz8c3aph2E3ap5WN9Tyt-Ou6gn0~clb1LJRR7JRxyrUk35-1-3HNm8Ao6-5b~ZClzIxKI3LZXQrbIWXomQ__"
+            src="/img/globo.gif"
             alt="Imagen Final en Globo"
-            class="w-full h-full object-cover large-image"
+            class="w-full h-full large-image"
           />
         </div>
       </div>
@@ -121,42 +119,72 @@
 
 <script setup>
 import theader from "@/components/ui/atoms/t-header.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, reactive } from "vue";
+
+const dots = reactive([]);
 
 const showContent = ref(false); // Controla el contenido principal
 const showImageInGlobe = ref(false); // Controla cuándo mostrar la imagen final en el globo
 const imageClass = ref("zoom-animation");
 
+function generateDots(count) {
+  for (let i = 0; i < count; i++) {
+    const randomX = Math.random() * 100; // Porcentaje para posición horizontal
+    const randomY = Math.random() * 100; // Porcentaje para posición vertical
+    const randomSize = Math.random() * 10 + 5; // Tamaño aleatorio entre 5px y 15px
+    const imageUrl = "https://via.placeholder.com/10"; // URL de fondo
+
+    dots.push({
+      style: {
+        left: `${randomX}%`,
+        top: `${randomY}%`,
+        width: `3px`,
+        height: `3px`,
+        position: "absolute",
+        backgroundImage: `url(${imageUrl})`,
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+        borderRadius: "50%",
+      },
+    });
+  }
+}
+
 onMounted(() => {
+  generateDots(100);
   setTimeout(() => {
-    imageClass.value = "zoom-right-large"; // Activa el zoom y movimiento de la imagen
+    imageClass.value = "zoom-right-large";
     setTimeout(() => {
-      showContent.value = true; // Muestra el contenido principal
-      showImageInGlobe.value = true; // Muestra la imagen dentro del globo al finalizar la animación
-    }, 2000); // Sincroniza con la duración del efecto de zoom
-  }, 1000); // Inicia la animación de zoom después de 1 segundo
+      showContent.value = true;
+      showImageInGlobe.value = true;
+    }, 2000); // Tiempo para que aparezca el contenido
+  }, 1000);
 });
 </script>
 
 <style scoped>
 .globe {
-  width: 450px; /* Tamaño específico del contenedor circular */
-  height: 450px; /* Asegura que el contenedor sea cuadrado para que el borde redondeado forme un círculo */
-  margin: auto;
-  border-radius: 50%; /* Hace que el globo sea circular */
-  overflow: hidden; /* Oculta las partes de la imagen fuera del círculo */
+  /* Asegura que el contenedor sea cuadrado para que el borde redondeado forme un círculo */
+  width: fit-content;
+  height: fit-content;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1;
+  width: 70%;
 }
 
 .zoom-animation {
-  transform: scale(0.5); /* Imagen pequeña centrada */
-  transition: transform 2s ease;
+  transform: scale(0.3); /* Imagen pequeña centrada */
+  transition: transform 1s ease;
+  width: 80%;
+  margin-top:199px ;
+
 }
 
 .zoom-right-large {
-  transform: scale(1.2) translateX(50%); /* Zoom a tamaño completo y mueve a la derecha */
+  transform: scale(1) translateX(43%); /* Zoom a tamaño completo y mueve a la derecha */
   transition: transform 2s ease;
 }
 
@@ -168,7 +196,7 @@ onMounted(() => {
 }
 
 .large-image {
-  transform: scale(1.5); /* Ajusta el valor para hacerlo más grande */
+  transform: scale(1); /* Ajusta el valor para hacerlo más grande */
   transition: transform 0.5s ease; /* Añade una transición si deseas suavizar el efecto */
 }
 
@@ -176,6 +204,27 @@ onMounted(() => {
   from {
     opacity: 0;
     transform: translateY(30px); /* Empieza más abajo */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0); /* Posición final */
+  }
+}
+.dot {
+  transition: transform 0.5s ease-in-out;
+}
+
+.theader-animation {
+  opacity: 0;
+  transform: translateY(-100px); /* Comienza fuera de la pantalla */
+  animation: slideDown 1.5s ease forwards; /* Duración y efecto */
+  animation-delay: 0s; /* Sincroniza con el globo */
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-80px);
   }
   to {
     opacity: 1;
