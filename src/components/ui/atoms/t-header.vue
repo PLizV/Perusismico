@@ -55,7 +55,7 @@
         }"
       >
         <iconworld class="h-5 mr-3"></iconworld>
-        Creditos
+        Creditosss
       </router-link>
       <div class="ml-auto">
         <button
