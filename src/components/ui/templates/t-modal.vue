@@ -9,7 +9,7 @@
       <p
         class="col-span-12 font-light  text-igp-blue text-base leading-[20px] px-3 py-2"
       >
-        <span class="font-semibold">Para iniciar, seleccione la siguiente información:</span> Región, periodo de datos, rango de magnitud y profundiad de los sismos a vizualizar.
+        <span class="font-semibold">Para iniciar, seleccione la siguiente información:</span> Región, periodo de datos, rango de magnitud y profundidad de los sismos a vizualizar.
       </p>
     </div>
     <div
