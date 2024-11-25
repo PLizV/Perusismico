@@ -4,13 +4,12 @@
   >
     <!-- Panel de control -->
     <div
-      class="px-4 pt-2 grid grid-cols-1 md:grid-cols-12 bg-orange-50 rounded-2xl w-full max-w-full md:max-w-[450px] mt-4 mb-4 border border-orange-500 shadow-[0px_4px_4px_0px_#00000024]"
+      class="px-4 pt-2 grid grid-cols-1 md:grid-cols-12 bg-white rounded-2xl w-full max-w-full md:max-w-[450px] mt-4 mb-4 border border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
     >
       <p
-        class="col-span-12 font-light text-orange-600 text-base leading-[20px] px-3 py-2"
+        class="col-span-12 font-light  text-igp-blue text-base leading-[20px] px-3 py-2"
       >
-        <span class="font-semibold">Importante:</span> Configura libremente los
-        parámetros sísmicos para ver los eventos en el visor.
+        <span class="font-semibold">Para iniciar, seleccione la siguiente información:</span> Región, periodo de datos, rango de magnitud y profundiad de los sismos a vizualizar.
       </p>
     </div>
     <div
@@ -46,7 +45,7 @@
           }"
           class="flex items-center justify-center focus:outline-none w-full h-full py-5 rounded-tr-2xl"
         >
-          <iconworld class="h-5 mr-1"></iconworld>
+          <iconperu class="h-5 mr-1"></iconperu>
           Perú
         </button>
       </div>
@@ -63,7 +62,7 @@
         class="col-span-12 flex mt-2 ml-2"
       >
         <img :src="gps" alt="img_gps" height="20" width="20" class="mr-1" />
-        Seleccione una ubicación:
+        Región o área de interés:
       </tLabel>
       <tLabel
         v-if="activeTab === 'peru'"
@@ -79,7 +78,7 @@
           width="20"
           class="mr-1"
         />
-        Seleccione una base de datos sísmicos:
+        Región o área de interés:
       </tLabel>
 
       <div
@@ -131,7 +130,7 @@
           width="18"
           class="mr-[6px]"
         />
-        Seleccione un rango de años:
+        Periodo de datos (desde 1960 a la fecha):
       </tLabel>
 
       <tCalendar class="col-span-6 mt-2 pl-4" :state="stateStartDate">
@@ -178,7 +177,7 @@
             width="16"
             class="mr-2"
           />
-          Defina un rango de magnitud:
+          Rango de magnitud:
         </tLabel>
         <div class="absolute right-5">
           <button
@@ -200,7 +199,7 @@
             role="tooltip"
             class="absolute text-center z-10 invisible inline-block px-3 py-2 text-xs text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip"
           >
-            Visualizar sismos
+            Inicio
             <div class="tooltip-arrow" data-popper-arrow></div>
           </div>
           <button
@@ -222,7 +221,7 @@
             role="tooltip"
             class="absolute text-center z-10 invisible inline-block px-3 py-2 text-xs text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip"
           >
-            Parar visualización
+            Detener
             <div class="tooltip-arrow" data-popper-arrow></div>
           </div>
         </div>
@@ -250,7 +249,7 @@
           width="18"
           class="mr-2"
         />
-        Escoja un rango de profundidad:
+        Rango de profundidad:
       </tLabel>
 
       <div class="col-span-12 mt-2 p-0">
@@ -316,6 +315,7 @@ import gps from "@/assets/icons/gps.svg";
 import magnitud from "@/assets/icons/magnitud.svg";
 import calendario from "@/assets/icons/calendario.svg";
 import iconworld from "@/assets/icons/world.vue";
+//import iconperu from "@/assets/icons/peru.vue";
 import idatabase from "@/assets/icons/database.svg";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import tCalendar from "@/components/ui/atoms/t-calendar.vue";

@@ -336,13 +336,13 @@ export default {
           const magnitude = feature.properties.mag;
 
           if (magnitude >= 4 && magnitude <= 5) {
-            radius = 3.5;
+            radius = 2.3;
           } else if (magnitude > 5 && magnitude <= 6) {
             radius = 4.5;
           } else if (magnitude > 6 && magnitude <= 7) {
-            radius = 5.5;
+            radius = 6.5;
           } else if (magnitude > 7 && magnitude <= 9.5) {
-            radius = 13;
+            radius = 9.5;
           }
           console.log(
             L.circleMarker(latlng, {
@@ -398,8 +398,8 @@ export default {
 
       // Reiniciar `features` con los datos actuales
       const features = geoJSON.features; // Datos filtrados actuales
-      const chunkSize = 10; // Tamaño del grupo - 10 en 10
-      const segundos = 0.5; //cantidad de segundos - 1 segundo
+      const chunkSize = 1; // Tamaño del grupo - 10 en 10
+      const segundos = 0.1; //cantidad de segundos - 1 segundo
       let index = 0; // Índice inicial
 
       // Añadir los puntos en intervalos
@@ -410,8 +410,13 @@ export default {
         ) {
           clearInterval(this.intervalId); // Detener el intervalo al finalizar
           console.log("YA PARE");
-          this.useGeojson.estadoPl = "disable";
-          return;
+          const checkboxes = document.querySelectorAll(".bloqueadas"); // Selector de las casillas
+    checkboxes.forEach((checkbox) => {
+      checkbox.disabled = false; // Habilitar
+    });
+
+    return;
+         
         }
 
         // Seleccionar el siguiente grupo de puntos

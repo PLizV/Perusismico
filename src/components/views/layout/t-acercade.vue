@@ -42,26 +42,18 @@
             class="col-span-12 text-igp-white text-7xl md:text-8xl font-bold leading-none fade-bar"
             style="--delay: 0.1s"
           >
-            Perú
+            Perú Sísmico
             <br />
-            <span
-              class="italic font-bold"
-              style="
-                background: linear-gradient(to top, #14212b 10%, white 50%);
-                background-clip: text;
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-              "
-              >Sísmico
-            </span>
+        
           </p>
+
           <p
             class="col-span-12 font-semibold pt-4 text-igp-white text-sm sm:text-base md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3 fade-bar"
             style="line-height: 2; --delay: 0.3s"
           >
             PerúSis es una plataforma digital de observación sísmica
-            desarrollada por el Instituto Geofísico del Perú (IGP), que ofrece
-            acceso espacio-temporal a la actividad sísmica ocurrida en el Perú y
+            desarrollada por el Instituto Geofísico del Perú (IGP) a fin de ofrecer
+            el acceso espacio-temporal a la actividad sísmica ocurrida en el Perú y
             en el mundo, de manera visual e interactiva.
           </p>
           <p
@@ -71,18 +63,10 @@
             Con una interfaz intuitiva, PerúSis permite filtrar sismos por
             fecha, región, magnitud y profundidad, facilitando el análisis y
             consulta de eventos sísmicos. Esto la convierte en una herramienta
-            clave para conocer las regiones potencialmente sísmicas y gestionar
-            la educación del riesgo.
+            clave para conocer las regiones potencialmente sísmicas y aportar a la
+            gestión del riesgo de desastres y a la educación.
           </p>
-          <p
-            class="text-igp-white col-span-12 font-semibold pt-4 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-xl mt-3 fade-bar"
-            style="line-height: 2; --delay: 0.7s"
-          >
-            En Perú utiliza información del >Centro Sismológico Nacional
-            (CENSIS) > y, a nivel mundial, del >National Earthquake Information
-            Center (NEIC) > de la U.S >U.S Geological Survey (USGS)
-          </p>
-
+         
           <div
             class="col-span-12 flex flex-col md:flex-row py-6 mt-10 fade-bar"
             style="--delay: 0.9s"
