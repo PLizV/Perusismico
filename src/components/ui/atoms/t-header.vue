@@ -54,8 +54,7 @@
             $route.name !== 'creditos',
         }"
       >
-        <iconworld class="h-5 mr-3"></iconworld>
-        Creditosss
+        Créditos
       </router-link>
       <div class="ml-auto">
         <button
