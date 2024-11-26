@@ -5,8 +5,8 @@
       junto con el equipo de innovación digital del Instituto Geofísico del Perú (IGP). Este proyecto busca fortalecer la gestión 
       del riesgo de desastres y contribuir a la educación en temas de sismicidad en el país.</p>
       <p>La plataforma integra datos del Centro Sismológico Nacional (CENSIS) a  cargo del IGP y del National Earthquake Information 
-      Center (NEIC) de la U.S. Geological Survey (USGS) de los EEUU.
-      Lima, diciembre de 2024.</p>
+      Center (NEIC) de la U.S. Geological Survey (USGS) de los EEUU.</p>
+      <p> Lima, diciembre de 2024.</p>
      </div>
 </template>
   
