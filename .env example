@@ -1,5 +1,0 @@
-# VITE_SISVULBD= http://localhost:5000/api
-VITE_PORT = 8000
-VITE_ROUTER_BASE = history
-VITE_LINK =  http://10.10.160.36 #LINK
-VITE_PUBLIC_PATH=perusismico #PREFIX
