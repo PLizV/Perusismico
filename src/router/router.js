@@ -4,7 +4,6 @@ import acercade from "@/components/views/layout/t-acercade.vue";
 // GEOVISOR
 import geovisor from "@/components/views/layout/t-geovisor.vue";
 // CREDITOS
-import creditos from "@/components/views/layout/t-creditos.vue";
 // PAGINAS DE ERROR
 import errorNotFound from "@/components/views/pages/errorNotFound.vue";
 import accessDenied from "@/components/views/pages/accessDenied.vue";
@@ -13,7 +12,6 @@ const linkAccess = import.meta.env.VITE_PUBLIC_PATH;
 const routes = [
   { path: "/", name: "acercade", component: acercade },
   { path: "/visor", name: "geovisor", component: geovisor },
-  { path: "/creditos", name: "creditos", component: creditos },
   { path: "/:catchAll(.*)*", component: errorNotFound },
   { path: "/acceso-denegado", component: accessDenied },
 ];

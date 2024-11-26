@@ -1,6 +1,5 @@
 <template>
   <div>
-    
     <div
       class="gap-x-1 h-[3rem] sm:h-[3.25rem] md:h-[3.75rem] lg:h-[4rem] xl:h-[4.25rem] 2xl:h-[4.25rem] flex items-center cursor-default select-none"
     >
@@ -44,18 +43,12 @@
         <iconworld class="h-5 mr-3"></iconworld>
         Visor PerúSis
       </router-link>
-       <router-link
-        :to="{ name: 'creditos' }"
-        class="text-md sm:text-md md:text-md lg:text-md xl:text-lg 2xl:text-lg hidden h-full items-center justify-center ml-8 outline-none font-light sm:hidden md:hidden lg:flex xl:flex 2xl:flex"
-        :class="{
-          ' bg-igp-blue bg-opacity-10 text-igp-blue px-3 border-igp-blue cursor-default':
-            $route.name === 'creditos',
-          ' hover:bg-igp-blue hover:bg-opacity-10 px-3 h-full cursor-pointer text-igp-dark-500 hover:text-igp-blue hover:border-igp-blue ':
-            $route.name !== 'creditos',
-        }"
+      <button
+        class="text-md sm:text-md md:text-md lg:text-md xl:text-lg 2xl:text-lg hidden h-full items-center justify-center ml-8 outline-none font-light sm:hidden md:hidden lg:flex xl:flex 2xl:flex hover:bg-igp-blue hover:bg-opacity-10 px-3 cursor-pointer text-igp-dark-500 hover:text-igp-blue hover:border-igp-blue"
       >
-        Créditos
-      </router-link>
+        <iconteam class="h-5 mr-3"></iconteam>
+        Creditos
+      </button>
       <div class="ml-auto">
         <button
           @click="toggleContent"
@@ -111,6 +104,14 @@
                 Visor PerúSis
               </router-link>
             </li>
+            <li class="px-2 py-1 text-gray-700 hover:bg-gray-100">
+              <button
+                class="text-xs flex items-center outline-none font-light sm:flex md:hidden lg:hidden xl:hidden 2xl:hidden hover:bg-igp-blue hover:bg-opacity-10 h-full cursor-pointer text-igp-dark-500 hover:text-igp-blue hover:border-igp-blue"
+              >
+                <iconteam class="h-[14px] mr-[7px]"></iconteam>
+                Creditos
+              </button>
+            </li>
           </ul>
         </div>
       </div>
@@ -121,6 +122,8 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import iconthome from "@/assets/icons/iconhome.vue";
 import iconworld from "@/assets/icons/world.vue";
+import iconteam from "@/assets/icons/team.vue";
+
 const showContent = ref(false);
 
 function toggleContent() {

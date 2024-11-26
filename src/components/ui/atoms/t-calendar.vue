@@ -1,7 +1,7 @@
 <template>
   <div class="text-right">
     <div
-      class="block rounded-md border text-start border-gray-200 px-3 z-50"
+      class="block rounded-md border text-start border-gray-200 px-3 z-50 "
       :class="textClasses"
     >
       <span
@@ -59,7 +59,7 @@ export default {
     statelassesLabel() {
       const stateMappings = {
         enable:
-          "focus-within:border-igp-blue focus-within:ring-1 focus-within:ring-igp-blue",
+          "focus-within:border-igp-blue focus-within:ring-1 focus-within:ring-igp-blue bg-igp-white",
         disable: "bg-gray-100 border border-gray-300 text-igp-dark-500",
         error: "text-igp-red border-igp-red",
       };
@@ -71,8 +71,8 @@ export default {
 
     stateSpan() {
       const stateMappings = {
-        enable: "text-igp-dark elect-text ",
-        disable: "text-igp-dark-500 ",
+        enable: "text-igp-blue elect-text ",
+        disable: "text-igp-blue ",
         error: "text-igp-red",
       };
       return stateMappings[this.state] || null;
@@ -82,8 +82,8 @@ export default {
     },
     stateInput() {
       const stateMappings = {
-        enable: "bg-white select-text text-igp-dark",
-        disable: "bg-gray-100 select-none text-igp-dark-500",
+        enable: "bg-white select-text text-igp-blue",
+        disable: "bg-gray-100 select-none text-igp-blue",
         error: "text-igp-dark bg-white",
       };
       return stateMappings[this.state] || null;

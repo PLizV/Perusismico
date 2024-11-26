@@ -1,89 +1,57 @@
 <template>
   <div
-    class="relative flex items-center pl-10 justify-start z-10 pt-[5.25rem] scroll-auto select-none"
+    class="flex items-center ml-24 justify-start z-10 scroll-auto select-none absolute mt-16"
   >
     <!-- Panel de control -->
-    <div
-      class="px-4 pt-2 grid grid-cols-1 md:grid-cols-12 bg-white rounded-2xl w-full max-w-full md:max-w-[450px] mt-4 mb-4 border border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
-    >
-      <p
-        class="col-span-12 font-light  text-igp-blue text-base leading-[20px] px-3 py-2"
-      >
-        <span class="font-semibold">Para iniciar, seleccione la siguiente información:</span> Región, periodo de datos, rango de magnitud y profundidad de los sismos a vizualizar.
-      </p>
-    </div>
-    <div
-      class="grid grid-cols-1 sm:grid-cols-6 md:grid-cols-12 bg-white rounded-t-2xl w-full max-w-full md:max-w-[450px] border-x border-t border-igp-blue"
-    >
-      <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
-        <!-- Botón Global -->
-        <button
-          :disabled="ableGlobal"
-          @click="setActiveTab('global')"
-          :class="{
-            'bg-white text-igp-blue font-semibold border-t border-l border-r':
-              activeTab === 'global',
-            'bg-igp-muted-100 text-igp-muted-400 border':
-              activeTab !== 'global',
-          }"
-          class="flex items-center justify-center focus:outline-none w-full h-full py-5 rounded-tl-2xl"
-        >
-          <iconworld class="h-5 mr-1"></iconworld>
-          Global
-        </button>
-      </div>
-
-      <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
-        <!-- Botón Perú -->
-        <button
-          :disabled="ablePeru"
-          @click="setActiveTab('peru')"
-          :class="{
-            'bg-white text-igp-blue font-semibold border-t border-l border-r':
-              activeTab === 'peru',
-            'bg-igp-muted-100 text-igp-muted-400 border': activeTab !== 'peru',
-          }"
-          class="flex items-center justify-center focus:outline-none w-full h-full py-5 rounded-tr-2xl"
-        >
-          <iconperu class="h-5 mr-1"></iconperu>
-          Perú
-        </button>
-      </div>
-    </div>
 
     <div
-      class="px-4 pt-3 grid grid-cols-1 md:grid-cols-12 bg-white rounded-b-2xl w-full max-w-full md:max-w-[450px] border-x border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
+      class="px-4 pt-3 grid grid-cols-1 md:grid-cols-12 bg-[#FCFDFF] rounded-2xl w-[490px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
     >
-      <tLabel
-        v-if="activeTab === 'global'"
-        color="blue"
-        size="md"
-        weight="400"
-        class="col-span-12 flex mt-2 ml-2"
-      >
-        <img :src="gps" alt="img_gps" height="20" width="20" class="mr-1" />
-        Región o área de interés:
-      </tLabel>
-      <tLabel
-        v-if="activeTab === 'peru'"
-        color="blue"
-        size="md"
-        weight="400"
-        class="col-span-12 flex mt-2 ml-2"
-      >
-        <img
-          :src="idatabase"
-          alt="img_db"
-          height="20"
-          width="20"
-          class="mr-1"
-        />
-        Región o área de interés:
-      </tLabel>
+      <div class="grid grid-cols-12 col-span-12 mt-3">
+        <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
+          <!-- Botón Global -->
+          <button
+            :disabled="ableGlobal"
+            @click="setActiveTab('global')"
+            :class="{
+              'bg-igp-blue text-igp-white font-semibold':
+                activeTab === 'global',
+              'bg-igp-white text-igp-muted-400 hover:text-igp-blue hover:font-medium  hover:border-igp-blue':
+                activeTab !== 'global',
+            }"
+            class="flex items-center justify-center focus:outline-none w-full h-full py-3 border-y-2 border-l-2 rounded-l-3xl text-sm"
+          >
+            <iconworld class="h-5 mr-1"></iconworld>
+            Global
+          </button>
+        </div>
+
+        <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
+          <!-- Botón Perú -->
+          <button
+            :disabled="ablePeru"
+            @click="setActiveTab('peru')"
+            :class="{
+              'bg-igp-blue text-igp-white font-semibold': activeTab === 'peru',
+              'bg-igp-white text-igp-muted-400 hover:text-igp-blue hover:font-medium  hover:border-igp-blue':
+                activeTab !== 'peru',
+            }"
+            class="flex items-center justify-center focus:outline-none w-full h-full py-3 border-y-2 border-r-2 rounded-r-3xl text-sm"
+          >
+            <iconperu class="absolute h-8 mr-14 mt-1"></iconperu>
+            Perú
+          </button>
+        </div>
+      </div>
+
+      <span class="text-igp-dark-300 col-span-12 text-sm px-3 mt-3">
+        Para iniciar, seleccione la región, período de datos, rango de magnitud
+        y profundidad para visualizar los sismos.
+      </span>
 
       <div
         v-if="activeTab === 'global'"
-        class="grid grid-cols-1 md:grid-cols-12 col-span-12"
+        class="grid grid-cols-1 md:grid-cols-12 col-span-12 mt-2"
       >
         <tSelect
           class="col-span-12 pl-3 mt-2"
@@ -94,14 +62,14 @@
           isRequired="reqContinente"
           :selectedItems="dataContinente"
         >
-          <template v-slot:name> Seleccionar continente </template>
+          <template v-slot:name> Región o área de interés: </template>
           <template v-slot:error> {{ errContinente }} </template>
         </tSelect>
       </div>
 
       <div
         v-if="activeTab === 'peru'"
-        class="grid grid-cols-1 md:grid-cols-12 col-span-12"
+        class="grid grid-cols-1 md:grid-cols-12 col-span-12 mt-2"
       >
         <tSelect
           class="col-span-12 pl-3 mt-2"
@@ -121,7 +89,7 @@
         color="blue"
         size="md"
         weight="400"
-        class="col-span-12 flex mt-4 ml-2"
+        class="col-span-12 flex mt-4 ml-4"
       >
         <img
           :src="calendario"
@@ -130,7 +98,11 @@
           width="18"
           class="mr-[6px]"
         />
-        Periodo de datos (desde 1960 a la fecha):
+        Periodo de años
+        <span class="text-xs text-center flex justify-center items-center ml-1"
+          >(desde 1960 hasta la fecha)
+        </span>
+        :
       </tLabel>
 
       <tCalendar class="col-span-6 mt-2 pl-4" :state="stateStartDate">
@@ -163,31 +135,49 @@
         <template v-slot:name> Fecha de fin </template>
         <template v-slot:error> {{ errEndDate }} </template>
       </tCalendar>
-      <div class="col-span-12 flex items-center">
-        <tLabel
-          color="blue"
-          size="md"
-          weight="400"
-          class="flex items-center ml-2"
-        >
-          <img
-            :src="magnitud"
-            alt="img_mag"
-            height="16"
-            width="16"
-            class="mr-2"
-          />
-          Rango de magnitud:
-        </tLabel>
-        <div class="absolute right-5">
+
+      <div class="grid grid-cols-12 col-span-12 border ml-4 py-3 rounded-lg">
+        <div class="col-span-12 flex items-center">
+          <tLabel
+            color="blue"
+            size="md"
+            weight="400"
+            class="flex items-center ml-4"
+          >
+            <img
+              :src="magnitud"
+              alt="img_mag"
+              height="16"
+              width="16"
+              class="mr-2"
+            />
+            Rango de magnitud:
+          </tLabel>
+        </div>
+        <!-- SELECCION DE CAPAS CHECK -->
+        <div class="col-span-12 pl-3 mt-2">
+          <div class="slider">
+            <Slider
+              v-model:value="magnitudeRange"
+              :marks="marks"
+              :min="4"
+              :max="9.5"
+              :step="0.1"
+              :tooltipFormatter="customTooltipFormatter"
+              range
+              :disabled="disabledSlider"
+            />
+          </div>
+        </div>
+        <div class="col-span-12 flex items-center justify-center mt-2">
           <button
             data-tooltip-target="tooltip-defaultP"
             type="button"
-            class="border-2 mr-2 rounded-lg px-3 py-[2px] items-center"
+            class="border-2 mr-2 rounded-lg px-6 py-2 items-center"
             :class="
               statePlay === 'enable'
-                ? 'hover:bg-igp-white-100 text-igp-blue hover:text-igp-blue-500'
-                : 'bg-gray-100 text-igp-dark-500 select-none cursor-not-allowed'
+                ? ' text-igp-blue hover:text-igp-blue-500 border-igp-blue'
+                : 'bg-gray-100 text-igp-dark-500 select-none cursor-not-allowed borde-igp-dark-500'
             "
             @click="togglePlay"
             :disabled="statePlay === 'disable'"
@@ -199,17 +189,17 @@
             role="tooltip"
             class="absolute text-center z-10 invisible inline-block px-3 py-2 text-xs text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip"
           >
-            Inicio
+            Visualizar sismos
             <div class="tooltip-arrow" data-popper-arrow></div>
           </div>
           <button
             data-tooltip-target="tooltip-defaultS"
             type="button"
-            class="border-2 mr-2 rounded-lg px-3 py-[2px] items-center"
+            class="border-2 mr-2 rounded-lg px-6 py-2 items-center"
             :class="
               stateStop === 'enable'
-                ? 'hover:bg-igp-white-100 text-igp-red hover:text-igp-red-500'
-                : 'bg-gray-100 text-igp-dark-500 select-none cursor-not-allowed'
+                ? 'hover:bg-igp-white-100 text-igp-red hover:text-igp-red-500 border-igp-red'
+                : 'bg-gray-100 text-igp-dark-500 select-none cursor-not-allowed borde-igp-dark-500'
             "
             @click="toggleStop"
             :disabled="stateStop === 'disable'"
@@ -221,71 +211,66 @@
             role="tooltip"
             class="absolute text-center z-10 invisible inline-block px-3 py-2 text-xs text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip"
           >
-            Detener
+            Parar visualización
             <div class="tooltip-arrow" data-popper-arrow></div>
           </div>
         </div>
       </div>
-      <!-- SELECCION DE CAPAS CHECK -->
-      <div class="col-span-12 pl-3 mt-2">
-        <div class="slider">
-          <Slider
-            v-model:value="magnitudeRange"
-            :marks="marks"
-            :min="4"
-            :max="9.5"
-            :step="0.1"
-            :tooltipFormatter="customTooltipFormatter"
-            range
+
+      <div
+        class="grip grid-cols-12 col-span-12 border rounded-lg py-4 my-4 ml-4"
+      >
+        <tLabel
+          color="blue"
+          size="md"
+          weight="400"
+          class="col-span-12 flex pl-4"
+        >
+          <img
+            :src="profundidad"
+            alt="img_prof"
+            height="20"
+            width="18"
+            class="mr-2"
           />
-        </div>
-      </div>
+          Rango de profundidad:
+        </tLabel>
 
-      <tLabel color="blue" size="md" weight="400" class="col-span-12 flex pl-4">
-        <img
-          :src="profundidad"
-          alt="img_prof"
-          height="20"
-          width="18"
-          class="mr-2"
-        />
-        Rango de profundidad:
-      </tLabel>
-
-      <div class="col-span-12 mt-2 p-0">
-        <div class="flex flex-col justify-between mb-4">
-          <div
-            v-for="(item, index) in items"
-            :key="index"
-            class="flex items-center ml-8"
-          >
-            <div class="flex">
-              <input
-                type="checkbox"
-                :id="'checkbox-' + index"
-                v-model="checkedItems[index]"
-                class="mr-4"
-                :disabled="isDisabled(index)"
-                :class="{
-                  'cursor-not-allowed': isDisabled(index),
-                }"
-                @change="handleCheckboxChange"
-              />
-              <label
-                :for="'checkbox-' + index"
-                class="text-sm select-none font-light leading-6 text-igp-dark"
-              >
-                {{ item.name }}
-                <span v-if="item.key === '1'" :style="redCircleStyle"></span>
-                <span
-                  v-else-if="item.key === '2'"
-                  :style="greenCircleStyle"
-                ></span>
-                <span
-                  v-else-if="item.key === '3'"
-                  :style="blueCircleStyle"
-                ></span>
-              </label>
+        <div class="col-span-12 mt-2 p-0">
+          <div class="flex flex-col justify-between mb-4">
+            <div
+              v-for="(item, index) in items"
+              :key="index"
+              class="flex items-center ml-8"
+            >
+              <div class="flex">
+                <input
+                  type="checkbox"
+                  :id="'checkbox-' + index"
+                  v-model="checkedItems[index]"
+                  class="mr-4"
+                  :disabled="isDisabled(index)"
+                  :class="{
+                    'cursor-not-allowed': isDisabled(index),
+                  }"
+                  @change="handleCheckboxChange"
+                />
+                <label
+                  :for="'checkbox-' + index"
+                  class="text-sm select-none font-light leading-6 text-igp-dark"
+                >
+                  {{ item.name }}
+                  <span v-if="item.key === '1'" :style="redCircleStyle"></span>
+                  <span
+                    v-else-if="item.key === '2'"
+                    :style="greenCircleStyle"
+                  ></span>
+                  <span
+                    v-else-if="item.key === '3'"
+                    :style="blueCircleStyle"
+                  ></span>
+                </label>
+              </div>
             </div>
           </div>
         </div>
@@ -315,7 +300,7 @@ import gps from "@/assets/icons/gps.svg";
 import magnitud from "@/assets/icons/magnitud.svg";
 import calendario from "@/assets/icons/calendario.svg";
 import iconworld from "@/assets/icons/world.vue";
-//import iconperu from "@/assets/icons/peru.vue";
+import iconperu from "@/assets/icons/peru.vue";
 import idatabase from "@/assets/icons/database.svg";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import tCalendar from "@/components/ui/atoms/t-calendar.vue";
@@ -332,6 +317,7 @@ const statePlay = ref("disable");
 const ablePeru = ref(false);
 const ableGlobal = ref(true);
 const activeTab = ref("global");
+
 // Estilos para los círculos personalizados
 const redCircleStyle = {
   display: "inline-block",
@@ -365,8 +351,14 @@ const blueCircleStyle = {
 
 function setActiveTab(tab) {
   activeTab.value = tab; // quitar si en caso no quiere que cuando se cambie a peru, se ponga play solo
+
   togglePlay();
   if (tab === "peru") {
+    stateStartDate.value = "disable";
+    disStartDate.value = true;
+    stateEndDate.value = "disable";
+    disEndDate.value = true;
+    selPeru.value = "";
     ablePeru.value = true;
     ableGlobal.value = false;
     useGeojson.continente = {
@@ -653,12 +645,48 @@ const dataPeru = ref([
       maxLongitude: -72.4,
     },
   },
+  {
+    value: "actual",
+    name: "Sísmica actual 1960 - 2024",
+    boundaries: {
+      minLatitude: -18.35,
+      maxLatitude: -0.03,
+      minLongitude: -81.33,
+      maxLongitude: -68.65,
+    },
+  },
+  {
+    value: "historica",
+    name: "Sísmica historica 1471 - 1959",
+    boundaries: {
+      minLatitude: -18.35,
+      maxLatitude: -0.03,
+      minLongitude: -81.33,
+      maxLongitude: -68.65,
+    },
+  },
 ]);
+
+function getValPeru() {
+  if (selPeru.value === "actual" || selPeru.value === "historica") {
+    stateStartDate.value = "disable";
+    disStartDate.value = true;
+    stateEndDate.value = "disable";
+    disEndDate.value = true;
+  } else {
+    stateStartDate.value = "enable";
+    disStartDate.value = false;
+    stateEndDate.value = "enable";
+    disEndDate.value = false;
+  }
+}
 
 watch(selPeru, (newValue) => {
   const depSeleccionado = dataPeru.value.find(
     (departamento) => departamento.value === newValue
   );
+
+  getValPeru();
 
   if (depSeleccionado) {
     const boundaries = depSeleccionado.boundaries;
@@ -766,6 +794,7 @@ watch(selContinente, (newValue) => {
 
 //MAGNITUD
 const magnitudeRange = ref([4, 9.5]);
+const disabledSlider = ref(true);
 const marks = {
   4: "4",
   4.5: "4.5",
@@ -867,11 +896,11 @@ const isDisabled = (index) => {
 watch(
   () => useGeojson.estadoPl, // Observar la propiedad estadoPl
   (newValue) => {
-    console.log(newValue); // Imprime el nuevo valor de estadoPl
     if (newValue === "enable") {
       statePlay.value = "disable";
       stateStop.value = "enable";
     } else if (newValue === "disable") {
+      toggleStop();
       stateStop.value = "disable";
       statePlay.value = "enable";
     }
@@ -879,6 +908,32 @@ watch(
 );
 
 const togglePlay = () => {
+  if (activeTab.value === "peru") {
+    if (selPeru.value === "actual") {
+      const act = {
+        month: new Date().getMonth(),
+        year: new Date().getFullYear(),
+      };
+      useGeojson.rangoFechas = {
+        startDate: convertToDate({ month: 0, year: 1960 }),
+        endDate: convertToDate(act),
+      };
+    } else if (selPeru.value === "historica") {
+      useGeojson.rangoFechas = {
+        startDate: convertToDate({ month: 0, year: 1471 }),
+        endDate: convertToDate({ month: 11, year: 1959 }),
+      };
+    } else {
+      useGeojson.rangoFechas = {
+        startDate: convertToDate(startDate.value),
+        endDate: convertToDate(endDate.value),
+      };
+    }
+  }
+  useGeojson.rangoFechas = {
+    startDate: convertToDate(startDate.value),
+    endDate: convertToDate(endDate.value),
+  };
   useGeojson.estadoPl = "enable";
   statePeru.value = "disable";
   stateStartDate.value = "disable";
@@ -887,29 +942,30 @@ const togglePlay = () => {
   disEndDate.value = true;
   stateContinente.value = "disable";
   stateCheckList.value = "disable";
+  disabledSlider.value = true;
 
   useGeojson.rangoMagnitud = {
     maxMag: magnitudeRange.value[0],
     minMag: magnitudeRange.value[1],
   };
 
-  useGeojson.rangoFechas = {
-    startDate: convertToDate(startDate.value),
-    endDate: convertToDate(endDate.value),
-  };
   useGeojson.profundidad = selectionState.value;
 };
 
 const toggleStop = () => {
   useGeojson.estadoPl = "disable";
-
+  disabledSlider.value = false;
   statePeru.value = "enable";
-  stateStartDate.value = "enable";
-  disStartDate.value = false;
-  stateEndDate.value = "enable";
-  disEndDate.value = false;
   stateContinente.value = "enable";
   stateCheckList.value = "enable";
+  if (activeTab.value === "peru") {
+    getValPeru();
+  } else {
+    stateStartDate.value = "enable";
+    disStartDate.value = false;
+    stateEndDate.value = "enable";
+    disEndDate.value = false;
+  }
 };
 </script>
 
@@ -988,12 +1044,5 @@ const toggleStop = () => {
 .tooltipmodal:hover .tooltiptextmodal {
   visibility: visible;
   opacity: 1;
-}
-.dp__disabled.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg {
-  color: #0032ff !important;
-}
-
-.dp__pointer.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg {
-  color: #0032ff !important;
 }
 </style>

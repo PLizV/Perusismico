@@ -11,15 +11,9 @@ import * as L from "leaflet/dist/leaflet-src.js";
 import Papa from "papaparse";
 //import "leaflet.pattern";
 import "leaflet/dist/leaflet.css";
-import circulo from "@/assets/icons/icircle.vue";
-import carpeta from "@/assets/icons/vermas.vue";
 import { useGeojsonStore } from "@/stores/geojson.js";
 
 export default {
-  components: {
-    circulo,
-    carpeta,
-  },
   data() {
     return {
       map: null,
@@ -31,6 +25,7 @@ export default {
       flashInterval: null, // Para almacenar el intervalo de destello
       sumarProf: 0,
       intervalId: null,
+      isGeoJSONProcessing: false,
     };
   },
   mounted() {
@@ -59,7 +54,7 @@ export default {
       ),
       luzNotable = L.tileLayer(
         "https://a.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
-        { attribution: attribution, noWrap: false }
+        { attribution: attribution }
       ),
       viajero = L.tileLayer(
         "https://basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png",
@@ -96,13 +91,13 @@ export default {
       );
 
     const windowWidth = window.innerWidth;
-
-    if (windowWidth < 991) {
+    console.log("=)", windowWidth);
+    if (windowWidth <= 1920) {
       this.initialZoom = 2;
-      this.initialLatLeng = [20, 0];
+      this.initialLatLeng = [10, 0];
     } else {
       this.initialZoom = 3;
-      this.initialLatLeng = [20, 0];
+      this.initialLatLeng = [37, 0];
     }
     // Define límites (bounds) para evitar la repetición del mapa
     const southWest = L.latLng(-75, -270);
@@ -110,11 +105,11 @@ export default {
     const bounds = L.latLngBounds(southWest, northEast);
     // Inicializa el mapa
     this.map = L.map("map", {
-      minZoom: 2,
+      minZoom: this.initialZoom,
       maxZoom: 18,
       center: this.initialLatLeng,
       zoom: this.initialZoom,
-      layers: [luzNotable], // cambiar favorito
+      layers: [gris], // cambiar favorito
       fullscreenControlOptions: { position: "bottomright" },
       preferCanvas: false,
       maxBounds: bounds, // Fija los límites del mapa
@@ -164,8 +159,13 @@ export default {
 
         repeatOffsets.forEach((offset) => {
           const geoJSONLayerClone = L.geoJSON(response.data, {
-            style: function (feature) {
-              return { color: "#fff" }; // Puedes personalizar el estilo aquí
+            style: function () {
+              return {
+                color: "#fff", // Color del borde
+                weight: 0.5, // Grosor del borde más delgado (ajústalo a tu gusto)
+                opacity: 1, // Opacidad del borde
+                fillOpacity: 0.5, // Opacidad del relleno (ajústalo si lo deseas)
+              };
             },
             onEachFeature: function (feature, layer) {
               if (feature.properties && feature.properties.name) {
@@ -199,37 +199,23 @@ export default {
     });
   },
   watch: {
-    "useGeojson.continente": {
-      async handler() {
-        const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
-        this.addGeoJSONToMap(geoJSONData);
-      },
-      deep: true,
-    },
-    "useGeojson.rangoFechas": {
-      async handler() {
-        const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
-        this.addGeoJSONToMap(geoJSONData);
-      },
-      deep: true,
-    },
-    "useGeojson.rangoMagnitud": {
-      async handler() {
-        const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
-        this.addGeoJSONToMap(geoJSONData);
-      },
-      deep: true,
-    },
-    "useGeojson.profundidad": {
-      async handler() {
-        const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
-        this.addGeoJSONToMap(geoJSONData);
-      },
-      deep: true,
-    },
-  },
+  "useGeojson.continente": "handleGeoJSONUpdate",
+  "useGeojson.rangoFechas": "handleGeoJSONUpdate",
+  "useGeojson.rangoMagnitud": "handleGeoJSONUpdate",
+  "useGeojson.profundidad": "handleGeoJSONUpdate",
+},
 
   methods: {
+    async handleGeoJSONUpdate() {
+    if (this.isGeoJSONProcessing) return;
+    this.isGeoJSONProcessing = true;
+    
+    const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
+    this.addGeoJSONToMap(geoJSONData);
+    
+    // Reset after processing
+    this.isGeoJSONProcessing = false;
+  },
     convertCSVToGeoJSON(data) {
       // Filtrar por latitud y longitud
       const filteredByCoordinates = data.filter((row) => {
@@ -336,31 +322,20 @@ export default {
           const magnitude = feature.properties.mag;
 
           if (magnitude >= 4 && magnitude <= 5) {
-            radius = 2.3;
+            radius = 3.5;
           } else if (magnitude > 5 && magnitude <= 6) {
             radius = 4.5;
           } else if (magnitude > 6 && magnitude <= 7) {
-            radius = 6.5;
+            radius = 5.5;
           } else if (magnitude > 7 && magnitude <= 9.5) {
-            radius = 9.5;
+            radius = 13;
           }
-          console.log(
-            L.circleMarker(latlng, {
-              className: "pulse",
-              radius: radius + this.sumarProf,
-              fillColor: color,
-              opacity: 0.5,
-              color: "#000",
-              opacity: 1,
-              fillOpacity: 0.9,
-            })
-          );
+
           return L.circleMarker(latlng, {
             className: "pulse",
             radius: radius + this.sumarProf,
             fillColor: color,
             opacity: 0.5,
-            opacity: 1,
             fillOpacity: 0.9,
           });
         },
@@ -399,7 +374,7 @@ export default {
       // Reiniciar `features` con los datos actuales
       const features = geoJSON.features; // Datos filtrados actuales
       const chunkSize = 1; // Tamaño del grupo - 10 en 10
-      const segundos = 0.1; //cantidad de segundos - 1 segundo
+      const segundos = 0.05; //cantidad de segundos - 1 segundo
       let index = 0; // Índice inicial
 
       // Añadir los puntos en intervalos
@@ -409,14 +384,8 @@ export default {
           this.useGeojson.estadoPl === "disable"
         ) {
           clearInterval(this.intervalId); // Detener el intervalo al finalizar
-          console.log("YA PARE");
-          const checkboxes = document.querySelectorAll(".bloqueadas"); // Selector de las casillas
-    checkboxes.forEach((checkbox) => {
-      checkbox.disabled = false; // Habilitar
-    });
-
-    return;
-         
+          this.useGeojson.estadoPl = "disable";
+          return;
         }
 
         // Seleccionar el siguiente grupo de puntos
@@ -534,11 +503,24 @@ export default {
     }, */
   },
   beforeUnmount() {
-    // Limpiar el intervalo de destello al desmontar
-    if (this.flashInterval) {
-      clearInterval(this.flashInterval);
+    // Detener cualquier intervalo en ejecución al desmontar
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
     }
-    this.map.remove();
+
+    // Eliminar capas del mapa si es necesario
+    if (this.csvLayer) {
+      this.map.removeLayer(this.csvLayer);
+      this.csvLayer = null;
+    }
+
+    // Limpiar el mapa
+    if (this.map) {
+      this.map.off(); // Desvincula todos los eventos
+      this.map.remove(); // Elimina el mapa
+      this.map = null;
+    }
   },
 };
 </script>
@@ -554,7 +536,7 @@ export default {
   animation: pulsate 1s ease-out;
   opacity: 1;
   stroke-width: 0.04rem;
-  stroke: black;
+  stroke: white;
 }
 @keyframes pulsate {
   0% {
