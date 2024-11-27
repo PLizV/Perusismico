@@ -82,7 +82,7 @@
         </div>
       </div>
       <div
-        class="mt-0 sm:mt-0 md:mt-0 lg:mt-0 xl:mt-0 2xl:mt-0 col-span-12 sm:col-span-12 md:col-span-6 lg:col-span-6 xl:col-span-6 2xl:col-span-6 flex justify-center items-center order-1 sm:order-1 md:order-2 lg:order-2 xl:order-2 2xl:order-2"
+        class="mt-10 sm:mt-10 md:mt-0 lg:mt-0 xl:mt-0 2xl:mt-0 col-span-12 sm:col-span-12 md:col-span-6 lg:col-span-6 xl:col-span-6 2xl:col-span-6 flex justify-center items-center order-1 sm:order-1 md:order-2 lg:order-2 xl:order-2 2xl:order-2"
       >
         <div class="globe w-full h-full" ref="globeContainer">
           <!-- Imagen final que aparece en el globo -->

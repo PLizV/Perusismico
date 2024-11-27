@@ -1,14 +1,20 @@
 <template>
   <div
-    class="flex items-center px-4 sm:px-4 md:px-0 lg:px-0 xl:px-0 2xl:px-0 ml-0 sm:ml-0 md:ml-8 lg:ml-10 xl:ml-14 2xl:ml-20 justify-start z-10 scroll-auto select-none relative mt-16"
+    class="flex items-center px-4 sm:px-4 md:px-0 lg:px-4 xl:px-0 2xl:px-0 ml-0 sm:ml-0 md:ml-8 lg:ml-10 xl:ml-14 2xl:ml-20 justify-start z-10 scroll-auto select-none relative"
   >
     <!-- Panel de control -->
 
     <div
-      class="px-4 pt-3 grid grid-cols-1 md:grid-cols-12 bg-[#FCFDFF] rounded-2xl w-[490px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
+      class="fixed px-4 mt-3 grid grid-cols-12 bg-[#FCFDFF] rounded-2xl border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024] w-[400px] sm:w-[400px] md:w-[400px] lg:w-[490px] xl:w-[490px] 2xl:w-[490px]"
+      ref="draggableDiv"
+      :class="{ 'transition-transform duration-300': isAnimating }"
     >
+      <div
+        class="h-1 rounded-xl bg-igp-muted cursor-pointer col-span-4 flex mt-3 col-start-5"
+        @click="toggleOpen"
+      ></div>
       <div class="grid grid-cols-12 col-span-12 mt-3">
-        <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
+        <div class="col-span-6">
           <!-- Botón Global -->
           <button
             :disabled="ableGlobal"
@@ -26,7 +32,7 @@
           </button>
         </div>
 
-        <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
+        <div class="col-span-6 flex">
           <!-- Botón Perú -->
           <button
             :disabled="ablePeru"
@@ -156,7 +162,7 @@
         </div>
         <!-- SELECCION DE CAPAS CHECK -->
         <div class="col-span-12 pl-3 mt-2">
-          <div class="slider">
+          <div class="slider focus:outline-none">
             <Slider
               v-model:value="magnitudeRange"
               :marks="marks"
@@ -169,7 +175,7 @@
             />
           </div>
         </div>
-        <div class="col-span-12 flex items-center justify-center">
+        <div class="col-span-12 flex items-center justify-center mt-2">
           <button
             data-tooltip-target="tooltip-defaultP"
             type="button"
@@ -248,7 +254,7 @@
                   type="checkbox"
                   :id="'checkbox-' + index"
                   v-model="checkedItems[index]"
-                  class="mr-4"
+                  class="mr-4 focus:outline-none"
                   :disabled="isDisabled(index)"
                   :class="{
                     'cursor-not-allowed': isDisabled(index),
@@ -276,23 +282,23 @@
         </div>
       </div>
       <!--  <div class="col-span-5 pt-4">
-        <tButton
-          @click="actCompartir"
-          class="mx-3 mb-1 w-full"
-          color="grayState"
-          size="md"
-          round="md"
-        >
-          <img :src="share" class="w-[18px] h-[18px]" alt="" />
-          Compartir
-        </tButton>
-      </div> -->
+          <tButton
+            @click="actCompartir"
+            class="mx-3 mb-1 w-full"
+            color="grayState"
+            size="md"
+            round="md"
+          >
+            <img :src="share" class="w-[18px] h-[18px]" alt="" />
+            Compartir
+          </tButton>
+        </div> -->
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, watch } from "vue";
+  
+  <script setup>
+import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import tLabel from "@/components/ui/atoms/t-label.vue";
 import tSelect from "@/components/ui/atoms/t-select.vue";
 import profundidad from "@/assets/icons/profundidad.svg";
@@ -308,6 +314,86 @@ import iplay from "@/assets/icons/iplay.vue";
 import istop from "@/assets/icons/istop.vue";
 import "flowbite";
 
+//////////////////////////////////////
+import Hammer from "hammerjs";
+const draggableDiv = ref(null);
+let initialY = 0;
+let currentY = 0;
+let yOffset = 0;
+let isDragging = false;
+let isOpen = false; // Estado para trackear si el div está abierto o cerrado
+const isAnimating = ref(false); // Estado para manejar la animación
+
+const toggleOpen = () => {
+  const maxTopOffset = 0; // Posición superior completamente visible
+  const maxBottomOffset =
+    window.innerHeight - draggableDiv.value.offsetHeight / 1; // Posición inferior oculta a la mitad
+
+  if (isOpen) {
+    // Ocultar el div hasta la mitad
+    currentY = maxBottomOffset;
+  } else {
+    // Mostrar el div completamente
+    currentY = maxTopOffset;
+  }
+
+  // Activar la animación y aplicar la transformación
+  isAnimating.value = true;
+  draggableDiv.value.style.transform = `translateY(${currentY}px)`;
+
+  // Desactivar la animación después de que termine la transición
+  setTimeout(() => {
+    isAnimating.value = false;
+    yOffset = currentY; // Actualizar yOffset después de la animación
+  }, 300); // Duración de la transición en ms
+
+  // Actualizar el estado
+  isOpen = !isOpen;
+};
+const handleGesture = (event) => {
+  const divHeight = draggableDiv.value.offsetHeight;
+  const maxBottomOffset = window.innerHeight - divHeight / 3; // El div puede ocultarse hasta la mitad
+
+  switch (event.type) {
+    case "panstart":
+      isAnimating.value = false; // Desactivar la animación durante el arrastre
+      isDragging = true;
+      initialY = event.center.y;
+      break;
+    case "panmove":
+      if (isDragging) {
+        currentY = event.center.y - initialY + yOffset;
+        // Permitir movimiento ilimitado hacia arriba y limitar hacia abajo
+        currentY = Math.min(maxBottomOffset, currentY);
+        draggableDiv.value.style.transform = `translateY(${currentY}px)`;
+      }
+      break;
+    case "panend":
+      yOffset = currentY;
+      isDragging = false;
+      break;
+  }
+};
+onMounted(() => {
+  const divHeight = draggableDiv.value.offsetHeight;
+  const initialHiddenPosition = window.innerHeight - divHeight / 2;
+  currentY = initialHiddenPosition;
+  yOffset = currentY;
+  draggableDiv.value.style.transform = `translateY(${currentY}px)`;
+
+  const hammer = new Hammer(draggableDiv.value);
+  hammer.get("pan").set({ direction: Hammer.DIRECTION_VERTICAL });
+
+  hammer.on("panstart panmove panend", handleGesture);
+});
+
+onBeforeUnmount(() => {
+  if (draggableDiv.value) {
+    const hammer = new Hammer(draggableDiv.value);
+    hammer.off("panstart panmove panend", handleGesture);
+  }
+});
+//////////////////////////////////////
 const useGeojson = useGeojsonStore();
 const stateStop = ref("enable");
 const statePlay = ref("disable");
@@ -966,8 +1052,8 @@ const toggleStop = () => {
   }
 };
 </script>
-
-<style>
+  
+  <style>
 .ant-slider-mark {
   font-size: 5px;
   /* Cambia este valor para ajustar el tamaño de la fuente */
@@ -1026,7 +1112,7 @@ const toggleStop = () => {
   visibility: hidden;
   background-color: rgb(160, 160, 160);
   color: white;
-  font-size: 12px;
+  font-size: 8px;
   text-align: center;
   border-radius: 6px;
   padding: 5px 5px;
@@ -1043,7 +1129,9 @@ const toggleStop = () => {
   visibility: visible;
   opacity: 1;
 }
+
 .ant-slider-mark-text.ant-slider-mark-text-active {
-    font-size: 12px;
-  }
+  font-size: 12px;
+}
 </style>
+  
