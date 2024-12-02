@@ -373,8 +373,8 @@ export default {
 
       // Reiniciar `features` con los datos actuales
       const features = geoJSON.features; // Datos filtrados actuales
-      const chunkSize = 1; // Tamaño del grupo - 10 en 10
-      const segundos = 0.05; //cantidad de segundos - 1 segundo
+      const chunkSize = 1; // Tamaño del grupo - 1 en 1
+      const segundos = 0.05; //cantidad de segundos - 0.05 segundos
       let index = 0; // Índice inicial
 
       // Añadir los puntos en intervalos
