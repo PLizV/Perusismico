@@ -397,10 +397,10 @@ const dataPeru = ref([
     value: "amazonas",
     name: "Amazonas",
     boundaries: {
-      minLatitude: -5.0,
-      maxLatitude: -3.5,
-      minLongitude: -78.5,
-      maxLongitude: -76.5,
+    minLatitude: -6.0,
+    maxLatitude: -2.8,
+    minLongitude: -79.5,
+    maxLongitude: -75.5
     },
   },
   {
@@ -417,40 +417,40 @@ const dataPeru = ref([
     value: "apurimac",
     name: "Apurímac",
     boundaries: {
-      minLatitude: -14.1,
-      maxLatitude: -13.1,
-      minLongitude: -74.2,
-      maxLongitude: -72.5,
+    minLatitude: -14.5,
+    maxLatitude: -12.8,
+    minLongitude: -74.5,
+    maxLongitude: -72.0
     },
   },
   {
     value: "arequipa",
     name: "Arequipa",
     boundaries: {
-      minLatitude: -17.5,
-      maxLatitude: -15.2,
-      minLongitude: -73.0,
-      maxLongitude: -71.0,
+    minLatitude: -18.0,
+    maxLatitude: -14.5,
+    minLongitude: -73.5,
+    maxLongitude: -70.5
     },
   },
   {
     value: "ayacucho",
     name: "Ayacucho",
     boundaries: {
-      minLatitude: -14.5,
-      maxLatitude: -12.5,
-      minLongitude: -75.0,
-      maxLongitude: -73.0,
-    },
+    minLatitude: -15.0,
+    maxLatitude: -12.0,
+    minLongitude: -75.5,
+    maxLongitude: -72.5
+  }
   },
   {
     value: "cajamarca",
     name: "Cajamarca",
     boundaries: {
-      minLatitude: -7.0,
-      maxLatitude: -5.0,
-      minLongitude: -79.5,
-      maxLongitude: -77.5,
+    minLatitude: -8.0,
+    maxLatitude: -4.5,
+    minLongitude: -80.5,
+    maxLongitude: -76.5
     },
   },
   {
@@ -467,20 +467,20 @@ const dataPeru = ref([
     value: "cusco",
     name: "Cusco",
     boundaries: {
-      minLatitude: -14.3,
-      maxLatitude: -12.4,
-      minLongitude: -73.4,
-      maxLongitude: -70.6,
+  minLatitude: -17.5,  // Ampliamos aún más hacia el sur
+  maxLatitude: -10.2,  // Ampliamos aún más hacia el norte
+  minLongitude: -75.5, // Ampliamos aún más hacia el oeste
+  maxLongitude: -67.8  // Ampliamos aún más hacia el este
     },
   },
   {
     value: "huancavelica",
     name: "Huancavelica",
     boundaries: {
-      minLatitude: -13.5,
-      maxLatitude: -12.4,
-      minLongitude: -75.5,
-      maxLongitude: -74.2,
+    minLatitude: -14.0,
+    maxLatitude: -12.0,
+    minLongitude: -76.0,
+    maxLongitude: -73.5
     },
   },
   {
@@ -490,7 +490,7 @@ const dataPeru = ref([
       minLatitude: -10.3,
       maxLatitude: -8.3,
       minLongitude: -76.5,
-      maxLongitude: -74.0,
+      maxLongitude: -76.0,
     },
   },
   {
@@ -537,30 +537,30 @@ const dataPeru = ref([
     value: "lima",
     name: "Lima",
     boundaries: {
-      minLatitude: -12.9,
-      maxLatitude: -10.6,
-      minLongitude: -77.8,
-      maxLongitude: -76.3,
+    minLatitude: -12.8,
+    maxLatitude: -10.5,
+    minLongitude: -78.2,
+    maxLongitude: -75.8
     },
   },
   {
     value: "loreto",
     name: "Loreto",
     boundaries: {
-      minLatitude: -5.3,
-      maxLatitude: -0.0,
-      minLongitude: -76.6,
-      maxLongitude: -70.2,
+      minLatitude: -5.15,
+      maxLatitude: -0.05,
+      minLongitude: -79.6,
+      maxLongitude: -71.6,
     },
   },
   {
     value: "madre_de_dios",
     name: "Madre de Dios",
     boundaries: {
-      minLatitude: -13.2,
-      maxLatitude: -10.5,
-      minLongitude: -70.8,
-      maxLongitude: -68.7,
+  minLatitude: -12.8,  // Límite inferior ampliado
+  maxLatitude: -10.2,  // Límite superior ampliado
+  minLongitude: -72.5, // Límite izquierdo ampliado
+  maxLongitude: -69.0  // Límite derecho ampliado
     },
   },
   {
@@ -643,16 +643,7 @@ const dataPeru = ref([
       maxLongitude: -72.4,
     },
   },
-  {
-    value: "actual",
-    name: "Sísmica actual 1960 - 2024",
-    boundaries: {
-      minLatitude: -18.35,
-      maxLatitude: -0.03,
-      minLongitude: -81.33,
-      maxLongitude: -68.65,
-    },
-  },
+  
   {
     value: "historica",
     name: "Sísmica historica 1471 - 1959",

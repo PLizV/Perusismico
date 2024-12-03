@@ -162,7 +162,7 @@ export default {
             style: function () {
               return {
                 color: "#fff", // Color del borde
-                weight: 0.5, // Grosor del borde más delgado (ajústalo a tu gusto)
+                weight: 0.6, // Grosor del borde más delgado (ajústalo a tu gusto)
                 opacity: 1, // Opacidad del borde
                 fillOpacity: 0.5, // Opacidad del relleno (ajústalo si lo deseas)
               };
@@ -322,11 +322,11 @@ export default {
           const magnitude = feature.properties.mag;
 
           if (magnitude >= 4 && magnitude <= 5) {
-            radius = 3.5;
+            radius = 1.5;
           } else if (magnitude > 5 && magnitude <= 6) {
-            radius = 4.5;
+            radius = 3.5;
           } else if (magnitude > 6 && magnitude <= 7) {
-            radius = 5.5;
+            radius = 6.5;
           } else if (magnitude > 7 && magnitude <= 9.5) {
             radius = 13;
           }
@@ -374,7 +374,7 @@ export default {
       // Reiniciar `features` con los datos actuales
       const features = geoJSON.features; // Datos filtrados actuales
       const chunkSize = 1; // Tamaño del grupo - 1 en 1
-      const segundos = 0.05; //cantidad de segundos - 0.05 segundos
+      const segundos = 0.05; //cantidad de segundos - 0.05 segundo
       let index = 0; // Índice inicial
 
       // Añadir los puntos en intervalos
