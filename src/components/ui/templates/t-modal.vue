@@ -45,8 +45,8 @@
       </div>
 
       <span class="text-igp-dark-300 col-span-12 text-sm px-3 mt-3">
-        Para iniciar, seleccione la región, período de datos, rango de magnitud
-        y profundidad para visualizar los sismos.
+        Para visualizar los sismos, primero seleccione la región, el periodo de
+        datos, el rango de magnitud y profundidad de los sismos.
       </span>
 
       <div

@@ -158,9 +158,8 @@ const showModal = () => {
     title:
       '<span class="text-igp-blue text-2xl font-semibold">Créditos de PerúSis</span>', // Título con color personalizado
     html: `
-      <p class="text-start text-sm">Perú Sísmico es una plataforma desarrollada bajo el liderazgo del <strong>Dr. Hernando Tavera</strong>, investigador científico, 
-      junto con el equipo de innovación digital del Instituto Geofísico del Perú (IGP). Este proyecto busca fortalecer la gestión 
-      del riesgo de desastres y contribuir a la educación en temas de sismicidad en el país.</p>
+      <p class="text-start text-sm">Perú Sísmico es una plataforma desarrollada bajo la dirección del <strong>Dr. Hernando Tavera</strong>, investigador científico, 
+      junto con el equipo de innovación digital del Instituto Geofísico del Perú (IGP). Este proyecto busca reducir el riesgo de desastres y contribuir a la educación en el país.</p>
 
       <p class="text-start text-sm pt-2">La plataforma integra datos del Centro Sismológico Nacional (CENSIS) a cargo del IGP y del National Earthquake Information 
       Center (NEIC) de la U.S. Geological Survey (USGS) de los EEUU.</p>
