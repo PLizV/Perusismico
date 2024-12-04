@@ -324,19 +324,19 @@ export default {
           if (magnitude >= 4 && magnitude <= 5) {
             radius = 1.5;
           } else if (magnitude > 5 && magnitude <= 6) {
-            radius = 3.5;
+            radius = 3.8;
           } else if (magnitude > 6 && magnitude <= 7) {
-            radius = 6.5;
+            radius = 10.5;
           } else if (magnitude > 7 && magnitude <= 9.5) {
-            radius = 13;
+            radius = 20;
           }
 
           return L.circleMarker(latlng, {
             className: "pulse",
             radius: radius + this.sumarProf,
             fillColor: color,
-            opacity: 0.5,
-            fillOpacity: 0.9,
+            fillOpacity: 0,
+            color: color,
           });
         },
 
@@ -536,7 +536,7 @@ export default {
   animation: pulsate 1s ease-out;
   opacity: 1;
   stroke-width: 0.04rem;
-  stroke: white;
+
 }
 @keyframes pulsate {
   0% {
