@@ -3,12 +3,29 @@
     class="flex items-center px-4 sm:px-4 md:px-0 lg:px-0 xl:px-0 2xl:px-0 ml-0 sm:ml-0 md:ml-8 lg:ml-10 xl:ml-14 2xl:ml-20 justify-start z-10 scroll-auto select-none relative mt-16"
   >
     <!-- Panel de control -->
-
-    <div
-      class="px-4 pt-3 grid grid-cols-1 md:grid-cols-12 bg-[#FCFDFF] rounded-2xl w-[490px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
+    <button
+      class="toggle-btn bg-transparent border-none text-lg cursor-pointer z-20"
+      @click="toggleWindowState" :title="isVisible ? 'Minimizar' : 'Maximizar'" 
     >
-      <div class="grid grid-cols-12 col-span-12 mt-3">
-        <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
+      <!-- Si la ventana está visible, muestra el ícono de cerrar (X) -->
+     <img v-if="isVisible" width="50" height="50" src="https://img.icons8.com/ios-filled/50/shrink.png"  alt="Minimizar"
+      class="w-6 h-6">
+      <!-- Si la ventana está oculta, muestra el ícono de maximizar/restaurar -->
+      <img v-else width="50" height="50" src="https://img.icons8.com/glyph-neue/64/toggle-full-screen.png"  alt="Maximizar"
+      class="w-7 h-7">
+        
+
+    </button>
+    <div
+      v-show="isVisible"  class="px-4 pt-3 grid grid-cols-1 md:grid-cols-12 bg-[#FCFDFF] rounded-2xl w-[490px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
+    >
+      <div class="col-span-1 sm:col-span-3 md:col-span-6 flex justify-between items-center">
+        <!-- Botón para ocultar/mostrar la ventana -->
+             </div>
+         <div class="grid grid-cols-12 col-span-12 mt-3">
+         <div class="col-span-1 sm:col-span-3 md:col-span-6 flex"> 
+            
+
           <!-- Botón Global -->
           <button
             :disabled="ableGlobal"
@@ -289,7 +306,7 @@
       </div> -->
     </div>
   </div>
-</template>
+  </template>
 
 <script setup>
 import { ref, watch } from "vue";
@@ -307,6 +324,14 @@ import { useGeojsonStore } from "@/stores/geojson";
 import iplay from "@/assets/icons/iplay.vue";
 import istop from "@/assets/icons/istop.vue";
 import "flowbite";
+
+// Estado de visibilidad del contenedor
+const isVisible = ref(true);
+
+// Función para alternar entre ocultar y mostrar la ventana
+const toggleWindowState = () => {
+  isVisible.value = !isVisible.value;
+};
 
 const useGeojson = useGeojsonStore();
 const stateStop = ref("enable");
@@ -861,6 +886,7 @@ const selectionState = ref({
   isIntermediate: true,
   isDeep: true,
 });
+
 const handleCheckboxChange = () => {
   const isSuperficial = checkedItems.value[0];
   const isIntermediate = checkedItems.value[1];
@@ -1037,4 +1063,20 @@ const toggleStop = () => {
 .ant-slider-mark-text.ant-slider-mark-text-active {
     font-size: 12px;
   }
+
+  .toggle-btn {
+  font-size: 18px;
+  font-weight: bold;
+  z-index: 10;
+  display: flex;
+  justify-content: flex-end;  /* Asegura que el ícono se alinee a la izquierda */
+  align-items: center;
+  width: 26%;
+}
+
+button[title] {
+  position: relative;
+}
+
+
 </style>
