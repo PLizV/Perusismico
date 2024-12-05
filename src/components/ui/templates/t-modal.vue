@@ -1,12 +1,30 @@
 <template>
   <div
-    class="flex items-center px-4 sm:px-4 md:px-0 lg:px-0 xl:px-0 2xl:px-0 ml-0 sm:ml-0 md:ml-8 lg:ml-10 xl:ml-14 2xl:ml-20 justify-start z-10 scroll-auto select-none relative mt-16"
+    class="flex items-center px-4 sm:px-4 md:px-0 lg:px-0 xl:px-0 2xl:px-0 ml-0 sm:ml-0 md:ml-8 lg:ml-10 xl:ml-14 2xl:ml-20 justify-start z-10 scroll-auto select-none absolute mt-16"
   >
     <!-- Panel de control -->
 
     <div
+      v-if="muestraModal"
       class="px-4 pt-3 grid grid-cols-1 md:grid-cols-12 bg-[#FCFDFF] rounded-2xl w-[490px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
     >
+      <button
+        class="ml-auto col-span-12"
+        data-tooltip-target="tooltip-right"
+        data-tooltip-placement="right"
+        type="button"
+        @click="cerrarModal"
+      >
+        <img :src="shared" alt="img_share" height="18" width="16" />
+      </button>
+      <div
+        id="tooltip-right"
+        role="tooltip"
+        class="absolute z-10 invisible inline-block text-xs px-3 py-2 font-medium text-white bg-gray-600 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+      >
+        Minimizar
+        <div class="tooltip-arrow" data-popper-arrow></div>
+      </div>
       <div class="grid grid-cols-12 col-span-12 mt-3">
         <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
           <!-- Botón Global -->
@@ -45,8 +63,8 @@
       </div>
 
       <span class="text-igp-dark-300 col-span-12 text-sm px-3 mt-3">
-        Para iniciar, seleccione la región, período de datos, rango de magnitud
-        y profundidad para visualizar los sismos.
+        Para visualizar los sismos, primero seleccione la región, el periodo de
+        datos, el rango de magnitud y profundidad de los sismos.
       </span>
 
       <div
@@ -288,6 +306,20 @@
         </tButton>
       </div> -->
     </div>
+    <button
+      v-else
+      class="px-4 py-3 font-medium text-sm text-igp-blue flex items-center bg-[#FCFDFF] rounded-2xl w-[490px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
+      @click="cerrarModal"
+    >
+      Personalizar parametros sismicos
+      <img
+        :src="share"
+        class="ml-auto"
+        alt="img_share"
+        height="18"
+        width="16"
+      />
+    </button>
   </div>
 </template>
 
@@ -296,6 +328,8 @@ import { ref, watch } from "vue";
 import tLabel from "@/components/ui/atoms/t-label.vue";
 import tSelect from "@/components/ui/atoms/t-select.vue";
 import profundidad from "@/assets/icons/profundidad.svg";
+import shared from "@/assets/icons/shared.svg";
+import share from "@/assets/icons/share.svg";
 import magnitud from "@/assets/icons/magnitud.svg";
 import calendario from "@/assets/icons/calendario.svg";
 import iconworld from "@/assets/icons/world.vue";
@@ -315,7 +349,11 @@ const statePlay = ref("disable");
 const ablePeru = ref(false);
 const ableGlobal = ref(true);
 const activeTab = ref("global");
-
+const muestraModal = ref(true);
+// Función para cerrar el modal
+function cerrarModal() {
+  muestraModal.value = !muestraModal.value;
+}
 // Estilos para los círculos personalizados
 const redCircleStyle = {
   display: "inline-block",
@@ -641,16 +679,6 @@ const dataPeru = ref([
       maxLatitude: -7.0,
       minLongitude: -75.6,
       maxLongitude: -72.4,
-    },
-  },
-  {
-    value: "actual",
-    name: "Sísmica actual 1960 - 2024",
-    boundaries: {
-      minLatitude: -18.35,
-      maxLatitude: -0.03,
-      minLongitude: -81.33,
-      maxLongitude: -68.65,
     },
   },
   {
@@ -1044,6 +1072,6 @@ const toggleStop = () => {
   opacity: 1;
 }
 .ant-slider-mark-text.ant-slider-mark-text-active {
-    font-size: 12px;
-  }
+  font-size: 12px;
+}
 </style>

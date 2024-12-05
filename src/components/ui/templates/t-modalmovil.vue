@@ -50,9 +50,9 @@
         </div>
       </div>
 
-      <span class="text-igp-dark-300 col-span-12 text-sm px-3 mt-3">
-        Para iniciar, seleccione la región, período de datos, rango de magnitud
-        y profundidad para visualizar los sismos.
+      <span class="text-igp-dark-300 col-span-12 text-xs px-3 mt-3">
+        Para visualizar los sismos, primero seleccione la región, el periodo de
+        datos, el rango de magnitud y profundidad de los sismos.
       </span>
 
       <div
@@ -727,16 +727,6 @@ const dataPeru = ref([
       maxLatitude: -7.0,
       minLongitude: -75.6,
       maxLongitude: -72.4,
-    },
-  },
-  {
-    value: "actual",
-    name: "Sísmica actual 1960 - 2024",
-    boundaries: {
-      minLatitude: -18.35,
-      maxLatitude: -0.03,
-      minLongitude: -81.33,
-      maxLongitude: -68.65,
     },
   },
   {

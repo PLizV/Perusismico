@@ -9,6 +9,8 @@
 import axios from "axios";
 import * as L from "leaflet/dist/leaflet-src.js";
 import Papa from "papaparse";
+import { DateTime } from "luxon";
+import * as XLSX from "xlsx";
 //import "leaflet.pattern";
 import "leaflet/dist/leaflet.css";
 import { useGeojsonStore } from "@/stores/geojson.js";
@@ -91,7 +93,6 @@ export default {
       );
 
     const windowWidth = window.innerWidth;
-    console.log("=)", windowWidth);
     if (windowWidth <= 1920) {
       this.initialZoom = 2;
       this.initialLatLeng = [10, 0];
@@ -186,7 +187,7 @@ export default {
       });
 
     // Cargar el archivo CSV
-    axios.get("/data.csv").then((response) => {
+    axios.get("/datas/data_noviembre.csv").then((response) => {
       Papa.parse(response.data, {
         header: true,
         dynamicTyping: true,
@@ -197,25 +198,56 @@ export default {
         },
       });
     });
+
+    /*     axios
+      .get("/datas/data_diciembre.xlsx", { responseType: "arraybuffer" })
+      .then((response) => {
+        const workbook = XLSX.read(response.data, { type: "array" });
+        const firstSheetName = workbook.SheetNames[0];
+        const sheetData = XLSX.utils.sheet_to_json(
+          workbook.Sheets[firstSheetName]
+        );
+        console.log(sheetData);
+        // Convertir `date` y `hour` a un formato ISO 8601 para la columna `time`
+        const formattedData = sheetData.map((row) => {
+          const { date, hour, ...rest } = row;
+          const formattedTime = DateTime.fromFormat(
+            `${date} ${hour}`,
+            "dd/MM/yyyy HH:mm:ss"
+          ).toISO();
+
+          console.log(formattedData);
+          return {
+            ...rest,
+            time: formattedTime,
+          };
+        });
+
+        const geoJSONData = convertCSVToGeoJSON(formattedData); // Usa tu función existente
+        this.setData = formattedData;
+        this.addGeoJSONToMap(geoJSONData); // Usa tu lógica existente
+      });
+
+ */
   },
   watch: {
-  "useGeojson.continente": "handleGeoJSONUpdate",
-  "useGeojson.rangoFechas": "handleGeoJSONUpdate",
-  "useGeojson.rangoMagnitud": "handleGeoJSONUpdate",
-  "useGeojson.profundidad": "handleGeoJSONUpdate",
-},
+    "useGeojson.continente": "handleGeoJSONUpdate",
+    "useGeojson.rangoFechas": "handleGeoJSONUpdate",
+    "useGeojson.rangoMagnitud": "handleGeoJSONUpdate",
+    "useGeojson.profundidad": "handleGeoJSONUpdate",
+  },
 
   methods: {
     async handleGeoJSONUpdate() {
-    if (this.isGeoJSONProcessing) return;
-    this.isGeoJSONProcessing = true;
-    
-    const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
-    this.addGeoJSONToMap(geoJSONData);
-    
-    // Reset after processing
-    this.isGeoJSONProcessing = false;
-  },
+      if (this.isGeoJSONProcessing) return;
+      this.isGeoJSONProcessing = true;
+
+      const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
+      this.addGeoJSONToMap(geoJSONData);
+
+      // Reset after processing
+      this.isGeoJSONProcessing = false;
+    },
     convertCSVToGeoJSON(data) {
       // Filtrar por latitud y longitud
       const filteredByCoordinates = data.filter((row) => {
@@ -282,6 +314,7 @@ export default {
             place: row.place,
             time: row.time,
             depth: row.depth,
+            magType: row.magType,
           },
         })),
       };
@@ -324,32 +357,37 @@ export default {
           if (magnitude >= 4 && magnitude <= 5) {
             radius = 3.5;
           } else if (magnitude > 5 && magnitude <= 6) {
-            radius = 4.5;
-          } else if (magnitude > 6 && magnitude <= 7) {
             radius = 5.5;
+          } else if (magnitude > 6 && magnitude <= 7) {
+            radius = 8.5;
           } else if (magnitude > 7 && magnitude <= 9.5) {
-            radius = 13;
+            radius = 15;
           }
 
           return L.circleMarker(latlng, {
             className: "pulse",
             radius: radius + this.sumarProf,
             fillColor: color,
+            /* CIRCULO COMPLETO
             opacity: 0.5,
             fillOpacity: 0.9,
+            */
+            /* CIRCULO HUECO */
+            fillOpacity: 0,
+            color: color,
           });
         },
 
         onEachFeature: (feature, layer) => {
           // Muestra un popup con la información del sismo
           layer.bindPopup(
-            `Lugar: ${feature.properties.place}<br>Magnitud: ${
-              feature.properties.mag
-            }<br>Profundidad: ${
-              feature.properties.depth
-            } km<br>Fecha: ${new Date(
-              feature.properties.time
-            ).toLocaleString()}`
+            `Lugar: ${feature.properties.place}
+            <br>
+            Magnitud: ${feature.properties.mag} ${feature.properties.magType}
+            <br>
+            Profundidad: ${feature.properties.depth} km
+            <br>
+            Fecha: ${new Date(feature.properties.time).toLocaleString()}`
           );
         },
       }).addTo(this.map);
@@ -536,7 +574,7 @@ export default {
   animation: pulsate 1s ease-out;
   opacity: 1;
   stroke-width: 0.04rem;
-  stroke: white;
+  /* stroke: white;  CIRCULO COMPLETO*/ 
 }
 @keyframes pulsate {
   0% {

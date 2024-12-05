@@ -54,7 +54,7 @@
           >
             PerúSis es una plataforma digital de observación sísmica
             desarrollada por el Instituto Geofísico del Perú (IGP), a fin de
-            para ofrecer acceso espacio-temporal a la actividad sísmica ocurrida
+            para ofrecer acceso espacio-tiempo a la actividad sísmica ocurrida
             en el Perú y el mundo de manera visual e interactiva.
           </p>
           <p
@@ -62,10 +62,11 @@
             style="line-height: 2; --delay: 0.5s"
           >
             Con una interfaz intuitiva, PerúSis permite filtrar sismos por
-            fecha, región, magnitud y profundidad, facilitando el análisis y la
+            fecha, región, magnitud y profundidad, facilitando su análisis y la
             consulta de eventos sísmicos. Esto la convierte en una herramienta
             clave para identificar regiones potencialmente sísmicas, contribuir
-            a la gestión del riesgo de desastres y a la educación.
+            con la información a la reducción del riesgo y fortalecer la
+            eduación.
           </p>
 
           <div
