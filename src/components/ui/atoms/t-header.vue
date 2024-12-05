@@ -166,20 +166,7 @@ const showModal = () => {
       <p class="text-start text-sm pt-2" >Lima, diciembre de 2024.</p>
     `,
     width: "400px",
-    showClass: {
-      popup: `
-        animate__animated
-        animate__fadeInUp
-        animate__faster
-      `,
-    },
-    hideClass: {
-      popup: `
-        animate__animated
-        animate__fadeOutDown
-        animate__faster
-      `,
-    },
+
     confirmButtonText: "Aceptar", // Cambiar el texto del botón a "Aceptar"
     confirmButtonColor: "#0032FF",
   });

@@ -1,31 +1,32 @@
 <template>
   <div
-    class="flex items-center px-4 sm:px-4 md:px-0 lg:px-0 xl:px-0 2xl:px-0 ml-0 sm:ml-0 md:ml-8 lg:ml-10 xl:ml-14 2xl:ml-20 justify-start z-10 scroll-auto select-none relative mt-16"
+    class="flex items-center px-4 sm:px-4 md:px-0 lg:px-0 xl:px-0 2xl:px-0 ml-0 sm:ml-0 md:ml-8 lg:ml-10 xl:ml-14 2xl:ml-20 justify-start z-10 scroll-auto select-none absolute mt-16"
   >
     <!-- Panel de control -->
-    <button
-      class="toggle-btn bg-transparent border-none text-lg cursor-pointer z-20"
-      @click="toggleWindowState" :title="isVisible ? 'Minimizar' : 'Maximizar'" 
-    >
-      <!-- Si la ventana está visible, muestra el ícono de cerrar (X) -->
-     <img v-if="isVisible" width="50" height="50" src="https://img.icons8.com/ios-filled/50/shrink.png"  alt="Minimizar"
-      class="w-6 h-6">
-      <!-- Si la ventana está oculta, muestra el ícono de maximizar/restaurar -->
-      <img v-else width="50" height="50" src="https://img.icons8.com/glyph-neue/64/toggle-full-screen.png"  alt="Maximizar"
-      class="w-7 h-7">
-        
 
-    </button>
     <div
-      v-show="isVisible"  class="px-4 pt-3 grid grid-cols-1 md:grid-cols-12 bg-[#FCFDFF] rounded-2xl w-[490px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
+      v-if="muestraModal"
+      class="px-4 pt-3 grid grid-cols-1 md:grid-cols-12 bg-[#FCFDFF] rounded-2xl w-[490px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]" 
     >
-      <div class="col-span-1 sm:col-span-3 md:col-span-6 flex justify-between items-center">
-        <!-- Botón para ocultar/mostrar la ventana -->
-             </div>
-         <div class="grid grid-cols-12 col-span-12 mt-3">
-         <div class="col-span-1 sm:col-span-3 md:col-span-6 flex"> 
-            
-
+      <button
+        class="ml-auto col-span-12"
+        data-tooltip-target="tooltip-right"
+        data-tooltip-placement="right"
+        type="button"
+        @click="cerrarModal"
+      >
+        <img :src="shared" alt="img_share" height="18" width="16" />
+      </button>
+      <div
+        id="tooltip-right"
+        role="tooltip"
+        class="absolute z-10 invisible inline-block text-xs px-3 py-2 font-medium text-white bg-gray-600 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+      >
+        Minimizar
+        <div class="tooltip-arrow" data-popper-arrow></div>
+      </div>
+      <div class="grid grid-cols-12 col-span-12 mt-3">
+        <div class="col-span-1 sm:col-span-3 md:col-span-6 flex">
           <!-- Botón Global -->
           <button
             :disabled="ableGlobal"
@@ -305,14 +306,30 @@
         </tButton>
       </div> -->
     </div>
+    <button
+      v-else
+      class="px-4 py-3 font-medium text-sm text-igp-blue flex items-center bg-[#FCFDFF] rounded-2xl w-[250px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
+      @click="cerrarModal"
+    >
+      Personalizar parametros sismicos
+      <img
+        :src="share"
+        class="ml-auto"
+        alt="img_share"
+        height="18"
+        width="12"
+      />
+    </button>
   </div>
-  </template>
+</template>
 
 <script setup>
 import { ref, watch } from "vue";
 import tLabel from "@/components/ui/atoms/t-label.vue";
 import tSelect from "@/components/ui/atoms/t-select.vue";
 import profundidad from "@/assets/icons/profundidad.svg";
+import shared from "@/assets/icons/shared.svg";
+import share from "@/assets/icons/share.svg";
 import magnitud from "@/assets/icons/magnitud.svg";
 import calendario from "@/assets/icons/calendario.svg";
 import iconworld from "@/assets/icons/world.vue";
@@ -325,14 +342,6 @@ import iplay from "@/assets/icons/iplay.vue";
 import istop from "@/assets/icons/istop.vue";
 import "flowbite";
 
-// Estado de visibilidad del contenedor
-const isVisible = ref(true);
-
-// Función para alternar entre ocultar y mostrar la ventana
-const toggleWindowState = () => {
-  isVisible.value = !isVisible.value;
-};
-
 const useGeojson = useGeojsonStore();
 const stateStop = ref("enable");
 const statePlay = ref("disable");
@@ -340,7 +349,11 @@ const statePlay = ref("disable");
 const ablePeru = ref(false);
 const ableGlobal = ref(true);
 const activeTab = ref("global");
-
+const muestraModal = ref(true);
+// Función para cerrar el modal
+function cerrarModal() {
+  muestraModal.value = !muestraModal.value;
+}
 // Estilos para los círculos personalizados
 const redCircleStyle = {
   display: "inline-block",
@@ -422,10 +435,10 @@ const dataPeru = ref([
     value: "amazonas",
     name: "Amazonas",
     boundaries: {
-    minLatitude: -6.0,
-    maxLatitude: -2.8,
-    minLongitude: -79.5,
-    maxLongitude: -75.5
+      minLatitude: -5.0,
+      maxLatitude: -3.5,
+      minLongitude: -78.5,
+      maxLongitude: -76.5,
     },
   },
   {
@@ -442,40 +455,40 @@ const dataPeru = ref([
     value: "apurimac",
     name: "Apurímac",
     boundaries: {
-    minLatitude: -14.5,
-    maxLatitude: -12.8,
-    minLongitude: -74.5,
-    maxLongitude: -72.0
+      minLatitude: -14.1,
+      maxLatitude: -13.1,
+      minLongitude: -74.2,
+      maxLongitude: -72.5,
     },
   },
   {
     value: "arequipa",
     name: "Arequipa",
     boundaries: {
-    minLatitude: -18.0,
-    maxLatitude: -14.5,
-    minLongitude: -73.5,
-    maxLongitude: -70.5
+      minLatitude: -17.5,
+      maxLatitude: -15.2,
+      minLongitude: -73.0,
+      maxLongitude: -71.0,
     },
   },
   {
     value: "ayacucho",
     name: "Ayacucho",
     boundaries: {
-    minLatitude: -15.0,
-    maxLatitude: -12.0,
-    minLongitude: -75.5,
-    maxLongitude: -72.5
-  }
+      minLatitude: -14.5,
+      maxLatitude: -12.5,
+      minLongitude: -75.0,
+      maxLongitude: -73.0,
+    },
   },
   {
     value: "cajamarca",
     name: "Cajamarca",
     boundaries: {
-    minLatitude: -8.0,
-    maxLatitude: -4.5,
-    minLongitude: -80.5,
-    maxLongitude: -76.5
+      minLatitude: -7.0,
+      maxLatitude: -5.0,
+      minLongitude: -79.5,
+      maxLongitude: -77.5,
     },
   },
   {
@@ -492,20 +505,20 @@ const dataPeru = ref([
     value: "cusco",
     name: "Cusco",
     boundaries: {
-  minLatitude: -17.5,  // Ampliamos aún más hacia el sur
-  maxLatitude: -10.2,  // Ampliamos aún más hacia el norte
-  minLongitude: -75.5, // Ampliamos aún más hacia el oeste
-  maxLongitude: -67.8  // Ampliamos aún más hacia el este
+      minLatitude: -14.3,
+      maxLatitude: -12.4,
+      minLongitude: -73.4,
+      maxLongitude: -70.6,
     },
   },
   {
     value: "huancavelica",
     name: "Huancavelica",
     boundaries: {
-    minLatitude: -14.0,
-    maxLatitude: -12.0,
-    minLongitude: -76.0,
-    maxLongitude: -73.5
+      minLatitude: -13.5,
+      maxLatitude: -12.4,
+      minLongitude: -75.5,
+      maxLongitude: -74.2,
     },
   },
   {
@@ -515,7 +528,7 @@ const dataPeru = ref([
       minLatitude: -10.3,
       maxLatitude: -8.3,
       minLongitude: -76.5,
-      maxLongitude: -76.0,
+      maxLongitude: -74.0,
     },
   },
   {
@@ -562,30 +575,30 @@ const dataPeru = ref([
     value: "lima",
     name: "Lima",
     boundaries: {
-    minLatitude: -12.8,
-    maxLatitude: -10.5,
-    minLongitude: -78.2,
-    maxLongitude: -75.8
+      minLatitude: -12.9,
+      maxLatitude: -10.6,
+      minLongitude: -77.8,
+      maxLongitude: -76.3,
     },
   },
   {
     value: "loreto",
     name: "Loreto",
     boundaries: {
-      minLatitude: -5.15,
-      maxLatitude: -0.05,
-      minLongitude: -79.6,
-      maxLongitude: -71.6,
+      minLatitude: -5.3,
+      maxLatitude: -0.0,
+      minLongitude: -76.6,
+      maxLongitude: -70.2,
     },
   },
   {
     value: "madre_de_dios",
     name: "Madre de Dios",
     boundaries: {
-  minLatitude: -12.8,  // Límite inferior ampliado
-  maxLatitude: -10.2,  // Límite superior ampliado
-  minLongitude: -72.5, // Límite izquierdo ampliado
-  maxLongitude: -69.0  // Límite derecho ampliado
+      minLatitude: -13.2,
+      maxLatitude: -10.5,
+      minLongitude: -70.8,
+      maxLongitude: -68.7,
     },
   },
   {
@@ -668,7 +681,6 @@ const dataPeru = ref([
       maxLongitude: -72.4,
     },
   },
-  
   {
     value: "historica",
     name: "Sísmica historica 1471 - 1959",
@@ -886,7 +898,6 @@ const selectionState = ref({
   isIntermediate: true,
   isDeep: true,
 });
-
 const handleCheckboxChange = () => {
   const isSuperficial = checkedItems.value[0];
   const isIntermediate = checkedItems.value[1];
@@ -1061,22 +1072,6 @@ const toggleStop = () => {
   opacity: 1;
 }
 .ant-slider-mark-text.ant-slider-mark-text-active {
-    font-size: 12px;
-  }
-
-  .toggle-btn {
-  font-size: 18px;
-  font-weight: bold;
-  z-index: 10;
-  display: flex;
-  justify-content: flex-end;  /* Asegura que el ícono se alinee a la izquierda */
-  align-items: center;
-  width: 26%;
+  font-size: 12px;
 }
-
-button[title] {
-  position: relative;
-}
-
-
 </style>

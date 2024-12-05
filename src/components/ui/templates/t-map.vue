@@ -9,6 +9,8 @@
 import axios from "axios";
 import * as L from "leaflet/dist/leaflet-src.js";
 import Papa from "papaparse";
+import { DateTime } from "luxon";
+import * as XLSX from "xlsx";
 //import "leaflet.pattern";
 import "leaflet/dist/leaflet.css";
 import { useGeojsonStore } from "@/stores/geojson.js";
@@ -91,7 +93,6 @@ export default {
       );
 
     const windowWidth = window.innerWidth;
-    console.log("=)", windowWidth);
     if (windowWidth <= 1920) {
       this.initialZoom = 2;
       this.initialLatLeng = [10, 0];
@@ -162,7 +163,7 @@ export default {
             style: function () {
               return {
                 color: "#fff", // Color del borde
-                weight: 0.6, // Grosor del borde más delgado (ajústalo a tu gusto)
+                weight: 0.5, // Grosor del borde más delgado (ajústalo a tu gusto)
                 opacity: 1, // Opacidad del borde
                 fillOpacity: 0.5, // Opacidad del relleno (ajústalo si lo deseas)
               };
@@ -186,7 +187,7 @@ export default {
       });
 
     // Cargar el archivo CSV
-    axios.get("/data.csv").then((response) => {
+   /* axios.get("/datas/data_noviembre.csv").then((response) => {
       Papa.parse(response.data, {
         header: true,
         dynamicTyping: true,
@@ -196,26 +197,56 @@ export default {
           this.addGeoJSONToMap(geoJSONData);
         },
       });
+    });*/
+
+   axios.get("/datas/data_diciembre.csv").then((response) => {
+      Papa.parse(response.data, {
+        header: true,
+        dynamicTyping: true,
+        complete: (result) => {
+          const transformedData = result.data.map((row) => {
+            if (row.date && row.hour) {
+              // Crear la columna "time" a partir de "date" y "hour"
+              const datetime = DateTime.fromFormat(
+                '${row.date} ${row.hour}',
+                "dd/MM/yyyy HH:mm:ss"
+              );
+              row.time = datetime.toISO(); // Crear la propiedad "time" con formato ISO
+            }
+            // Eliminar columnas originales si existen
+            delete row.date;
+            delete row.hour;
+            return row;
+          });
+
+          console.log(transformedData);
+
+          const geoJSONData = this.convertCSVToGeoJSON(transformedData);
+          this.setData = transformedData;
+          this.addGeoJSONToMap(geoJSONData);
+        },
+      });
     });
   },
+
   watch: {
-  "useGeojson.continente": "handleGeoJSONUpdate",
-  "useGeojson.rangoFechas": "handleGeoJSONUpdate",
-  "useGeojson.rangoMagnitud": "handleGeoJSONUpdate",
-  "useGeojson.profundidad": "handleGeoJSONUpdate",
-},
+    "useGeojson.continente": "handleGeoJSONUpdate",
+    "useGeojson.rangoFechas": "handleGeoJSONUpdate",
+    "useGeojson.rangoMagnitud": "handleGeoJSONUpdate",
+    "useGeojson.profundidad": "handleGeoJSONUpdate",
+  },
 
   methods: {
     async handleGeoJSONUpdate() {
-    if (this.isGeoJSONProcessing) return;
-    this.isGeoJSONProcessing = true;
-    
-    const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
-    this.addGeoJSONToMap(geoJSONData);
-    
-    // Reset after processing
-    this.isGeoJSONProcessing = false;
-  },
+      if (this.isGeoJSONProcessing) return;
+      this.isGeoJSONProcessing = true;
+
+      const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
+      this.addGeoJSONToMap(geoJSONData);
+
+      // Reset after processing
+      this.isGeoJSONProcessing = false;
+    },
     convertCSVToGeoJSON(data) {
       // Filtrar por latitud y longitud
       const filteredByCoordinates = data.filter((row) => {
@@ -282,6 +313,7 @@ export default {
             place: row.place,
             time: row.time,
             depth: row.depth,
+            magType: row.magType,
           },
         })),
       };
@@ -322,34 +354,40 @@ export default {
           const magnitude = feature.properties.mag;
 
           if (magnitude >= 4 && magnitude <= 5) {
-            radius = 1.5;
+            radius = 3.5;
           } else if (magnitude > 5 && magnitude <= 6) {
-            radius = 3.8;
+            radius = 5.5;
           } else if (magnitude > 6 && magnitude <= 7) {
-            radius = 10.5;
+            radius = 8.5;
           } else if (magnitude > 7 && magnitude <= 9.5) {
-            radius = 20;
+            radius = 15;
           }
 
           return L.circleMarker(latlng, {
             className: "pulse",
             radius: radius + this.sumarProf,
             fillColor: color,
+            /* CIRCULO COMPLETO
+            opacity: 0.5,
+            fillOpacity: 0.9,
+            */
+            /* CIRCULO HUECO */
             fillOpacity: 0,
             color: color,
+           
           });
         },
 
         onEachFeature: (feature, layer) => {
           // Muestra un popup con la información del sismo
           layer.bindPopup(
-            `Lugar: ${feature.properties.place}<br>Magnitud: ${
-              feature.properties.mag
-            }<br>Profundidad: ${
-              feature.properties.depth
-            } km<br>Fecha: ${new Date(
-              feature.properties.time
-            ).toLocaleString()}`
+            `Lugar: ${feature.properties.place}
+            <br>
+            Magnitud: ${feature.properties.mag} ${feature.properties.magType}
+            <br>
+            Profundidad: ${feature.properties.depth} km
+            <br>
+            Fecha: ${new Date(feature.properties.time).toLocaleString()}`
           );
         },
       }).addTo(this.map);
@@ -373,8 +411,8 @@ export default {
 
       // Reiniciar `features` con los datos actuales
       const features = geoJSON.features; // Datos filtrados actuales
-      const chunkSize = 1; // Tamaño del grupo - 1 en 1
-      const segundos = 0.05; //cantidad de segundos - 0.05 segundo
+      const chunkSize = 1; // Tamaño del grupo - 10 en 10
+      const segundos = 0.05; //cantidad de segundos - 1 segundo
       let index = 0; // Índice inicial
 
       // Añadir los puntos en intervalos
@@ -536,7 +574,7 @@ export default {
   animation: pulsate 1s ease-out;
   opacity: 1;
   stroke-width: 0.04rem;
-
+  /* stroke: white;  CIRCULO COMPLETO*/ 
 }
 @keyframes pulsate {
   0% {
