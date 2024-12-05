@@ -227,6 +227,37 @@ export default {
         },
       });
     });
+
+    /*     axios
+      .get("/datas/data_diciembre.xlsx", { responseType: "arraybuffer" })
+      .then((response) => {
+        const workbook = XLSX.read(response.data, { type: "array" });
+        const firstSheetName = workbook.SheetNames[0];
+        const sheetData = XLSX.utils.sheet_to_json(
+          workbook.Sheets[firstSheetName]
+        );
+        console.log(sheetData);
+        // Convertir `date` y `hour` a un formato ISO 8601 para la columna `time`
+        const formattedData = sheetData.map((row) => {
+          const { date, hour, ...rest } = row;
+          const formattedTime = DateTime.fromFormat(
+            `${date} ${hour}`,
+            "dd/MM/yyyy HH:mm:ss"
+          ).toISO();
+
+          console.log(formattedData);
+          return {
+            ...rest,
+            time: formattedTime,
+          };
+        });
+
+        const geoJSONData = convertCSVToGeoJSON(formattedData); // Usa tu función existente
+        this.setData = formattedData;
+        this.addGeoJSONToMap(geoJSONData); // Usa tu lógica existente
+      });
+
+ */
   },
 
   watch: {

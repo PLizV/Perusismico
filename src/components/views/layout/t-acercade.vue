@@ -65,7 +65,12 @@
             fecha, región, magnitud y profundidad, facilitando su análisis y la
             consulta de eventos sísmicos. Esto la convierte en una herramienta
             clave para identificar regiones potencialmente sísmicas, contribuir
+<<<<<<< HEAD
             con información a la reducción del riesgo y fortalecer la educación.
+=======
+            con la información a la reducción del riesgo y fortalecer la
+            eduación.
+>>>>>>> 7a5723c977f4a1b36d06c25fb5de28340225efbc
           </p>
 
           <div
