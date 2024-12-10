@@ -507,7 +507,7 @@ const dataPeru = ref([
     boundaries: {
       minLatitude: -14.3,
       maxLatitude: -12.4,
-      minLongitude: -73.4,
+      minLongitude: -72.6,
       maxLongitude: -70.6,
     },
   },
@@ -527,7 +527,7 @@ const dataPeru = ref([
     boundaries: {
       minLatitude: -10.3,
       maxLatitude: -8.3,
-      minLongitude: -76.5,
+      minLongitude: -76.6,
       maxLongitude: -74.0,
     },
   },
@@ -605,10 +605,10 @@ const dataPeru = ref([
     value: "moquegua",
     name: "Moquegua",
     boundaries: {
-      minLatitude: -17.6,
-      maxLatitude: -15.8,
-      minLongitude: -71.8,
-      maxLongitude: -70.4,
+      minLatitude: -17.9,  // Ligeramente más al sur
+  maxLatitude: -16.5,  // Ligeramente más al norte
+  minLongitude: -71.5, // Ligeramente más al oeste
+  maxLongitude: -70.6, // Ligeramente más al este
     },
   },
   {

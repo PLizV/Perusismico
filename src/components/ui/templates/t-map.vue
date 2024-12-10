@@ -187,42 +187,13 @@ export default {
       });
 
     // Cargar el archivo CSV
-   /* axios.get("/datas/data_noviembre.csv").then((response) => {
+    axios.get("/datas/data_noviembre.csv").then((response) => {
       Papa.parse(response.data, {
         header: true,
         dynamicTyping: true,
         complete: (result) => {
           const geoJSONData = this.convertCSVToGeoJSON(result.data);
           this.setData = result.data;
-          this.addGeoJSONToMap(geoJSONData);
-        },
-      });
-    });*/
-
-   axios.get("/datas/data_diciembre.csv").then((response) => {
-      Papa.parse(response.data, {
-        header: true,
-        dynamicTyping: true,
-        complete: (result) => {
-          const transformedData = result.data.map((row) => {
-            if (row.date && row.hour) {
-              // Crear la columna "time" a partir de "date" y "hour"
-              const datetime = DateTime.fromFormat(
-                '${row.date} ${row.hour}',
-                "dd/MM/yyyy HH:mm:ss"
-              );
-              row.time = datetime.toISO(); // Crear la propiedad "time" con formato ISO
-            }
-            // Eliminar columnas originales si existen
-            delete row.date;
-            delete row.hour;
-            return row;
-          });
-
-          console.log(transformedData);
-
-          const geoJSONData = this.convertCSVToGeoJSON(transformedData);
-          this.setData = transformedData;
           this.addGeoJSONToMap(geoJSONData);
         },
       });
@@ -259,7 +230,6 @@ export default {
 
  */
   },
-
   watch: {
     "useGeojson.continente": "handleGeoJSONUpdate",
     "useGeojson.rangoFechas": "handleGeoJSONUpdate",
