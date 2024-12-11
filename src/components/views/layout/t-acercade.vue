@@ -62,10 +62,10 @@
             style="line-height: 2; --delay: 0.5s"
           >
             Con una interfaz intuitiva, PerúSis permite filtrar sismos por
-            fecha, región, magnitud y profundidad, facilitando su análisis.
-            Esto la convierte en una herramienta clave para identificar regiones
-             potencialmente sísmicas, contribuir con información a la reducción
-             del riesgo y fortalecer la educación.
+            fecha, región, magnitud y profundidad, facilitando su análisis. Esto
+            la convierte en una herramienta clave para identificar regiones
+            potencialmente sísmicas, contribuir con información a la reducción
+            del riesgo y fortalecer la educación.
           </p>
 
           <div

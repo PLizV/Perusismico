@@ -483,18 +483,18 @@ const dataPeru = ref([
     value: "amazonas",
     name: "Amazonas",
     boundaries: {
-      minLatitude: -5.0,
-      maxLatitude: -3.5,
-      minLongitude: -78.5,
-      maxLongitude: -76.5,
+    minLatitude: -5.3,
+    maxLatitude: -4.5,
+    minLongitude: -78.5,
+    maxLongitude: -76.5
     },
   },
   {
     value: "ancash",
     name: "Áncash",
     boundaries: {
-      minLatitude: -10.2,
-      maxLatitude: -8.0,
+      minLatitude: -10.6,
+      maxLatitude: -8.1,
       minLongitude: -78.5,
       maxLongitude: -76.5,
     },
@@ -513,10 +513,10 @@ const dataPeru = ref([
     value: "arequipa",
     name: "Arequipa",
     boundaries: {
-      minLatitude: -17.5,
-      maxLatitude: -15.2,
-      minLongitude: -73.0,
-      maxLongitude: -71.0,
+     minLatitude: -17.8,
+     maxLatitude: -14.8,
+     minLongitude: -74.3,
+     maxLongitude: -71.5
     },
   },
   {
@@ -530,13 +530,13 @@ const dataPeru = ref([
     },
   },
   {
-    value: "cajamarca",
-    name: "Cajamarca",
-    boundaries: {
-      minLatitude: -7.0,
-      maxLatitude: -5.0,
-      minLongitude: -79.5,
-      maxLongitude: -77.5,
+  value: "cajamarca",
+  name: "Cajamarca",
+  boundaries: {
+    minLatitude: -7.6,
+    maxLatitude: -5.8,
+    minLongitude: -79.6,
+    maxLongitude: -77.5
     },
   },
   {
@@ -555,7 +555,7 @@ const dataPeru = ref([
     boundaries: {
       minLatitude: -14.3,
       maxLatitude: -12.4,
-      minLongitude: -73.4,
+      minLongitude: -72.6,
       maxLongitude: -70.6,
     },
   },
@@ -575,7 +575,7 @@ const dataPeru = ref([
     boundaries: {
       minLatitude: -10.3,
       maxLatitude: -8.3,
-      minLongitude: -76.5,
+      minLongitude: -76.6,
       maxLongitude: -74.0,
     },
   },
@@ -593,30 +593,31 @@ const dataPeru = ref([
     value: "junin",
     name: "Junín",
     boundaries: {
-      minLatitude: -12.5,
-      maxLatitude: -10.5,
-      minLongitude: -76.8,
-      maxLongitude: -74.9,
+    minLatitude: -12.5,
+    maxLatitude: -10.9,
+    minLongitude: -76.2,
+    maxLongitude: -74.0
     },
   },
   {
     value: "la_libertad",
     name: "La Libertad",
     boundaries: {
-      minLatitude: -8.5,
-      maxLatitude: -6.8,
-      minLongitude: -80.5,
-      maxLongitude: -77.8,
+    minLatitude: -9.0,
+    maxLatitude: -7.0,
+    minLongitude: -81.1,
+    maxLongitude: -78.8
     },
   },
   {
     value: "lambayeque",
     name: "Lambayeque",
     boundaries: {
-      minLatitude: -7.0,
-      maxLatitude: -5.5,
-      minLongitude: -80.6,
-      maxLongitude: -79.2,
+      minLatitude: -7.3,
+      maxLatitude: -5.2,
+      minLongitude: -80.7,
+      maxLongitude: -79.1,
+
     },
   },
   {
@@ -653,10 +654,10 @@ const dataPeru = ref([
     value: "moquegua",
     name: "Moquegua",
     boundaries: {
-      minLatitude: -17.6,
-      maxLatitude: -15.8,
-      minLongitude: -71.8,
-      maxLongitude: -70.4,
+      minLatitude: -17.9,  // Ligeramente más al sur
+  maxLatitude: -16.5,  // Ligeramente más al norte
+  minLongitude: -71.5, // Ligeramente más al oeste
+  maxLongitude: -70.6, // Ligeramente más al este
     },
   },
   {
@@ -673,10 +674,10 @@ const dataPeru = ref([
     value: "piura",
     name: "Piura",
     boundaries: {
-      minLatitude: -5.9,
+      minLatitude: -6.2,
       maxLatitude: -4.0,
-      minLongitude: -81.1,
-      maxLongitude: -79.3,
+      minLongitude: -81.7,
+      maxLongitude: -79.0
     },
   },
   {
@@ -703,30 +704,30 @@ const dataPeru = ref([
     value: "tacna",
     name: "Tacna",
     boundaries: {
-      minLatitude: -18.0,
-      maxLatitude: -16.2,
-      minLongitude: -70.6,
-      maxLongitude: -69.4,
+    minLatitude: -18.3,
+    maxLatitude: -16.9,
+    minLongitude: -70.8,
+    maxLongitude: -69.6
     },
   },
   {
     value: "tumbes",
     name: "Tumbes",
     boundaries: {
-      minLatitude: -4.3,
-      maxLatitude: -3.2,
-      minLongitude: -80.9,
-      maxLongitude: -80.3,
+      minLatitude: -4.5,
+      maxLatitude: -3.3,
+      minLongitude: -81.9,
+      maxLongitude: -80.3   
     },
   },
   {
     value: "ucayali",
     name: "Ucayali",
     boundaries: {
-      minLatitude: -10.6,
-      maxLatitude: -7.0,
-      minLongitude: -75.6,
-      maxLongitude: -72.4,
+    minLatitude: -10.9,
+    maxLatitude: -7.7,
+    minLongitude: -75.7,
+    maxLongitude: -73.0
     },
   },
   {
@@ -740,7 +741,6 @@ const dataPeru = ref([
     },
   },
 ]);
-
 function getValPeru() {
   if (selPeru.value === "actual" || selPeru.value === "historica") {
     stateStartDate.value = "disable";

@@ -6,7 +6,7 @@
 
     <div
       v-if="muestraModal"
-      class="px-4 pt-3 grid grid-cols-1 md:grid-cols-12 bg-[#FCFDFF] rounded-2xl w-[490px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]" 
+      class="px-4 pt-3 grid grid-cols-1 md:grid-cols-12 bg-[#FCFDFF] rounded-2xl w-[490px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
     >
       <button
         class="ml-auto col-span-12"
@@ -308,7 +308,7 @@
     </div>
     <button
       v-else
-      class="px-4 py-3 font-medium text-sm text-igp-blue flex items-center bg-[#FCFDFF] rounded-2xl w-[250px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
+      class="px-4 py-3 font-medium text-sm text-igp-blue flex items-center bg-[#FCFDFF] rounded-2xl w-[330px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
       @click="cerrarModal"
     >
       Personalizar parametros sismicos
@@ -317,7 +317,7 @@
         class="ml-auto"
         alt="img_share"
         height="18"
-        width="12"
+        width="16"
       />
     </button>
   </div>
@@ -693,7 +693,6 @@ const dataPeru = ref([
     },
   },
 ]);
-
 function getValPeru() {
   if (selPeru.value === "actual" || selPeru.value === "historica") {
     stateStartDate.value = "disable";

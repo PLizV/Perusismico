@@ -10,7 +10,7 @@ import axios from "axios";
 import * as L from "leaflet/dist/leaflet-src.js";
 import Papa from "papaparse";
 import { DateTime } from "luxon";
-
+import * as XLSX from "xlsx";
 //import "leaflet.pattern";
 import "leaflet/dist/leaflet.css";
 import { useGeojsonStore } from "@/stores/geojson.js";
@@ -187,7 +187,7 @@ export default {
       });
 
     // Cargar el archivo CSV
-   /* axios.get("/datas/data_noviembre.csv").then((response) => {
+    axios.get("/datas/data_diciembre.csv").then((response) => {
       Papa.parse(response.data, {
         header: true,
         dynamicTyping: true,
@@ -197,9 +197,9 @@ export default {
           this.addGeoJSONToMap(geoJSONData);
         },
       });
-    });*/
+    });
 
-   axios.get("/datas/data_noviembre.csv").then((response) => {
+    /*    axios.get("/datas/data_diciembre.csv").then((response) => {
       Papa.parse(response.data, {
         header: true,
         dynamicTyping: true,
@@ -228,7 +228,7 @@ export default {
       });
     });
 
-    /*     axios
+        axios
       .get("/datas/data_diciembre.xlsx", { responseType: "arraybuffer" })
       .then((response) => {
         const workbook = XLSX.read(response.data, { type: "array" });
@@ -292,7 +292,7 @@ export default {
           row.longitude <= this.useGeojson.continente.maxLongitude
         );
       });
-
+      
       // Filtrar por magnitud
       const filteredByMagnitude = filteredByCoordinates.filter((row) => {
         const mag = row.mag;
@@ -310,7 +310,7 @@ export default {
           eventDate <= this.useGeojson.rangoFechas.endDate
         );
       });
-
+      console.log("FILTRO POR COORDENADAS:",filteredByDate)
       // Filtrar por profunidad
       const filteredByDepth = filteredByDate.filter((row) => {
         const depth = row.depth;
@@ -400,12 +400,11 @@ export default {
             fillColor: color,
             /* CIRCULO COMPLETO
             opacity: 0.5,
-            fillOpacity: 0.9,
-            */
-            /* CIRCULO HUECO */
+            fillOpacity: 0.9,*/
+
+            /* CIRCULO HUECO  */
             fillOpacity: 0,
             color: color,
-           
           });
         },
 
@@ -605,7 +604,7 @@ export default {
   animation: pulsate 1s ease-out;
   opacity: 1;
   stroke-width: 0.04rem;
-  /* stroke: white;  CIRCULO COMPLETO*/ 
+  /*stroke: white;  CIRCULO COMPLETO*/
 }
 @keyframes pulsate {
   0% {
