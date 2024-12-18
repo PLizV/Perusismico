@@ -177,7 +177,6 @@
         </div>
         <div class="col-span-12 flex items-center justify-center mt-2">
           <button
-            data-tooltip-target="tooltip-defaultP"
             type="button"
             class="border-2 mr-2 rounded-lg px-6 py-2 items-center"
             :class="
@@ -190,16 +189,8 @@
           >
             <iplay class="w-4 h-4"></iplay>
           </button>
-          <div
-            id="tooltip-defaultP"
-            role="tooltip"
-            class="absolute text-center z-10 invisible inline-block px-3 py-2 text-xs text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip"
-          >
-            Visualizar sismos
-            <div class="tooltip-arrow" data-popper-arrow></div>
-          </div>
+
           <button
-            data-tooltip-target="tooltip-defaultS"
             type="button"
             class="border-2 mr-2 rounded-lg px-6 py-2 items-center"
             :class="
@@ -212,13 +203,53 @@
           >
             <istop class="w-4 h-4"></istop>
           </button>
-          <div
-            id="tooltip-defaultS"
-            role="tooltip"
-            class="absolute text-center z-10 invisible inline-block px-3 py-2 text-xs text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip"
+          <button class="ml-3 relative" type="button">
+            <img :src="qst" alt="question_img" height="20" width="18" />
+            <div
+                class="tooltip absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-2 text-xs font-medium text-white bg-igp-blue rounded-lg shadow-sm w-50 text-start w-60"
+            >
+              Función que permite reproducir y
+              parar la animación de los simos en el 
+              mapa.
+            </div>
+          </button>
+        </div>
+        <div
+          class="grid-cols-11 col-span-12 border rounded-lg py-2 mt-4 mx-4 bg-gray-50"
+        >
+          <tLabel
+            size="md"
+            weight="400"
+            class="col-span-12 flex pl-4"
+            color="black"
           >
-            Parar visualización
-            <div class="tooltip-arrow" data-popper-arrow></div>
+            Escala visual del mapa
+          </tLabel>
+          <div class="flex px-6 col-span-12 mt-2 p-0 justify-between">
+            <div class="flex flex-col items-center justify-center">
+              <div class="w-10 h-10 flex items-center">
+                <div class="w-2 h-2 rounded-full bg-igp-muted"></div>
+              </div>
+              <p class="text-xs text-igp-black-1000">M4.0 a M5.0</p>
+            </div>
+            <div class="flex flex-col items-center justify-center">
+              <div class="w-10 h-10 flex items-center">
+                <div class="w-3 h-3 rounded-full bg-igp-muted"></div>
+              </div>
+              <p class="text-xs text-igp-black-1000">M >5 a M6.0</p>
+            </div>
+            <div class="flex flex-col items-center justify-center">
+              <div class="w-10 h-10 flex items-center">
+                <div class="w-6 h-6 rounded-full bg-igp-muted"></div>
+              </div>
+              <p class="text-xs text-igp-black-1000">M >6.0 a M7.0</p>
+            </div>
+            <div class="flex flex-col items-center justify-center">
+              <div class="w-10 h-10 flex items-center">
+                <div class="w-9 h-9 rounded-full bg-igp-muted"></div>
+              </div>
+              <p class="text-xs text-igp-black-1000">M >7.0 a M9.5</p>
+            </div>
           </div>
         </div>
       </div>
@@ -312,6 +343,7 @@ import { Slider } from "ant-design-vue";
 import { useGeojsonStore } from "@/stores/geojson";
 import iplay from "@/assets/icons/iplay.vue";
 import istop from "@/assets/icons/istop.vue";
+import qst from "@/assets/icons/question.svg";
 import "flowbite";
 
 //////////////////////////////////////
@@ -483,10 +515,10 @@ const dataPeru = ref([
     value: "amazonas",
     name: "Amazonas",
     boundaries: {
-    minLatitude: -5.3,
-    maxLatitude: -4.5,
-    minLongitude: -78.5,
-    maxLongitude: -76.5
+      minLatitude: -5.3,
+      maxLatitude: -4.5,
+      minLongitude: -78.5,
+      maxLongitude: -76.5,
     },
   },
   {
@@ -513,10 +545,10 @@ const dataPeru = ref([
     value: "arequipa",
     name: "Arequipa",
     boundaries: {
-     minLatitude: -17.8,
-     maxLatitude: -14.8,
-     minLongitude: -74.3,
-     maxLongitude: -71.5
+      minLatitude: -17.9,
+      maxLatitude: -14.5,
+      minLongitude: -75,
+      maxLongitude: -70.8,
     },
   },
   {
@@ -530,13 +562,13 @@ const dataPeru = ref([
     },
   },
   {
-  value: "cajamarca",
-  name: "Cajamarca",
-  boundaries: {
-    minLatitude: -7.6,
-    maxLatitude: -5.8,
-    minLongitude: -79.6,
-    maxLongitude: -77.5
+    value: "cajamarca",
+    name: "Cajamarca",
+    boundaries: {
+      minLatitude: -7.6,
+      maxLatitude: -5.8,
+      minLongitude: -79.6,
+      maxLongitude: -77.5,
     },
   },
   {
@@ -593,20 +625,20 @@ const dataPeru = ref([
     value: "junin",
     name: "Junín",
     boundaries: {
-    minLatitude: -12.5,
-    maxLatitude: -10.9,
-    minLongitude: -76.2,
-    maxLongitude: -74.0
+      minLatitude: -12.5,
+      maxLatitude: -10.9,
+      minLongitude: -76.2,
+      maxLongitude: -74.0,
     },
   },
   {
     value: "la_libertad",
     name: "La Libertad",
     boundaries: {
-    minLatitude: -9.0,
-    maxLatitude: -7.0,
-    minLongitude: -81.1,
-    maxLongitude: -78.8
+      minLatitude: -9.0,
+      maxLatitude: -7.0,
+      minLongitude: -81.1,
+      maxLongitude: -78.8,
     },
   },
   {
@@ -617,7 +649,6 @@ const dataPeru = ref([
       maxLatitude: -5.2,
       minLongitude: -80.7,
       maxLongitude: -79.1,
-
     },
   },
   {
@@ -654,10 +685,10 @@ const dataPeru = ref([
     value: "moquegua",
     name: "Moquegua",
     boundaries: {
-      minLatitude: -17.9,  // Ligeramente más al sur
-  maxLatitude: -16.5,  // Ligeramente más al norte
-  minLongitude: -71.5, // Ligeramente más al oeste
-  maxLongitude: -70.6, // Ligeramente más al este
+      minLatitude: -17.9, // Ligeramente más al sur
+      maxLatitude: -16.5, // Ligeramente más al norte
+      minLongitude: -71.5, // Ligeramente más al oeste
+      maxLongitude: -70.6, // Ligeramente más al este
     },
   },
   {
@@ -677,7 +708,7 @@ const dataPeru = ref([
       minLatitude: -6.2,
       maxLatitude: -4.0,
       minLongitude: -81.7,
-      maxLongitude: -79.0
+      maxLongitude: -79.0,
     },
   },
   {
@@ -704,10 +735,10 @@ const dataPeru = ref([
     value: "tacna",
     name: "Tacna",
     boundaries: {
-    minLatitude: -18.3,
-    maxLatitude: -16.9,
-    minLongitude: -70.8,
-    maxLongitude: -69.6
+      minLatitude: -18.3,
+      maxLatitude: -16.9,
+      minLongitude: -70.8,
+      maxLongitude: -69.6,
     },
   },
   {
@@ -717,17 +748,17 @@ const dataPeru = ref([
       minLatitude: -4.5,
       maxLatitude: -3.3,
       minLongitude: -81.9,
-      maxLongitude: -80.3   
+      maxLongitude: -80.3,
     },
   },
   {
     value: "ucayali",
     name: "Ucayali",
     boundaries: {
-    minLatitude: -10.9,
-    maxLatitude: -7.7,
-    minLongitude: -75.7,
-    maxLongitude: -73.0
+      minLatitude: -10.9,
+      maxLatitude: -7.7,
+      minLongitude: -75.7,
+      maxLongitude: -73.0,
     },
   },
   {

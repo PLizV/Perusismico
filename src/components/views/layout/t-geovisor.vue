@@ -10,7 +10,7 @@
     <tmap class="tmap sticky"></tmap>
 
     <tmodal
-      class="  hidden sm:hidden md:hidden lg:block xl:block 2xl:block"
+      class=" pb-6 hidden sm:hidden md:hidden lg:block xl:block 2xl:block"
     ></tmodal>
     <tmodalMovil
       class=" hidden sm:hidden md:block lg:hidden xl:hidden 2xl:hidden"

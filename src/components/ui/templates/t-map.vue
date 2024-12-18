@@ -20,6 +20,8 @@ export default {
     return {
       map: null,
       useGeojson: useGeojsonStore(),
+      initialCenter: [10, 0], // Coordenadas iniciales
+      initialZoom: 1, // Zoom inicial
       initialZoom: null,
       initialLatLeng: null,
       setData: null,
@@ -91,9 +93,11 @@ export default {
         "https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
         { attribution: attribution }
       );
-
     const windowWidth = window.innerWidth;
-    if (windowWidth <= 1920) {
+    if (windowWidth <= 600) {
+      this.initialZoom = 1;
+      this.initialLatLeng = [10, 0]; // O cualquier otra coordenada que desees para esta condición
+    } else if (windowWidth <= 1920) {
       this.initialZoom = 2;
       this.initialLatLeng = [10, 0];
     } else {
@@ -188,6 +192,7 @@ export default {
 
     // Cargar el archivo CSV
     axios.get("/datas/data_diciembre.csv").then((response) => {
+    //axios.get("/datas/data_dicie.csv").then((response) => {
       Papa.parse(response.data, {
         header: true,
         dynamicTyping: true,
@@ -265,9 +270,38 @@ export default {
     "useGeojson.rangoFechas": "handleGeoJSONUpdate",
     "useGeojson.rangoMagnitud": "handleGeoJSONUpdate",
     "useGeojson.profundidad": "handleGeoJSONUpdate",
+    "useGeojson.setZoom": function (newVal) {
+      if (newVal) {
+        // Cuando setZoom es true, aumenta el zoom y guarda el valor previo
+        this.zoomIn();
+      } else {
+        // Cuando setZoom es false, regresa al zoom previo
+        this.zoomOut();
+      }
+    },
   },
 
   methods: {
+    zoomIn() {
+      if (this.map) {
+        // Guardamos el zoom actual antes de aumentar el zoom
+        this.previousZoom = this.map.getZoom();
+
+        // Aumentamos el zoom en 2 niveles
+        let newZoom = this.previousZoom + 1; // CAMBIAR AQUI LA CANTIDAD DEL ZOOM
+        // Asegurarse de no exceder el zoom máximo
+        newZoom = Math.min(newZoom, this.map.getMaxZoom());
+
+        // Establecemos el nuevo zoom
+        this.map.setZoom(newZoom);
+      }
+    },
+    zoomOut() {
+      if (this.map && this.previousZoom !== null) {
+        // Si existe un zoom previo, regresamos a ese valor
+        this.map.setZoom(this.previousZoom);
+      }
+    },
     async handleGeoJSONUpdate() {
       if (this.isGeoJSONProcessing) return;
       this.isGeoJSONProcessing = true;
@@ -292,7 +326,7 @@ export default {
           row.longitude <= this.useGeojson.continente.maxLongitude
         );
       });
-      
+
       // Filtrar por magnitud
       const filteredByMagnitude = filteredByCoordinates.filter((row) => {
         const mag = row.mag;
@@ -310,7 +344,7 @@ export default {
           eventDate <= this.useGeojson.rangoFechas.endDate
         );
       });
-      console.log("FILTRO POR COORDENADAS:",filteredByDate)
+      console.log("FILTRO POR COORDENADAS:", filteredByDate);
       // Filtrar por profunidad
       const filteredByDepth = filteredByDate.filter((row) => {
         const depth = row.depth;

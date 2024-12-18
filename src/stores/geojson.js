@@ -31,8 +31,10 @@ export const useGeojsonStore = defineStore('geojson', () => {
         isDeep: true,
     });
 
+    const setZoom = ref(false);
+
     return {
         estadoPl,
-        continente, rangoFechas, rangoMagnitud, profundidad
+        continente, rangoFechas, rangoMagnitud, profundidad, setZoom
     };
 });

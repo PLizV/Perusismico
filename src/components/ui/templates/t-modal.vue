@@ -189,7 +189,6 @@
         </div>
         <div class="col-span-12 flex items-center justify-center">
           <button
-            data-tooltip-target="tooltip-defaultP"
             type="button"
             class="border-2 mr-2 rounded-lg px-6 py-2 items-center"
             :class="
@@ -202,16 +201,8 @@
           >
             <iplay class="w-4 h-4"></iplay>
           </button>
-          <div
-            id="tooltip-defaultP"
-            role="tooltip"
-            class="absolute text-center z-10 invisible inline-block px-3 py-2 text-xs text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip"
-          >
-            Visualizar sismos
-            <div class="tooltip-arrow" data-popper-arrow></div>
-          </div>
+
           <button
-            data-tooltip-target="tooltip-defaultS"
             type="button"
             class="border-2 mr-2 rounded-lg px-6 py-2 items-center"
             :class="
@@ -224,32 +215,17 @@
           >
             <istop class="w-4 h-4"></istop>
           </button>
-          <div
-            id="tooltip-defaultS"
-            role="tooltip"
-            class="absolute text-center z-10 invisible inline-block px-3 py-2 text-xs text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip"
-          >
-            Parar visualización
-            <div class="tooltip-arrow" data-popper-arrow></div>
-          </div>
-          <button
-            data-tooltip-target="tooltip-tipo"
-            data-tooltip-placement="right"
-            class="ml-3"
-            type="button"
-          >
+
+          <button class="ml-3 relative" type="button">
             <img :src="qst" alt="question_img" height="20" width="18" />
+            <div
+                class="tooltip absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-2 text-xs font-medium text-white bg-igp-blue rounded-lg shadow-sm w-50 text-start w-60"
+            >
+              Función que permite reproducir y
+              parar la animación de los simos en el 
+              mapa.
+            </div>
           </button>
-          <div
-            id="tooltip-tipo"
-            role="tooltip"
-            class="absolute z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white bg-igp-blue rounded-lg shadow-sm opacity-0 tooltip"
-          >
-            Función que permite reproducir y<br />
-            parar la animación de los simos en el <br />
-            mapa.
-            <div class="tooltip-arrow" data-popper-arrow></div>
-          </div>
         </div>
         <div
           class="grid-cols-11 col-span-12 border rounded-lg py-2 mt-4 mx-4 bg-gray-50"
@@ -258,7 +234,7 @@
             size="md"
             weight="400"
             class="col-span-12 flex pl-4"
-            style="color: gray"
+            color="black"
           >
             Escala visual del mapa
           </tLabel>
@@ -267,25 +243,25 @@
               <div class="w-10 h-10 flex items-center">
                 <div class="w-2 h-2 rounded-full bg-igp-muted"></div>
               </div>
-              <p class="text-xs">M4.0 a M5.0</p>
+              <p class="text-xs text-igp-black-1000">M4.0 a M5.0</p>
             </div>
             <div class="flex flex-col items-center justify-center">
               <div class="w-10 h-10 flex items-center">
                 <div class="w-3 h-3 rounded-full bg-igp-muted"></div>
               </div>
-              <p class="text-xs">M >5 a M6.0</p>
+              <p class="text-xs text-igp-black-1000">M >5 a M6.0</p>
             </div>
             <div class="flex flex-col items-center justify-center">
               <div class="w-10 h-10 flex items-center">
                 <div class="w-6 h-6 rounded-full bg-igp-muted"></div>
               </div>
-              <p class="text-xs">M >6.0 a M7.0</p>
+              <p class="text-xs text-igp-black-1000">M >6.0 a M7.0</p>
             </div>
             <div class="flex flex-col items-center justify-center">
               <div class="w-10 h-10 flex items-center">
                 <div class="w-9 h-9 rounded-full bg-igp-muted"></div>
               </div>
-              <p class="text-xs">M >7.0 a M9.5</p>
+              <p class="text-xs text-igp-black-1000">M >7.0 a M9.5</p>
             </div>
           </div>
         </div>
@@ -411,6 +387,7 @@ const muestraModal = ref(true);
 // Función para cerrar el modal
 function cerrarModal() {
   muestraModal.value = !muestraModal.value;
+  useGeojson.setZoom = !useGeojson.setZoom;
 }
 // Estilos para los círculos personalizados
 const redCircleStyle = {
@@ -1130,5 +1107,17 @@ const toggleStop = () => {
 }
 .ant-slider-mark-text.ant-slider-mark-text-active {
   font-size: 12px;
+}
+
+.tooltip {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Mostrar el tooltip cuando el botón se encuentre en hover */
+button:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
 }
 </style>
