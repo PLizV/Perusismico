@@ -206,11 +206,10 @@
           <button class="ml-3 relative" type="button">
             <img :src="qst" alt="question_img" height="20" width="18" />
             <div
-                class="tooltip absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-2 text-xs font-medium text-white bg-igp-blue rounded-lg shadow-sm w-50 text-start w-60"
+              class="tooltip absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-2 text-xs font-medium text-white bg-igp-blue rounded-lg shadow-sm w-50 text-start w-60"
             >
-              Función que permite reproducir y
-              parar la animación de los simos en el 
-              mapa.
+              Función que permite reproducir y parar la animación de los simos
+              en el mapa.
             </div>
           </button>
         </div>
@@ -327,8 +326,8 @@
     </div>
   </div>
 </template>
-  
-  <script setup>
+
+<script setup>
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import tLabel from "@/components/ui/atoms/t-label.vue";
 import tSelect from "@/components/ui/atoms/t-select.vue";
@@ -1034,11 +1033,12 @@ const togglePlay = () => {
         endDate: convertToDate(endDate.value),
       };
     }
+  } else {
+    useGeojson.rangoFechas = {
+      startDate: convertToDate(startDate.value),
+      endDate: convertToDate(endDate.value),
+    };
   }
-  useGeojson.rangoFechas = {
-    startDate: convertToDate(startDate.value),
-    endDate: convertToDate(endDate.value),
-  };
   useGeojson.estadoPl = "enable";
   statePeru.value = "disable";
   stateStartDate.value = "disable";
@@ -1073,8 +1073,8 @@ const toggleStop = () => {
   }
 };
 </script>
-  
-  <style>
+
+<style>
 .ant-slider-mark {
   font-size: 5px;
   /* Cambia este valor para ajustar el tamaño de la fuente */

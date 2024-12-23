@@ -344,7 +344,6 @@ export default {
           eventDate <= this.useGeojson.rangoFechas.endDate
         );
       });
-      console.log("FILTRO POR COORDENADAS:", filteredByDate);
       // Filtrar por profunidad
       const filteredByDepth = filteredByDate.filter((row) => {
         const depth = row.depth;
