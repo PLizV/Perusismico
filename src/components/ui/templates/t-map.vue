@@ -1,11 +1,20 @@
 <template>
   <div>
     <div
+      v-if="noDataMessage"
+      class="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50"
+    >
+      <div class="text-center flex flex-col items-center justify-center">
+        <p style="color: #3388ff" class="text-lg font-semibold">No se encuentran datos para mostrar</p>
+        <div class="no-data-message"></div>
+      </div>
+    </div>
+     <div
       v-if="isLoading"
       class="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50"
     >
-    <div class="text-center flex flex-col items-center justify-center">
-        <p style="color: #3388ff;" class="text-lg font-semibold">Cargando...</p>
+      <div class="text-center flex flex-col items-center justify-center">
+        <p style="color: #3388ff" class="text-lg font-semibold">Cargando...</p>
         <div class="loader"></div>
       </div>
     </div>
@@ -24,7 +33,8 @@
         height: 100%;
         pointer-events: none;
         z-index: 10;
-      " >
+      "
+    >
       <!-- Aquí va el código SVG del mapa sombreado -->
       <path
         class="leaflet-interactive"
@@ -61,6 +71,7 @@ export default {
       initialZoom: 1, // Zoom inicial*/
       /*initialZoom: null,*/
       initialLatLeng: null,
+      setminzoom: null,
       setData: null,
       csvLayer: null,
       flashInterval: null, // Para almacenar el intervalo de destello
@@ -68,6 +79,7 @@ export default {
       intervalId: null,
       isGeoJSONProcessing: false,
       geoJSONLayerCapaDepartamento: null,
+      noDataMessage: null, // Nuevo estado para el mensaje
     };
   },
   mounted() {
@@ -134,24 +146,27 @@ export default {
     const windowWidth = window.innerWidth;
     if (windowWidth <= 600) {
       this.initialZoom = 4;
+      this.setminzoom = 2;
       this.initialLatLeng = [-9.5, -76.0]; // O cualquier otra coordenada que desees para esta condición
       //this.initialLatLeng = [10, 0]; // O cualquier otra coordenada que desees para esta condición
     } else if (windowWidth <= 1920) {
+      this.setminzoom = 2;
       this.initialZoom = 6;
       this.initialLatLeng = [-9.3, -75.0];
       //this.initialLatLeng = [10, 0];
     } else {
+      this.setminzoom = 3;
       this.initialZoom = 6;
       this.initialLatLeng = [-9.3, -75.0];
     }
     // Define límites (bounds) para evitar la repetición del mapa
-    const southWest = L.latLng(-75, -270);
-    const northEast = L.latLng(90, 210);
+    const southWest = L.latLng(-75, -720);
+    const northEast = L.latLng(90, 720);
     const bounds = L.latLngBounds(southWest, northEast);
     // Inicializa el mapa
     this.map = L.map("map", {
-      minZoom: 1,
-      maxZoom: 18,
+      minZoom: this.setminzoom,
+      maxZoom: 16,
       center: this.initialLatLeng,
       zoom: this.initialZoom,
       layers: [gris], // cambiar favorito
@@ -186,44 +201,42 @@ export default {
       )
       .addTo(this.map);
     // Cargar el archivo GeoJSON usando axios
-    axios
-      .get("/placas.json")
-      .then((response) => {
-        // Crear clones del GeoJSON para simular repetición
-        const repeatOffsets = [
-          [0, -360],
-          [0, 360],
-          [0, 0],
-          [360, 0],
-          [-360, 0], // Estas son longitudes para replicar el GeoJSON (puedes ajustar más offsets)
-        ];
-        repeatOffsets.forEach((offset) => {
-          const geoJSONLayerClone = L.geoJSON(response.data, {
-            style: function () {
-              return {
-                color: "#fff", // Color del borde
-                weight: 0.5, // Grosor del borde más delgado (ajústalo a tu gusto)
-                opacity: 1, // Opacidad del borde
-                fillOpacity: 0.5, // Opacidad del relleno (ajústalo si lo deseas)
-              };
-            },
-            onEachFeature: function (feature, layer) {
-              if (feature.properties && feature.properties.name) {
-                layer.bindPopup(feature.properties.name); // Muestra un popup con la propiedad 'name'
-              }
-            },
-          }).addTo(that.map);
-          // Mueve el clon de la capa por las coordenadas
-          geoJSONLayerClone.eachLayer((layer) => {
-            layer.setLatLngs(
-              layer.getLatLngs().map((point) => [
-                point.lat,
-                point.lng + offset[0], // Desplaza longitudinalmente para repetir
-              ])
-            );
-          });
+    axios.get("/placas.json").then((response) => {
+      // Crear clones del GeoJSON para simular repetición
+      const repeatOffsets = [
+        [0, -360],
+        [0, 360],
+        [0, 0],
+        [360, 0],
+        [-360, 0], // Estas son longitudes para replicar el GeoJSON (puedes ajustar más offsets)
+      ];
+      repeatOffsets.forEach((offset) => {
+        const geoJSONLayerClone = L.geoJSON(response.data, {
+          style: function () {
+            return {
+              color: "#fff", // Color del borde
+              weight: 0.5, // Grosor del borde más delgado (ajústalo a tu gusto)
+              opacity: 1, // Opacidad del borde
+              fillOpacity: 0.5, // Opacidad del relleno (ajústalo si lo deseas)
+            };
+          },
+          onEachFeature: function (feature, layer) {
+            if (feature.properties && feature.properties.name) {
+              layer.bindPopup(feature.properties.name); // Muestra un popup con la propiedad 'name'
+            }
+          },
+        }).addTo(that.map);
+        // Mueve el clon de la capa por las coordenadas
+        geoJSONLayerClone.eachLayer((layer) => {
+          layer.setLatLngs(
+            layer.getLatLngs().map((point) => [
+              point.lat,
+              point.lng + offset[0], // Desplaza longitudinalmente para repetir
+            ])
+          );
         });
       });
+    });
     // Cargar el archivo CSV
     axios
       .get("/datas/datas.csv")
@@ -320,6 +333,14 @@ export default {
       this.isGeoJSONProcessing = false;
     },
     convertCSVToGeoJSON(data) {
+      const repeatOffsets = [
+        [0, -360],
+        [0, 360],
+        [0, 0],
+        [360, 0],
+        [-360, 0],
+      ];
+
       // Filtrar por latitud y longitud
       const filteredByCoordinates = data.filter((row) => {
         return (
@@ -333,6 +354,7 @@ export default {
           row.longitude <= this.useGeojson.continente.maxLongitude
         );
       });
+
       // Filtrar por magnitud
       const filteredByMagnitude = filteredByCoordinates.filter((row) => {
         const mag = row.mag;
@@ -341,6 +363,7 @@ export default {
           mag <= this.useGeojson.rangoMagnitud.minMag
         );
       });
+
       // Filtrar por fecha
       const filteredByDate = filteredByMagnitude.filter((row) => {
         const eventDate = new Date(row.time);
@@ -349,7 +372,8 @@ export default {
           eventDate <= this.useGeojson.rangoFechas.endDate
         );
       });
-      // Filtrar por profunidad
+
+      // Filtrar por profundidad
       const filteredByDepth = filteredByDate.filter((row) => {
         const depth = row.depth;
         if (this.useGeojson.profundidad.isSuperficial && depth <= 60) {
@@ -367,22 +391,35 @@ export default {
         }
         return false; // No cumple con las condiciones de profundidad
       });
+
+      // Aplicar los offsets a los datos filtrados
+      let features = [];
+
+      filteredByDepth.forEach((row) => {
+        repeatOffsets.forEach((offset) => {
+          features.push({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [
+                parseFloat(row.longitude) + offset[0], // Aplicar desplazamiento en longitud
+                parseFloat(row.latitude) + offset[1], // Aplicar desplazamiento en latitud
+              ],
+            },
+            properties: {
+              mag: row.mag,
+              place: row.place,
+              time: row.time,
+              depth: row.depth,
+              magType: row.magType,
+            },
+          });
+        });
+      });
+
       return {
         type: "FeatureCollection",
-        features: filteredByDepth.map((row) => ({
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: [parseFloat(row.longitude), parseFloat(row.latitude)],
-          },
-          properties: {
-            mag: row.mag,
-            place: row.place,
-            time: row.time,
-            depth: row.depth,
-            magType: row.magType,
-          },
-        })),
+        features: features,
       };
     },
     addGeoJSONToMap(geoJSON) {
@@ -396,6 +433,16 @@ export default {
         clearInterval(this.intervalId); // Detener el intervalo anterior
         this.intervalId = null; // Reiniciar la variable
       }
+       // Verificar si hay datos
+  if (geoJSON.features.length === 0) {
+    // Mostrar mensaje de "No se encontraron datos"
+    this.noDataMessage = "No se encontraron datos para el rango de fecha solicitado.";
+    return; // Salir del método si no hay datos
+  } else {
+    // Ocultar el mensaje si hay datos
+    this.noDataMessage = null;
+  }
+
       // Crear una nueva capa GeoJSON vacía
       this.csvLayer = L.geoJSON(null, {
         pointToLayer: (feature, latlng) => {
@@ -451,7 +498,7 @@ export default {
           );
         },
       }).addTo(this.map);
-      // Ajustar el mapa a los límites definidos
+      // Establecer los límites
       const bounds = L.latLngBounds([
         [
           this.useGeojson.continente.minLatitude,
@@ -462,6 +509,9 @@ export default {
           this.useGeojson.continente.maxLongitude,
         ],
       ]);
+
+      // Comprobar si los límites corresponden con los valores dados
+
       // Verifica si hay datos y ajusta el mapa a los límites
       if (geoJSON.features.length > 0) {
         this.map.fitBounds(bounds);
@@ -469,7 +519,7 @@ export default {
       // Reiniciar `features` con los datos actuales
       const features = geoJSON.features; // Datos filtrados actuales
       const chunkSize = 1; // Tamaño del grupo - 10 en 10
-      const segundos = 0.05; //cantidad de segundos - 1 segundo
+      const segundos = 0.02; //cantidad de segundos - 1 segundo
       let index = 0; // Índice inicial
       // Añadir los puntos en intervalos
       const addPointsInChunks = () => {
@@ -490,6 +540,24 @@ export default {
       };
       // Iniciar un nuevo intervalo
       this.intervalId = setInterval(addPointsInChunks, segundos * 1000);
+      if (
+        this.useGeojson.continente.minLatitude === -55.0 &&
+        this.useGeojson.continente.maxLatitude === 81.0 &&
+        this.useGeojson.continente.minLongitude === -168.0 &&
+        this.useGeojson.continente.maxLongitude === 180.0
+      ) {
+        // Si los límites son correctos, establecer el centro en [0.0, -120.0]
+        console.log("SI LLEGO A CUMPLIR AQUI EN GLOBAL VERIFICAR AQUI TEST");
+        console.log(this.map.getCenter());
+        const defaultCenter = [20.0, -190.0]; // Centro predefinido
+        this.map.setView(defaultCenter, 2); // Mantener el zoom actual
+        console.log("------------");
+        console.log(this.map.getCenter());
+      } else {
+        console.log("NO ENTRO AL GLOBAL");
+        // Si los límites no son los esperados, ajusta el mapa a los límites definidos
+        this.map.fitBounds(bounds);
+      }
     },
     fetchDataCapaDepartamentosCenter(val) {
       let getApiGeoJson = null;
@@ -651,7 +719,7 @@ export default {
   animation: l16 1s infinite linear;
 }
 .loader::before,
-.loader::after {    
+.loader::after {
   content: "";
   grid-area: 1/1;
   margin: 2px;
@@ -660,15 +728,17 @@ export default {
 }
 .loader::before {
   border-color: #3388ff #0000;
-  animation: inherit; 
-  animation-duration: .5s;
+  animation: inherit;
+  animation-duration: 0.5s;
   animation-direction: reverse;
 }
 .loader::after {
   margin: 8px;
 }
-@keyframes l16 { 
-  100%{transform: rotate(1turn)}
+@keyframes l16 {
+  100% {
+    transform: rotate(1turn);
+  }
 }
 </style>
 

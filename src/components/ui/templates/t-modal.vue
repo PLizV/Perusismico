@@ -517,16 +517,7 @@ const dataPeru = ref([
       maxLongitude: -68.15, // Aumenté más la longitud máxima
     },
   },
-  {
-    value: "CFP ",
-    name: "Cinturón de Fuego del Pacífico",
-    boundaries: {
-      minLatitude: -60, // Reduje un poco más el valor de la latitud mínima
-      maxLatitude: 60, // Aumenté un poco la latitud máxima
-      minLongitude: 110, // Aumenté un poco más la longitud mínima
-      maxLongitude: -80, // Aumenté más la longitud máxima
-    },
-  },
+  
   {
     value: "",
     send: "peru",
@@ -862,16 +853,7 @@ const dataContinente = ref([
       maxLongitude: 180.0,
     },
   },
-  {
-    value: "CFP",
-    name: "Cinturón de Fuego del Pacífico",
-    boundaries: {
-      minLatitude: -60, // Reduje un poco más el valor de la latitud mínima
-      maxLatitude: 60, // Aumenté un poco la latitud máxima
-      minLongitude: 110, // Aumenté un poco más la longitud mínima
-      maxLongitude: -80, // Aumenté más la longitud máxima
-    },
-  },
+ 
   {
     value: "suramerica",
     name: "América del Sur",
