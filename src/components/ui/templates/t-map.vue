@@ -5,7 +5,7 @@
       class="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50"
     >
       <div class="text-center flex flex-col items-center justify-center">
-        <p style="color: #3388ff" class="text-lg font-semibold">No se encuentran datos para mostrar</p>
+        <p style="color: #3388ff" class="text-lg font-semibold"> "No se han registrado sismos en esta área segun los parámetros ingresados"</p>
         <div class="no-data-message"></div>
       </div>
     </div>
