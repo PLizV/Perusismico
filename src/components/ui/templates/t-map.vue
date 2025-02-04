@@ -1,15 +1,17 @@
 <template>
-  <div>
+  <div class="relative border-2 border-red-600">
     <div
       v-if="noDataMessage"
-      class="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50"
+      class="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-[99999999]"
     >
       <div class="text-center flex flex-col items-center justify-center">
-        <p style="color: #3388ff" class="text-lg font-semibold">No se encuentran datos para mostrar</p>
+        <p style="color: #3388ff" class="text-lg font-semibold">
+          No se encuentran datos para mostrar
+        </p>
         <div class="no-data-message"></div>
       </div>
     </div>
-     <div
+    <!-- <div
       v-if="isLoading"
       class="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50"
     >
@@ -17,8 +19,23 @@
         <p style="color: #3388ff" class="text-lg font-semibold">Cargando...</p>
         <div class="loader"></div>
       </div>
+    </div> -->
+    <div
+      class="overflow-hidden inset-0 bg-cover absolute top-0 left-0 w-full h-screen z-1"
+      id="map"
+    >
+      <div
+        v-if="isLoading"
+        class="rounded-md absolute z-[99999999] bg-white bg-opacity-50 inset-0 flex items-center justify-center"
+      >
+        <div class="text-center flex flex-col items-center justify-center">
+          <p style="color: #3388ff" class="text-lg font-semibold">
+            Cargando...
+          </p>
+          <div class="loader"></div>
+        </div>
+      </div>
     </div>
-    <div class="overflow-hidden fixed inset-0 bg-cover" id="map"></div>
     <!-- v-if="makerPopup" -->
     <!-- Insertamos el SVG directamente sobre el mapa -->
     <svg
@@ -60,6 +77,8 @@ import Papa from "papaparse";
 //import "leaflet.pattern";
 import "leaflet/dist/leaflet.css";
 import { useGeojsonStore } from "@/stores/geojson.js";
+import { useDataStore } from "@/stores/data";
+import { useConfigStore } from "@/stores/config";
 export default {
   data() {
     return {
@@ -80,6 +99,8 @@ export default {
       isGeoJSONProcessing: false,
       geoJSONLayerCapaDepartamento: null,
       noDataMessage: null, // Nuevo estado para el mensaje
+      dataStore: useDataStore(), // DATA FROM STORE
+      configStore: useConfigStore(), // switch from store
     };
   },
   mounted() {
@@ -237,54 +258,23 @@ export default {
         });
       });
     });
-    // Cargar el archivo CSV
-    axios
-      .get("/datas/datas.csv")
-      .then((response1) => {
-        axios.get("/datas/historicos.csv").then((response2) => {
-          // Procesar el primer CSV
-          Papa.parse(response1.data, {
-            header: true,
-            dynamicTyping: true,
-            complete: (result1) => {
-              const dataDiciembre = result1.data;
-              // Procesar el segundo CSV
-              Papa.parse(response2.data, {
-                header: true,
-                dynamicTyping: true,
-                complete: (result2) => {
-                  const dataEnero = result2.data.map((row) => {
-                    // Unir fecha y hora, y agregar campos faltantes
-                    return {
-                      time: `${row.fecha}T${row.hora}Z`,
-                      latitude: row.latitude,
-                      longitude: row.longitude,
-                      depth: row.depth,
-                      mag: row.mag,
-                      place: "-", // Asignar "-" si no hay lugar
-                      magType: "-", // Asignar "-" si no hay tipo de magnitud
-                    };
-                  });
-                  // Combinar los datos
-                  const combinedData = [...dataDiciembre, ...dataEnero];
-                  // Convertir a GeoJSON
-                  const geoJSONData = this.convertCSVToGeoJSON(combinedData);
-                  // Actualizar datos y mapa
-                  this.setData = combinedData;
-                  this.addGeoJSONToMap(geoJSONData);
-                  this.isLoading = false;
-                },
-              });
-            },
-          });
-        });
-      })
-      .catch((error) => {
-        console.error("Error al cargar los datos:", error);
-      });
+
+    this.getDataPeru();
     this.fetchDataCapaDepartamentosCenter("peru");
   },
   watch: {
+    "configStore.switchStatus"(newValue) {
+      this.isLoading = true;
+      if (newValue) {
+        if (this.configStore.switchStatus === "global") {
+          this.isLoading = true;
+          this.getDataGlobal();
+        } else if (this.configStore.switchStatus === "peru") {
+          this.isLoading = true;
+          this.getDataPeru();
+        }
+      }
+    },
     "useGeojson.continente": "handleGeoJSONUpdate",
     "useGeojson.rangoFechas": "handleGeoJSONUpdate",
     "useGeojson.rangoMagnitud": "handleGeoJSONUpdate",
@@ -329,7 +319,6 @@ export default {
       this.isGeoJSONProcessing = true;
       const geoJSONData = await this.convertCSVToGeoJSON(this.setData);
       this.addGeoJSONToMap(geoJSONData);
-      // Reset after processing
       this.isGeoJSONProcessing = false;
     },
     convertCSVToGeoJSON(data) {
@@ -433,15 +422,16 @@ export default {
         clearInterval(this.intervalId); // Detener el intervalo anterior
         this.intervalId = null; // Reiniciar la variable
       }
-       // Verificar si hay datos
-  if (geoJSON.features.length === 0) {
-    // Mostrar mensaje de "No se encontraron datos"
-    this.noDataMessage = "No se encontraron datos para el rango de fecha solicitado.";
-    return; // Salir del método si no hay datos
-  } else {
-    // Ocultar el mensaje si hay datos
-    this.noDataMessage = null;
-  }
+      // Verificar si hay datos
+      if (geoJSON.features.length === 0) {
+        // Mostrar mensaje de "No se encontraron datos"
+        this.noDataMessage =
+          "No se encontraron datos para el rango de fecha solicitado.";
+        return; // Salir del método si no hay datos
+      } else {
+        // Ocultar el mensaje si hay datos
+        this.noDataMessage = null;
+      }
 
       // Crear una nueva capa GeoJSON vacía
       this.csvLayer = L.geoJSON(null, {
@@ -519,7 +509,7 @@ export default {
       // Reiniciar `features` con los datos actuales
       const features = geoJSON.features; // Datos filtrados actuales
       const chunkSize = 1; // Tamaño del grupo - 10 en 10
-      const segundos = 0.02; //cantidad de segundos - 1 segundo
+      const segundos = 0.002; //cantidad de segundos - 1 segundo
       let index = 0; // Índice inicial
       // Añadir los puntos en intervalos
       const addPointsInChunks = () => {
@@ -546,15 +536,9 @@ export default {
         this.useGeojson.continente.minLongitude === -168.0 &&
         this.useGeojson.continente.maxLongitude === 180.0
       ) {
-        // Si los límites son correctos, establecer el centro en [0.0, -120.0]
-        console.log("SI LLEGO A CUMPLIR AQUI EN GLOBAL VERIFICAR AQUI TEST");
-        console.log(this.map.getCenter());
         const defaultCenter = [20.0, -190.0]; // Centro predefinido
         this.map.setView(defaultCenter, 2); // Mantener el zoom actual
-        console.log("------------");
-        console.log(this.map.getCenter());
       } else {
-        console.log("NO ENTRO AL GLOBAL");
         // Si los límites no son los esperados, ajusta el mapa a los límites definidos
         this.map.fitBounds(bounds);
       }
@@ -582,35 +566,7 @@ export default {
           });
           // this.map.fitBounds(this.geoJSONLayerCapaDepartamento.getBounds());
         })
-        /*
-        .then((response) => {
-          this.geoJSONLayerCapaDepartamento = L.geoJSON(response.data, {
-            style: function () {
-              return {
-                color: "black", // Color de los bordes
-                weight: 1, // Grosor de los bordes
-                fillOpacity: 0, // Sin color de fondo (transparente)
-              };
-            },
-            onEachFeature: (feature, layer) => {
-              // Obtener el centro del polígono
-              const center = layer.getBounds().getCenter();
 
-              // Agregar un marcador con texto en el centro del polígono
-              L.marker(center, {
-                icon: L.divIcon({
-                  className: "custom-label",
-                  html: `<span class="texticon absolute font-bold text-igp-white top-[-17px] ml-[-14px] w-14 ">
-                      ${feature.properties.departamen}
-                    </span>`,
-                  iconSize: [100, 40], // Ajustar según el texto
-                  iconAnchor: [50, 20], // Centrar el texto en el marcador
-                }),
-                interactive: false, // Hacer que el marcador no sea interactivo
-              }).addTo(this.map);
-            },
-          });
-        })*/
         .then(() => {
           this.geoJSONLayerCapaDepartamento.addTo(this.map);
         })
@@ -624,7 +580,60 @@ export default {
         this.geoJSONLayerCapaDepartamento = null;
       }
     },
+
+    async getDataPeru() {
+      this.isLoading = true;
+      if (!this.dataStore.isLoadingPeru) {
+        const storeCombined = this.dataStore.combinedData;
+        const storeGeoJSONData = this.convertCSVToGeoJSON(storeCombined);
+        this.setData = storeCombined;
+        this.addGeoJSONToMap(storeGeoJSONData);
+        this.isLoading = this.dataStore.isLoadingPeru;
+      } else {
+        this.dataStore
+          .fetchDataPeru()
+          .then(() => {
+            // Asumimos que fetchDataPeru actualiza los datos en `dataStore` de alguna manera.
+            const storeCombined = this.dataStore.combinedData;
+            const storeGeoJSONData = this.convertCSVToGeoJSON(storeCombined);
+            this.setData = storeCombined;
+            this.addGeoJSONToMap(storeGeoJSONData);
+            this.isLoading = this.dataStore.isLoadingPeru;
+          })
+          .catch((error) => {
+            console.error("Error fetching data for Peru:", error);
+            this.isLoading = this.dataStore.isLoadingPeru; // Asegúrate de marcarlo como no cargando, incluso si hay un error.
+          });
+      }
+    },
+
+    async getDataGlobal() {
+      this.isLoading = true;
+      if (!this.dataStore.isLoadingGlobal) {
+        await this.dataStore.fetchDataGlobal();
+        const globalData = this.dataStore.dataGlobal;
+        const globalGeoJSONData = this.convertCSVToGeoJSON(globalData);
+        this.setData = globalData;
+        this.addGeoJSONToMap(globalGeoJSONData);
+        this.isLoading = this.dataStore.isLoadingGlobal;
+      } else {
+        this.dataStore
+          .fetchDataGlobal()
+          .then(() => {
+            const globalData = this.dataStore.dataGlobal;
+            const globalGeoJSONData = this.convertCSVToGeoJSON(globalData);
+            this.setData = globalData;
+            this.addGeoJSONToMap(globalGeoJSONData);
+            this.isLoading = this.dataStore.isLoadingGlobal;
+          })
+          .catch((error) => {
+            console.error("Error fetching data for Global:", error);
+            this.isLoading = this.dataStore.isLoadingGlobal; // Asegúrate de marcarlo como no cargando, incluso si hay un error.
+          });
+      }
+    },
   },
+
   beforeUnmount() {
     this.useGeojson.departamento = "peru";
     this.useGeojson.estadoPl = "enable";
@@ -654,18 +663,9 @@ export default {
 };
 </script>
 <style>
-#map {
-  position: absolute; /* Posiciona el mapa de forma absoluta respecto a su contenedor más cercano con posición relativa (por defecto, el body) */
-  top: 0; /* Coloca el mapa en la parte superior del contenedor o ventana */
-  left: 0; /* Coloca el mapa en la parte izquierda del contenedor o ventana */
-  width: 100%; /* El mapa ocupará el 100% del ancho disponible de su contenedor */
-  height: 100vh; /* Por defecto, el mapa ocupa toda la altura */
-  z-index: 1;
-}
-/*Para el responsive el mapa se posiciona mas arriba*/
 @media (max-width: 600px) {
   #map {
-    height: 70vh; /* En pantallas pequeñas, ocupa solo la mitad de la altura */
+    height: 70vh;
   }
 }
 .pulse {
@@ -688,25 +688,6 @@ export default {
   100% {
     opacity: 1;
   }
-}
-.texticon {
-  font-size: 11px !important;
-  font-weight: 500;
-
-  text-shadow: rgb(0, 0, 0) 3px 0px 0px, rgb(0, 0, 0) 2.83487px 0.981584px 0px,
-    rgb(0, 0, 0) 2.35766px 1.85511px 0px, rgb(0, 0, 0) 1.62091px 2.52441px 0px,
-    rgb(0, 0, 0) 0.705713px 2.91581px 0px,
-    rgb(0, 0, 0) -0.287171px 2.98622px 0px,
-    rgb(0, 0, 0) -1.24844px 2.72789px 0px, rgb(0, 0, 0) -2.07227px 2.16926px 0px,
-    rgb(0, 0, 0) -2.66798px 1.37182px 0px, rgb(0, 0, 0) -2.96998px 0.42336px 0px,
-    rgb(0, 0, 0) -2.94502px -0.571704px 0px,
-    rgb(0, 0, 0) -2.59586px -1.50383px 0px,
-    rgb(0, 0, 0) -1.96093px -2.27041px 0px,
-    rgb(0, 0, 0) -1.11013px -2.78704px 0px,
-    rgb(0, 0, 0) -0.137119px -2.99686px 0px,
-    rgb(0, 0, 0) 0.850987px -2.87677px 0px,
-    rgb(0, 0, 0) 1.74541px -2.43999px 0px, rgb(0, 0, 0) 2.44769px -1.73459px 0px,
-    rgb(0, 0, 0) 2.88051px -0.838247px 0px;
 }
 
 .loader {
@@ -741,4 +722,3 @@ export default {
   }
 }
 </style>
-

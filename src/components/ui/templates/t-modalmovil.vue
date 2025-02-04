@@ -4,10 +4,13 @@
     <button
       class="fixed z-50 bottom-5 left-10 bg-igp-blue rounded-full px-1 py-1 h-10 w-10 shadow-[0px_0px_50px_0px_#00000025] animate-bounce"
       @click="toggleMove"
-    >   
-    <img  :src="arrow" alt="Down Arrow Icon"  :class="{ 'rotate-180': isRotated }"
-      class="transition-transform duration-300"
-    />
+    >
+      <img
+        :src="arrow"
+        alt="Down Arrow Icon"
+        :class="{ 'rotate-180': isRotated }"
+        class="transition-transform duration-300"
+      />
     </button>
     <!-- Panel de control -->
     <div
@@ -318,8 +321,7 @@
                   v-model="checkedItems[index]"
                   class="mr-4 focus:outline-none"
                   :disabled="isDisabled(index)"
-                  :class="{'cursor-not-allowed': isDisabled(index),
-                  }"
+                  :class="{ 'cursor-not-allowed': isDisabled(index) }"
                   @change="handleCheckboxChange"
                 />
                 <label
@@ -377,6 +379,8 @@ import { useGeojsonStore } from "@/stores/geojson";
 import iplay from "@/assets/icons/iplay.vue";
 import istop from "@/assets/icons/istop.vue";
 import qst from "@/assets/icons/question.svg";
+import { useConfigStore } from "@/stores/config";
+
 import "flowbite";
 //////////////////////////////////////
 function capitalizeMonth(date) {
@@ -393,6 +397,7 @@ const statePlay = ref("disable");
 const ablePeru = ref(true);
 const ableGlobal = ref(false);
 const activeTab = ref("peru");
+const configStore = useConfigStore();
 // Estilos para los círculos personalizados
 const redCircleStyle = {
   display: "inline-block",
@@ -419,6 +424,7 @@ const blueCircleStyle = {
   border: "2px solid #002FEF", // Borde negro delgado
 };
 function setActiveTab(tab) {
+  configStore.switchActiveTab(tab);
   activeTab.value = tab; // quitar si en caso no quiere que cuando se cambie a peru, se ponga play solo
   useGeojson.departamento = tab;
   togglePlay();
@@ -957,7 +963,7 @@ const convertToDateStart = (proxyObject) => {
     proxyObject.month !== undefined &&
     proxyObject.year !== undefined
   ) {
-    const date = new Date(proxyObject.year, proxyObject.month );
+    const date = new Date(proxyObject.year, proxyObject.month);
     date.setDate(date.getDate() - 1);
     return date;
   }
@@ -1107,10 +1113,10 @@ const isMoved = ref(true);
 const setAltura = ref(320);
 //const setAltura = ref(null);
 const isDown = ref(false);
-const isRotated = ref(false)
+const isRotated = ref(false);
 const toggleMove = () => {
   //setAltura.value = 320;
-  isRotated.value = !isRotated.value
+  isRotated.value = !isRotated.value;
   isDown.value = !isDown.value;
   isMoved.value = !isMoved.value; // Alternar estado
 };

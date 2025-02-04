@@ -393,6 +393,8 @@ import { useGeojsonStore } from "@/stores/geojson";
 import iplay from "@/assets/icons/iplay.vue";
 import istop from "@/assets/icons/istop.vue";
 import qst from "@/assets/icons/question.svg";
+import { useConfigStore } from "@/stores/config";
+
 import "flowbite";
 function capitalizeMonth(date) {
   if (!date) return "";
@@ -402,13 +404,13 @@ function capitalizeMonth(date) {
 const useGeojson = useGeojsonStore();
 const stateStop = ref("enable");
 const statePlay = ref("disable");
-//const ablePeru = ref(false);
-//const ableGlobal = ref(true);
 const ablePeru = ref(true);
 const ableGlobal = ref(false);
 //const activeTab = ref("global");
 const activeTab = ref("peru");
 const muestraModal = ref(true);
+
+const configStore = useConfigStore();
 // Función para cerrar el modal
 function cerrarModal() {
   muestraModal.value = !muestraModal.value;
@@ -440,6 +442,7 @@ const blueCircleStyle = {
   border: "2px solid #002FEF", // Borde negro delgado
 };
 function setActiveTab(tab) {
+  configStore.switchActiveTab(tab);
   activeTab.value = tab; // quitar si en caso no quiere que cuando se cambie a peru, se ponga play solo
   useGeojson.departamento = tab;
   togglePlay();
@@ -517,7 +520,7 @@ const dataPeru = ref([
       maxLongitude: -68.15, // Aumenté más la longitud máxima
     },
   },
-  
+
   {
     value: "",
     send: "peru",
@@ -842,7 +845,6 @@ const selContinente = ref("");
 const stateContinente = ref("disable");
 const errContinente = ref("Continente error");
 const dataContinente = ref([
-
   {
     value: "",
     name: "Global",
@@ -853,7 +855,7 @@ const dataContinente = ref([
       maxLongitude: 180.0,
     },
   },
- 
+
   {
     value: "suramerica",
     name: "América del Sur",
@@ -971,7 +973,7 @@ const convertToDate = (proxyObject) => {
     proxyObject.year !== undefined
   ) {
     const date = new Date(proxyObject.year, proxyObject.month + 1);
-   date.setDate(date.getDate() - 1);
+    date.setDate(date.getDate() - 1);
     return date;
   }
   return null;

@@ -46,29 +46,31 @@
             style="--delay: 0.1s"
           >
             PeruSis
-           
           </p>
-          <p class="col-span-12 text-igp-white text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-normal italic leading-none fade-bar"
-             style="--delay: 0.1s"> Perú Sísmico             
+          <p
+            class="col-span-12 text-igp-white text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-normal italic leading-none fade-bar"
+            style="--delay: 0.1s"
+          >
+            Perú Sísmico
           </p>
           <p
             class="col-span-12 font-semibold pt-4 text-igp-white text-xs sm:text-sm md:text-sm lg:text-base xl:text-lg 2xl:text-lg mt-3 fade-bar"
             style="line-height: 2; --delay: 0.3s"
           >
             PeruSis es una plataforma digital de observación sísmica
-            desarrollada por el Instituto Geofísico del Perú (IGP), 
-            para ofrecer acceso espacio-tiempo a la actividad sísmica ocurrida
-            en el Perú y el mundo de manera visual e interactiva.
+            desarrollada por el Instituto Geofísico del Perú (IGP), para ofrecer
+            acceso espacio-tiempo a la actividad sísmica ocurrida en el Perú y
+            el mundo de manera visual e interactiva.
           </p>
           <p
             class="col-span-12 font-semibold pt-4 text-igp-white text-xs sm:text-sm md:text-sm lg:text-base xl:text-lg 2xl:text-lg mt-3 fade-bar"
             style="line-height: 2; --delay: 0.5s"
           >
             Con una interfaz intuitiva, PeruSis permite seleccionar sismos por
-            región, fecha, magnitud y profundidad, lo cual facilita su análisis. Esto
-            la convierte en una herramienta clave para identificar regiones
-            potencialmente sísmicas y contribuir con información para fortalecer la 
-            educación en temas sísmicos.
+            región, fecha, magnitud y profundidad, lo cual facilita su análisis.
+            Esto la convierte en una herramienta clave para identificar regiones
+            potencialmente sísmicas y contribuir con información para fortalecer
+            la educación en temas sísmicos.
           </p>
 
           <div
@@ -104,7 +106,9 @@
 <script setup>
 import theader from "@/components/ui/atoms/t-header.vue";
 import { ref, onMounted, reactive } from "vue";
+import { useDataStore } from "@/stores/data";
 
+const dataStore = useDataStore();
 const dots = reactive([]);
 
 const showContent = ref(false); // Controla el contenido principal
@@ -136,6 +140,7 @@ function generateDots(count) {
 }
 
 onMounted(async () => {
+  // Ejecutar la animación primero
   await generateDots(100);
   setTimeout(() => {
     imageClass.value = "zoom-right-large";
@@ -144,6 +149,11 @@ onMounted(async () => {
       showImageInGlobe.value = true;
     }, 2000); // Tiempo para que aparezca el contenido
   }, 1000);
+
+  // Cargar datos en segundo plano sin bloquear la animación
+  if (dataStore.combinedData.length === 0) {
+    dataStore.fetchDataPeru();
+  }
 });
 </script>
 
