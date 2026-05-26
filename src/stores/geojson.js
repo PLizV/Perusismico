@@ -13,10 +13,10 @@ export const useGeojsonStore = defineStore('geojson', () => {
        // maxLatitude: 81.0,
        // minLongitude: -168.0,
        // maxLongitude: 180.0,
-       minLatitude: -18.35,
-       maxLatitude: -0.03,
-       minLongitude: -81.33,
-       maxLongitude: -68.65,
+    minLatitude: -18.35,
+    maxLatitude: -0.03,
+    minLongitude: -81.33,
+    maxLongitude: -68.65,
     });
 
 

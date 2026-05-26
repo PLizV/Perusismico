@@ -71,5 +71,36 @@ export const useDataStore = defineStore("dataStore", {
         });
       });
     },
+
+/*parseCSV(csvData, isHistorical = false) {
+  return new Promise((resolve, reject) => {
+    Papa.parse(csvData, {
+      header: true,
+      dynamicTyping: true,
+      complete: (result) => {
+        let data = result.data;
+        if (isHistorical) {
+          data = data.map((row) => {
+            const rawTime = `${row.fecha}T${row.hora}Z`;
+            const fechaHora = new Date(rawTime).toISOString().replace("T", " ").slice(0, 19);
+
+            return {
+              time: fechaHora,           
+              latitude: row.latitude,
+              longitude: row.longitude,
+              depth: row.depth,
+              mag: row.mag,
+              place: row.place || "-",   
+              magType: row.magType || "-",
+            };
+          });
+        }
+        resolve(data);
+      },
+      error: (err) => reject(err),
+    });
+  });
+}*/
+
   },
-});
+}); 

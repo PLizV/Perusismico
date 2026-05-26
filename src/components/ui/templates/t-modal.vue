@@ -994,7 +994,7 @@ const convertToDateStart = (proxyObject) => {
 //StartDate
 const startDate = ref({
   month: new Date().getMonth(),
-  year: new Date().getFullYear() - 2,
+  year: new Date().getFullYear() - 1,
 });
 const errStartDate = ref("Fecha inicio error");
 const disStartDate = ref(true);

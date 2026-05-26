@@ -93,7 +93,7 @@
           v-bind:modelValue="selPeru"
           v-on:update:modelValue="selPeru = $event"
           :groupOpcion="false"
-          isRequired="reqPeru"
+          isRequired="reqPeru"  
           :selectedItems="dataPeru"
         >
           <template v-slot:name> Seleccionar región o departamento</template>
@@ -313,7 +313,7 @@
               v-for="(item, index) in items"
               :key="index"
               class="flex items-center ml-8"
-            >
+            > 
               <div class="flex">
                 <input
                   type="checkbox"
@@ -380,7 +380,6 @@ import iplay from "@/assets/icons/iplay.vue";
 import istop from "@/assets/icons/istop.vue";
 import qst from "@/assets/icons/question.svg";
 import { useConfigStore } from "@/stores/config";
-
 import "flowbite";
 //////////////////////////////////////
 function capitalizeMonth(date) {
@@ -429,7 +428,7 @@ function setActiveTab(tab) {
   useGeojson.departamento = tab;
   togglePlay();
   if (tab === "peru") {
-    stateStartDate.value = "disable";
+    stateStartDate.value = "disable"; 
     disStartDate.value = true;
     stateEndDate.value = "disable";
     disEndDate.value = true;
@@ -972,7 +971,7 @@ const convertToDateStart = (proxyObject) => {
 //StartDate
 const startDate = ref({
   month: new Date().getMonth(),
-  year: new Date().getFullYear() - 2,
+  year: new Date().getFullYear() - 1,
 });
 const errStartDate = ref("Fecha inicio error");
 const disStartDate = ref(true);

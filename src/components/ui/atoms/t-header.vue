@@ -10,13 +10,14 @@
           src="/img/logo_minam.png"
         />
       </div>
-      <div class="ml-4">
-        <img
-          alt="logo_minam"
-          class="w-[5.5rem] sm:w-[5.5rem] md:w-[5.6rem] lg:w-[6rem] xl:w-[6.5rem] 2xl:w-[7.3rem]"
-          src="/img/logo_igp.png"
-        />
-      </div>
+     <div class="ml-4 flex items-center gap-x-2">
+  <img
+    alt="logo_igp"
+    class="w-[5.5rem] sm:w-[5.5rem] md:w-[5.6rem] lg:w-[6rem] xl:w-[6.5rem] 2xl:w-[7.3rem]"
+    src="/img/logo_igp.png"
+  />
+
+</div>
       <router-link
         :to="{ name: 'acercade' }"
         class="text-md sm:text-md md:text-md lg:text-md xl:text-lg 2xl:text-lg hidden h-full items-center justify-center ml-10 cursor-pointer z-50 outline-none font-light sm:hidden md:hidden lg:flex xl:flex 2xl:flex"

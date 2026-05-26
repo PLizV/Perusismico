@@ -15,7 +15,7 @@
         "Boundary_Type": "Unknown",
         "VolcanoSums": null
       },
-      "geometry": {
+      "geometry": { 
         "type": "LineString",
         "coordinates": [
           [
@@ -14081,18 +14081,7 @@
       "geometry": {
         "type": "LineString",
         "coordinates": [
-          [
-            -130.325809955562988,
-            50.159949208087298
-          ],
-          [
-            -130.690480775205003,
-            50.7677339074909
-          ],
-          [
-            -131.176708534727993,
-            51.091885747172597
-          ]
+  
         ]
       }
     },
