@@ -5,9 +5,13 @@
       class="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-[99999999]"
     >
       <div class="text-center flex flex-col items-center justify-center">
+<<<<<<< HEAD
         <p style="color: #3388ff" class="text-lg font-semibold">
           No se han registrado sismos en esta área según los parámetros ingresados
         </p>
+=======
+        <p style="color: #3388ff" class="text-lg font-semibold"> "No se han registrado sismos en esta área segun los parámetros ingresados"</p>
+>>>>>>> 350510e8528f2ac7c564b0429f1a08a7dff2c65e
         <div class="no-data-message"></div>
       </div>
     </div>
