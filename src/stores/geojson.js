@@ -34,14 +34,14 @@ export const useGeojsonStore = defineStore('geojson', () => {
         isIntermediate: true,
         isDeep: true,
     });
+    const animationType = ref("1");
 
     const setZoom = ref(false);
 
     const departamento = ref("peru")
 
-
     return {
         estadoPl,
-        continente, rangoFechas, rangoMagnitud, profundidad, setZoom, departamento
+        continente, rangoFechas, rangoMagnitud, profundidad, animationType, setZoom, departamento
     };
 });

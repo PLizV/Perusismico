@@ -1,28 +1,26 @@
 <template>
-  <div class="flex justify-start z-10 scroll-auto select-none">
-    <!-- px-4 sm:px-4 md:px-0 lg:px-4 xl:px-0 2xl:px-0 ml-0 sm:ml-0 md:ml-8 lg:ml-10 xl:ml-14 2xl:ml-20 c -->
-    <button
-      class="fixed z-50 bottom-5 left-10 bg-igp-blue rounded-full px-1 py-1 h-10 w-10 shadow-[0px_0px_50px_0px_#00000025] animate-bounce"
-      @click="toggleMove"
-    >
-      <img
-        :src="arrow"
-        alt="Down Arrow Icon"
-        :class="{ 'rotate-180': isRotated }"
-        class="transition-transform duration-300"
-      />
-    </button>
-    <!-- Panel de control -->
-    <div
-      id="contenedorModal"
-      class="relative px-4 sm:px-4 md:px-4 lg:px-0 xl:px-0 2xl:px-0 mx-4 sm:mx-4 md:mx-4 lg:mx-0 xl:mx-0 2xl:mx-0 mt-3 mb-10 grid grid-cols-12 bg-[#FCFDFF] rounded-2xl border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
-      ref="myDiv"
-      :style="{
-        transform: isMoved
-          ? `translateY(calc(100vh - ${setAltura}px))`
-          : 'translateY(0)',
-      }"
-    >
+  <!-- Botón flotante para abrir/cerrar el panel (bottom-sheet) -->
+  <button
+    class="fixed z-[30] bottom-24 left-4 bg-igp-blue rounded-full w-10 h-10 flex items-center justify-center shadow-[0px_0px_24px_0px_#00000040]"
+    :class="{ 'animate-bounce': isMoved }"
+    @click="toggleMove"
+    aria-label="Mostrar u ocultar panel de filtros"
+  >
+    <img
+      :src="arrow"
+      alt="Abrir panel"
+      :class="{ 'rotate-180': !isMoved }"
+      class="transition-transform duration-300 w-5 h-5"
+    />
+  </button>
+
+  <!-- Bottom-sheet panel: fixed, desliza desde abajo -->
+  <div
+    id="contenedorModal"
+    ref="myDiv"
+    :class="{ 'translate-y-full': isMoved }"
+    class="fixed bottom-0 inset-x-0 z-[25] px-4 pb-6 bg-[#FCFDFF] rounded-t-2xl border-t border-igp-blue shadow-[0px_-4px_12px_0px_#00000024] max-h-[85vh] overflow-y-auto transition-transform duration-300 ease-in-out grid grid-cols-12"
+  >
       <div
         class="h-1 rounded-xl bg-igp-muted cursor-pointer col-span-4 flex mt-3 col-start-5"
         @click="toggleMove"
@@ -218,15 +216,24 @@
           >
             <istop class="w-4 h-4"></istop>
           </button>
-          <button class="ml-3 relative" type="button" @mouseenter="showTooltip">
+          <button
+            class="ml-3 relative"
+            type="button"
+            @mouseenter="showTooltip"
+            @mouseleave="hideTooltip"
+            @focus="showTooltip"
+            @blur="hideTooltip"
+            aria-describedby="animation-help-tooltip-mobile"
+          >
             <img :src="qst" alt="question_img" height="20" width="18" />
             <div
+              id="animation-help-tooltip-mobile"
               v-if="tooltipVisible"
               :class="[
-                'tooltip',
+                'help-tooltip',
                 tooltipVisible ? 'opacity-100 visible' : 'opacity-0 invisible',
               ]"
-              class="tooltip absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-1 py-1 text-[8px] font-medium text-white bg-igp-blue rounded-lg shadow-sm w-50 text-start w-20"
+              class="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 px-2 py-1 text-[8px] font-medium text-white bg-igp-blue rounded-lg shadow-sm text-start w-32 max-w-[calc(100vw-3rem)] pointer-events-none"
             >
               Presiona Play o Stop para controlar la animación de sismos.
             </div>
@@ -288,6 +295,28 @@
             </div>
           </div>
         </div>
+      </div>
+      <div
+        class="grid grid-cols-12 col-span-12 border ml-4 py-3 my-4 rounded-lg"
+      >
+        <tLabel
+          color="blue"
+          size="md"
+          weight="400"
+          class="col-span-12 flex pl-4"
+        >
+          <img :src="qst" alt="img_animacion" height="18" width="18" class="mr-2" />
+          Animación de aparición:
+        </tLabel>
+        <tSelect
+          id="animation-selector-mobile"
+          v-model="selectedAnimation"
+          :selectedItems="dataAnimation"
+          :state="stateAnimation"
+          class="col-span-12 px-4 mt-2"
+        >
+          <template #name>Tipo de animación</template>
+        </tSelect>
       </div>
       <div
         class="grip grid-cols-12 col-span-12 border rounded-lg py-4 my-4 ml-4"
@@ -356,11 +385,10 @@
             Compartir
           </tButton>
         </div> -->
-    </div>
   </div>
 </template>
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onBeforeUnmount } from "vue";
 import tLabel from "@/components/ui/atoms/t-label.vue";
 import tSelect from "@/components/ui/atoms/t-select.vue";
 import profundidad from "@/assets/icons/profundidad.svg";
@@ -380,6 +408,8 @@ import iplay from "@/assets/icons/iplay.vue";
 import istop from "@/assets/icons/istop.vue";
 import qst from "@/assets/icons/question.svg";
 import { useConfigStore } from "@/stores/config";
+import { useDataStore } from "@/stores/data";
+import { computeDepthRange } from "@/services/usgsService";
 import "flowbite";
 //////////////////////////////////////
 function capitalizeMonth(date) {
@@ -389,8 +419,11 @@ function capitalizeMonth(date) {
 }
 //////////////////////////////////////
 const useGeojson = useGeojsonStore();
+const dataStore = useDataStore();
 const stateStop = ref("enable");
 const statePlay = ref("disable");
+const stateAnimation = ref("enable");
+const selectedAnimation = ref(useGeojson.animationType || "1");
 //const ablePeru = ref(false);
 //const ableGlobal = ref(true);
 const ablePeru = ref(true);
@@ -422,6 +455,14 @@ const blueCircleStyle = {
   marginRight: "5px",
   border: "2px solid #002FEF", // Borde negro delgado
 };
+const dataAnimation = ref([
+  { value: "1", name: "1 - Onda expansiva" },
+  { value: "2", name: "2 - Pulso doble" },
+  { value: "3", name: "3 - Rebote" },
+  { value: "4", name: "4 - Destello blanco" },
+  { value: "5", name: "5 - Radar" },
+  { value: "6", name: "6 - Orbital" },
+]);
 function setActiveTab(tab) {
   configStore.switchActiveTab(tab);
   activeTab.value = tab; // quitar si en caso no quiere que cuando se cambie a peru, se ponga play solo
@@ -435,6 +476,7 @@ function setActiveTab(tab) {
     selPeru.value = "";
     ablePeru.value = true;
     ableGlobal.value = false;
+    dataStore.clearUsgsData();
     useGeojson.continente = {
       minLatitude: -18.35,
       maxLatitude: -0.03,
@@ -453,27 +495,25 @@ function setActiveTab(tab) {
     };
   }
 }
-// Variable para controlar la visibilidad del tooltip
-const tooltipVisible = ref(true);
-// Variable para almacenar el temporizador
-let hideTimeout;
-// Configurar el temporizador para cerrar el tooltip automáticamente después de 2 segundos al montar el componente
-onMounted(() => {
-  hideTimeout = setTimeout(() => {
-    tooltipVisible.value = false;
-  }, 2000); // 5000 milisegundos = 5 segundos
-});
-// Función para mostrar el tooltip al pasar el mouse
+const tooltipVisible = ref(false);
+let hideTimeout = null;
+
 const showTooltip = () => {
-  // Si ya hay un temporizador activo, lo limpiamos
   clearTimeout(hideTimeout);
-  // Mostramos el tooltip
   tooltipVisible.value = true;
-  // Configuramos el temporizador para ocultar el tooltip después de 5 segundos
   hideTimeout = setTimeout(() => {
     tooltipVisible.value = false;
   }, 3000);
 };
+
+const hideTooltip = () => {
+  clearTimeout(hideTimeout);
+  tooltipVisible.value = false;
+};
+
+onBeforeUnmount(() => {
+  clearTimeout(hideTimeout);
+});
 // PERU
 const selPeru = ref("");
 const statePeru = ref("disable");
@@ -1073,10 +1113,8 @@ const togglePlay = () => {
       };
     }
   } else {
-    useGeojson.rangoFechas = {
-      startDate: convertToDateStart(startDate.value),
-      endDate: convertToDate(endDate.value),
-    };
+    // --- GLOBAL: delegar fetch a la capa de store/servicio ---
+    _dispatchUsgsQuery();
   }
   useGeojson.estadoPl = "enable";
   statePeru.value = "disable";
@@ -1086,12 +1124,14 @@ const togglePlay = () => {
   disEndDate.value = true;
   stateContinente.value = "disable";
   stateCheckList.value = "disable";
+  stateAnimation.value = "disable";
   disabledSlider.value = true;
   useGeojson.rangoMagnitud = {
     maxMag: magnitudeRange.value[0],
     minMag: magnitudeRange.value[1],
   };
   useGeojson.profundidad = selectionState.value;
+  useGeojson.animationType = selectedAnimation.value;
 };
 const toggleStop = () => {
   useGeojson.estadoPl = "disable";
@@ -1099,6 +1139,7 @@ const toggleStop = () => {
   statePeru.value = "enable";
   stateContinente.value = "enable";
   stateCheckList.value = "enable";
+  stateAnimation.value = "enable";
   if (activeTab.value === "peru") {
     getValPeru();
   } else {
@@ -1109,16 +1150,53 @@ const toggleStop = () => {
   }
 };
 const isMoved = ref(true);
-const setAltura = ref(320);
-//const setAltura = ref(null);
-const isDown = ref(false);
-const isRotated = ref(false);
+// toggleMove: alterna la visibilidad del bottom-sheet
 const toggleMove = () => {
-  //setAltura.value = 320;
-  isRotated.value = !isRotated.value;
-  isDown.value = !isDown.value;
-  isMoved.value = !isMoved.value; // Alternar estado
+  isMoved.value = !isMoved.value;
 };
+
+/**
+ * Construye los parámetros y delega el fetch al store (data.js → usgsService.js).
+ * El componente t-map.vue reacciona al cambio en dataStore.dataUSGS.
+ */
+function _dispatchUsgsQuery() {
+  const startMonth = String(startDate.value.month + 1).padStart(2, "0");
+  const starttime  = `${startDate.value.year}-${startMonth}-01`;
+
+  // Último día real del mes (cubre febrero, meses de 30 días, etc.)
+  const lastDay   = new Date(endDate.value.year, endDate.value.month + 1, 0).getDate();
+  const endMonth  = String(endDate.value.month + 1).padStart(2, "0");
+  const endtime   = `${endDate.value.year}-${endMonth}-${String(lastDay).padStart(2, "0")}`;
+
+  const { mindepth, maxdepth } = computeDepthRange(
+    checkedItems.value[0],
+    checkedItems.value[1],
+    checkedItems.value[2]
+  );
+
+  const params = {
+    starttime,
+    endtime,
+    minmagnitude: magnitudeRange.value[0],
+    maxmagnitude: magnitudeRange.value[1],
+    mindepth,
+    maxdepth,
+  };
+
+  // Inyectar bbox solo si el continente NO es "Global" (value !== "")
+  const continenteSeleccionado = dataContinente.value.find(
+    (c) => c.value === selContinente.value
+  );
+  if (continenteSeleccionado && continenteSeleccionado.value !== "") {
+    const b = continenteSeleccionado.boundaries;
+    params.minlatitude  = b.minLatitude;
+    params.maxlatitude  = b.maxLatitude;
+    params.minlongitude = b.minLongitude;
+    params.maxlongitude = b.maxLongitude;
+  }
+
+  dataStore.fetchDataUSGS(params);
+}
 </script>
 
 <style>
@@ -1194,5 +1272,14 @@ const toggleMove = () => {
 }
 #contenedorModal {
   transition: transform 0.3s ease-in-out; /* Animación suave */
+}
+.help-tooltip {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.help-tooltip.opacity-100.visible {
+  opacity: 1;
+  visibility: visible;
 }
 </style>

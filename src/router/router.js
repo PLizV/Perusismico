@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory, createWebHistory } from "vue-router";
 //ACERCA DE
 import acercade from "@/components/views/layout/t-acercade.vue";
 // GEOVISOR
@@ -8,7 +8,13 @@ import geovisor from "@/components/views/layout/t-geovisor.vue";
 import errorNotFound from "@/components/views/pages/errorNotFound.vue";
 import accessDenied from "@/components/views/pages/accessDenied.vue";
 
-const linkAccess = import.meta.env.VITE_PUBLIC_PATH;
+const routerBase = import.meta.env.BASE_URL || "/";
+const routerMode = String(import.meta.env.VITE_ROUTER_BASE || "history").toLowerCase();
+const history =
+  routerMode === "hash"
+    ? createWebHashHistory(routerBase)
+    : createWebHistory(routerBase);
+
 const routes = [
   { path: "/", name: "acercade", component: acercade },
   { path: "/visor", name: "geovisor", component: geovisor },
@@ -16,7 +22,7 @@ const routes = [
   { path: "/acceso-denegado", component: accessDenied },
 ];
 const router = createRouter({
-  history: createWebHistory(linkAccess),
+  history,
   routes,
   pathToRegexpOptions: {
     sensitive: true,

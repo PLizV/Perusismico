@@ -1,11 +1,11 @@
 <template>
   <div
-    class="flex items-center px-4 sm:px-4 md:px-0 lg:px-0 xl:px-0 2xl:px-0 ml-0 sm:ml-0 md:ml-8 lg:ml-10 xl:ml-14 2xl:ml-20 justify-start z-10 scroll-auto select-none absolute mt-16"
+    class="flex items-center px-4 sm:px-4 md:px-0 lg:px-0 xl:px-0 2xl:px-0 ml-0 sm:ml-0 md:ml-8 lg:ml-10 xl:ml-14 2xl:ml-20 justify-start z-[15] scroll-auto select-none absolute mt-16 lg:mt-16 xl:mt-[4.5rem]"
   >
     <!-- Panel de control -->
     <div
       v-if="muestraModal"
-      class="px-4 p-3 grid grid-cols-1 md:grid-cols-12 bg-[#FCFDFF] rounded-2xl w-[490px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024]"
+      class="px-4 p-3 grid grid-cols-1 md:grid-cols-12 bg-[#FCFDFF] rounded-2xl w-[490px] border border-b border-igp-blue shadow-[0px_4px_4px_0px_#00000024] max-h-[calc(100vh-5rem)] overflow-y-auto"
     >
       <button
         class="ml-auto col-span-12"
@@ -125,6 +125,7 @@
               :autoApply="true"
               :disabled="disStartDate"
               :min-date="new Date(1960, 0, 1)"
+              :max-date="new Date()"
               :year-range="[1960, new Date().getFullYear()]"
               month-picker
               style="color: blue !important"
@@ -143,6 +144,7 @@
               :disabled="disEndDate"
               month-picker
               :min-date="new Date(1960, 0, 1)"
+              :max-date="new Date()"
               :year-range="[1960, new Date().getFullYear()]"
             ></VueDatePicker>
           </template>
@@ -216,15 +218,24 @@
           >
             <istop class="w-4 h-4"></istop>
           </button>
-          <button class="ml-3 relative" type="button" @mouseenter="showTooltip">
+          <button
+            class="ml-3 relative"
+            type="button"
+            @mouseenter="showTooltip"
+            @mouseleave="hideTooltip"
+            @focus="showTooltip"
+            @blur="hideTooltip"
+            aria-describedby="animation-help-tooltip"
+          >
             <img :src="qst" alt="question_img" height="20" width="18" />
             <div
+              id="animation-help-tooltip"
               v-if="tooltipVisible"
               :class="[
-                'tooltip',
+                'help-tooltip',
                 tooltipVisible ? 'opacity-100 visible' : 'opacity-0 invisible',
               ]"
-              class="tooltip absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-2 text-xs font-medium text-white bg-igp-blue rounded-lg shadow-sm w-50 text-start w-60"
+              class="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 px-3 py-2 text-xs font-medium text-white bg-igp-blue rounded-lg shadow-sm text-start w-56 max-w-[calc(100vw-3rem)] pointer-events-none"
             >
               Presiona Play o Stop para controlar la animación de sismos.
             </div>
@@ -286,6 +297,28 @@
             </div>
           </div>
         </div>
+      </div>
+      <div
+        class="hidden  grid-cols-12 col-span-12 border ml-4 py-3 my-4 rounded-lg"
+      >
+        <tLabel
+          color="blue"
+          size="md"
+          weight="400"
+          class="col-span-12 flex pl-4"
+        >
+          <img :src="qst" alt="img_animacion" height="18" width="18" class="mr-2" />
+          Animación de aparición:
+        </tLabel>
+        <tSelect
+          id="animation-selector"
+          v-model="selectedAnimation"
+          :selectedItems="dataAnimation"
+          :state="stateAnimation"
+          class="col-span-12 px-4 mt-2"
+        >
+          <template #name>Tipo de animación</template>
+        </tSelect>
       </div>
       <div
         class="grip grid-cols-12 col-span-12 border rounded-lg py-4 my-4 ml-4"
@@ -374,7 +407,7 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onBeforeUnmount, watch } from "vue";
 import tLabel from "@/components/ui/atoms/t-label.vue";
 import tSelect from "@/components/ui/atoms/t-select.vue";
 import profundidad from "@/assets/icons/profundidad.svg";
@@ -394,6 +427,8 @@ import iplay from "@/assets/icons/iplay.vue";
 import istop from "@/assets/icons/istop.vue";
 import qst from "@/assets/icons/question.svg";
 import { useConfigStore } from "@/stores/config";
+import { useDataStore } from "@/stores/data";
+import { computeDepthRange } from "@/services/usgsService";
 
 import "flowbite";
 function capitalizeMonth(date) {
@@ -402,11 +437,13 @@ function capitalizeMonth(date) {
   return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
 }
 const useGeojson = useGeojsonStore();
+const dataStore = useDataStore();
 const stateStop = ref("enable");
 const statePlay = ref("disable");
+const stateAnimation = ref("enable");
+const selectedAnimation = ref(useGeojson.animationType || "1");
 const ablePeru = ref(true);
 const ableGlobal = ref(false);
-//const activeTab = ref("global");
 const activeTab = ref("peru");
 const muestraModal = ref(true);
 
@@ -441,6 +478,14 @@ const blueCircleStyle = {
   marginRight: "5px",
   border: "2px solid #002FEF", // Borde negro delgado
 };
+const dataAnimation = ref([
+  { value: "1", name: "1 - Onda expansiva" },
+  { value: "2", name: "2 - Pulso doble" },
+  { value: "3", name: "3 - Rebote" },
+  { value: "4", name: "4 - Destello blanco" },
+  { value: "5", name: "5 - Radar" },
+  { value: "6", name: "6 - Orbital" },
+]);
 function setActiveTab(tab) {
   configStore.switchActiveTab(tab);
   activeTab.value = tab; // quitar si en caso no quiere que cuando se cambie a peru, se ponga play solo
@@ -454,6 +499,7 @@ function setActiveTab(tab) {
     selPeru.value = "";
     ablePeru.value = true;
     ableGlobal.value = false;
+    dataStore.clearUsgsData();
     useGeojson.continente = {
       minLatitude: -18.35,
       maxLatitude: -0.03,
@@ -472,27 +518,25 @@ function setActiveTab(tab) {
     };
   }
 }
-// Variable para controlar la visibilidad del tooltip
-const tooltipVisible = ref(true);
-// Variable para almacenar el temporizador
-let hideTimeout;
-// Configurar el temporizador para cerrar el tooltip automáticamente después de 5 segundos al montar el componente
-onMounted(() => {
-  hideTimeout = setTimeout(() => {
-    tooltipVisible.value = false;
-  }, 2000); // 2000 milisegundos = 2 segundos
-});
-// Función para mostrar el tooltip al pasar el mouse
+const tooltipVisible = ref(false);
+let hideTimeout = null;
+
 const showTooltip = () => {
-  // Si ya hay un temporizador activo, lo limpiamos
   clearTimeout(hideTimeout);
-  // Mostramos el tooltip
   tooltipVisible.value = true;
-  // Configuramos el temporizador para ocultar el tooltip después de 5 segundos
   hideTimeout = setTimeout(() => {
     tooltipVisible.value = false;
   }, 2000);
 };
+
+const hideTooltip = () => {
+  clearTimeout(hideTimeout);
+  tooltipVisible.value = false;
+};
+
+onBeforeUnmount(() => {
+  clearTimeout(hideTimeout);
+});
 // PERU
 const selPeru = ref("");
 const statePeru = ref("disable");
@@ -1080,12 +1124,9 @@ const togglePlay = () => {
         endDate: convertToDate({ month: 11, year: 1900 }),
       };
     } else if (selPeru.value === "historica2") {
-      // Agrega una nueva condición para "transicional":
       useGeojson.rangoFechas = {
         startDate: convertToDateStart({ month: 0, year: 1901 }),
-        // Asigna como fecha de inicio enero del año 1901.
         endDate: convertToDate({ month: 11, year: 1959 }),
-        // Asigna como fecha de fin diciembre del año 1959 (mes 11).
       };
     } else {
       useGeojson.rangoFechas = {
@@ -1094,10 +1135,8 @@ const togglePlay = () => {
       };
     }
   } else {
-    useGeojson.rangoFechas = {
-      startDate: convertToDateStart(startDate.value),
-      endDate: convertToDate(endDate.value),
-    };
+    // --- GLOBAL: delegar fetch a la capa de store/servicio ---
+    _dispatchUsgsQuery();
   }
   useGeojson.estadoPl = "enable";
   statePeru.value = "disable";
@@ -1107,19 +1146,65 @@ const togglePlay = () => {
   disEndDate.value = true;
   stateContinente.value = "disable";
   stateCheckList.value = "disable";
+  stateAnimation.value = "disable";
   disabledSlider.value = true;
   useGeojson.rangoMagnitud = {
     maxMag: magnitudeRange.value[0],
     minMag: magnitudeRange.value[1],
   };
   useGeojson.profundidad = selectionState.value;
+  useGeojson.animationType = selectedAnimation.value;
 };
+
+/**
+ * Construye los parámetros y delega el fetch al store (data.js → usgsService.js).
+ * El componente t-map.vue reacciona al cambio en dataStore.dataUSGS.
+ */
+function _dispatchUsgsQuery() {
+  const startMonth = String(startDate.value.month + 1).padStart(2, "0");
+  const starttime  = `${startDate.value.year}-${startMonth}-01`;
+
+  // Último día real del mes (cubre febrero, meses de 30 días, etc.)
+  const lastDay   = new Date(endDate.value.year, endDate.value.month + 1, 0).getDate();
+  const endMonth  = String(endDate.value.month + 1).padStart(2, "0");
+  const endtime   = `${endDate.value.year}-${endMonth}-${String(lastDay).padStart(2, "0")}`;
+
+  const { mindepth, maxdepth } = computeDepthRange(
+    checkedItems.value[0],
+    checkedItems.value[1],
+    checkedItems.value[2]
+  );
+
+  const params = {
+    starttime,
+    endtime,
+    minmagnitude: magnitudeRange.value[0],
+    maxmagnitude: magnitudeRange.value[1],
+    mindepth,
+    maxdepth,
+  };
+
+  // Inyectar bbox solo si el continente NO es "Global" (value !== "")
+  const continenteSeleccionado = dataContinente.value.find(
+    (c) => c.value === selContinente.value
+  );
+  if (continenteSeleccionado && continenteSeleccionado.value !== "") {
+    const b = continenteSeleccionado.boundaries;
+    params.minlatitude  = b.minLatitude;
+    params.maxlatitude  = b.maxLatitude;
+    params.minlongitude = b.minLongitude;
+    params.maxlongitude = b.maxLongitude;
+  }
+
+  dataStore.fetchDataUSGS(params);
+}
 const toggleStop = () => {
   useGeojson.estadoPl = "disable";
   disabledSlider.value = false;
   statePeru.value = "enable";
   stateContinente.value = "enable";
   stateCheckList.value = "enable";
+  stateAnimation.value = "enable";
   if (activeTab.value === "peru") {
     getValPeru();
   } else {
@@ -1202,13 +1287,13 @@ const toggleStop = () => {
 .ant-slider-mark-text.ant-slider-mark-text-active {
   font-size: 12px;
 }
-.tooltip {
+.help-tooltip {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 /* Mostrar el tooltip cuando el botón se encuentre en hover */
-.tooltip.opacity-100.visible {
+.help-tooltip.opacity-100.visible {
   opacity: 1;
   visibility: visible;
 }

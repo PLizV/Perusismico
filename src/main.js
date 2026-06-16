@@ -1,32 +1,62 @@
+import { createApp } from "vue";
+import App from "./App.vue";
+import "./assets/main.css";
 
-import { createApp } from 'vue'
-import App from './App.vue'
-import './assets/main.css'
-import router from './router/router.js';
-import { createPinia } from 'pinia'
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css'
-const app = createApp(App)
-const pinia = createPinia();
-const script = document.createElement('script');
-script.async = true;
-script.src = 'https://www.googletagmanager.com/gtag/js?id=G-7X7S78DN4M';
-document.head.appendChild(script);
-script.onload = () => {
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      window.dataLayer.push(arguments);
-    }
-    gtag('js', new Date());
-    gtag('config', 'G-7X7S78DN4M');
-  };
-app.use(router)
-app.component('VueDatePicker', VueDatePicker);
-app.use(pinia);
-app.mount('#app')
+import router from "./router/router.js";
+import { createPinia } from "pinia";
 
-/* // Verifica si la página está cargando sobre HTTP, y si es así, redirige automáticamente a HTTPS.
-if (window.location.protocol === "http:") {
-  window.location.href = "https://" + window.location.hostname + window.location.pathname + window.location.search;
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+
+function setupGoogleAnalytics(router) {
+  const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+  const enabled = import.meta.env.VITE_ENABLE_ANALYTICS === "true";
+
+  if (!enabled || !gaId) return;
+
+  const script = document.createElement("script");
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(
+    gaId
+  )}`;
+  document.head.appendChild(script);
+
+  window.dataLayer = window.dataLayer || [];
+
+  function gtag() {
+    window.dataLayer.push(arguments);
+  }
+
+  window.gtag = gtag;
+
+  gtag("js", new Date());
+
+  // Evita doble page_view inicial en SPA
+  gtag("config", gaId, {
+    send_page_view: false,
+  });
+
+  router.afterEach((to) => {
+    const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+    gtag("event", "page_view", {
+      page_title: document.title,
+      page_path: `${base}${to.fullPath}`,
+      page_location: window.location.href,
+    });
+  });
 }
-*/
+
+const app = createApp(App);
+const pinia = createPinia();
+
+setupGoogleAnalytics(router);
+
+app.use(pinia);
+app.use(router);
+
+app.component("VueDatePicker", VueDatePicker);
+
+router.isReady().then(() => {
+  app.mount("#app");
+});
